@@ -1,8 +1,8 @@
 super + d
 	rofi -show drun -config .config/bspwm/rofi/config.rasi
 
-super + {_,shift + }Return
-	{alacritty, bspc node -s biggest.local}
+super + Return
+	alacritty
 
 Print
 	flameshot gui
