@@ -1,0 +1,185 @@
+[module/void]
+type = custom/text
+content = .
+
+[module/cava]
+type = custom/script
+tail = true
+exec = $HOME/.config/bspwm/polybar/cava.sh
+format = <label>
+format-font = 5
+label = %output%
+
+[module/weather]
+type       = custom/script
+#label = 
+pudding = 1
+exec       =  curl -s 'wttr.in/Жлобин?format=%t+%C&lang=ru' | sed 's/^+//g'
+#format=%t+%C' | sed 's/^+//g''
+interval   = 600
+
+[module/memory]
+type = internal/memory
+interval = 2
+format = <label>
+format-foreground= ${color.fg}
+format-prefix = " "
+label =  %percentage_used:2%%
+format-padding = 1
+
+[module/brigctl]
+type = custom/script
+exec = ~/.config/bspwm/polybar/brightnessctl.sh
+use-ui-max = true
+interval = 1
+label = %output%
+format-prefix = ""
+format-padding = 1
+format-foreground = ${color.fg} 
+label-padding = 1
+
+[module/title]
+type = internal/xwindow
+format = <label>
+interval = 1
+format-prefix = 
+format-foreground = ${color.fg}
+format-padding = 1
+label = " %title%"
+label-maxlen = 40
+label-empty = "Welcome to White Space"
+label-empty-padding = 1
+label-padding = 1
+
+[module/net]
+type = internal/network
+interface = wlan0
+label-connected = %downspeed:9%
+format-connected = <label-connected>
+format-connected-prefix = ""
+format-connected-prefix-foreground = ${color.fg}
+format-connected-foreground = ${color.fg}
+format-connected-padding = 1
+
+[module/xkeyboard]
+type = internal/xkeyboard
+
+blacklist-0 = num lock
+blacklist-1 = scroll lock
+format-prefix         = 
+format-prefix-padding = 1
+label-layout          = %layout%
+label-layout-padding  = 1
+label-layout-foreground = ${color.fg}
+format-prefix-foreground = ${color.fg}
+label-indicator-padding    = 1
+
+
+[module/cpu]
+type = internal/cpu
+interval = 1
+format = <label>
+format-foreground= ${color.fg}
+format-prefix = " "
+format-padding = 1
+
+
+[module/bspwm]
+type = internal/bspwm
+enable-click = true
+format = <label-state> <label-mode>
+
+label-focused = 
+label-focused-foreground = ${color.fg}
+label-focused-padding = 1
+
+label-occupied = 
+label-occupied-foreground = ${color.fg}
+label-occupied-padding = 1
+
+label-empty = %icon%
+label-empty-foreground = ${color.fg}
+label-empty-padding = 1
+
+ws-icon-default = 
+
+
+[module/battery]
+type = internal/battery
+
+full-at = 99
+battery = BAT1
+adapter = AC
+
+poll-interval = 2
+time-format = %H:%M
+
+
+format-charging            = <animation-charging><label-charging>
+format-charging-foreground = ${color.fg}
+label-charging             = %percentage%%
+label-charging-padding     = 1
+
+animation-charging-0 = 
+animation-charging-1 = 
+animation-charging-2 = 
+animation-charging-3 = 
+animation-charging-4 = 
+animation-charging-5 = 
+animation-charging-6 = 
+animation-charging-padding   = 1
+
+animation-charging-framerate = 750
+
+format-discharging            = <ramp-capacity><label-discharging>
+format-discharging-foreground = ${self.format-charging-foreground}
+label-discharging             = ${self.label-charging}
+label-discharging-padding     = ${self.label-charging-padding}
+
+ramp-capacity-0 = 
+ramp-capacity-1 = 
+ramp-capacity-2 = 
+ramp-capacity-3 = 
+ramp-capacity-4 = 
+ramp-capacity-5 = 
+ramp-capacity-6 = 
+ramp-capacity-7 = 
+ramp-capacity-8 = 
+ramp-capacity-9 = 
+ramp-capacity-padding = 1
+
+format-full                = <label-full>
+format-full-foreground     = ${self.format-charging-foreground}
+format-full-prefix         = 
+format-full-prefix-padding = 1
+label-full                 = ${self.label-charging}
+label-full-padding         = ${self.label-charging-padding}
+
+[module/volume]
+type = internal/pulseaudio
+use-ui-max = true
+interval = 2
+format-volume = <ramp-volume> <label-volume>
+format-volume-padding = 1 
+format-muted = 婢 Muted
+format-muted-padding = 1
+format-muted-foreground = ${color.fg}
+label-volume = %percentage%%
+ramp-volume-0 = 奄 
+ramp-volume-1 = 奔 
+ramp-volume-2 = 墳 
+ramp-headphones-0 = 
+ramp-headphones-1 = 
+format-volume-foreground= ${color.fg}
+
+
+[module/time]
+type = internal/date
+#time = "%d.%m.%y %H:%M:%S"
+time = "%H:%M:%S"
+format = <label>
+format-foreground= ${color.fg}
+format-font = 30
+label = %time%
+format-padding = 1
+

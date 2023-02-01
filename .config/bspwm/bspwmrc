@@ -1,0 +1,54 @@
+#! /bin/sh
+
+# wallpaper
+feh --no-fehbg --bg-scale .imgs/7.png
+
+pgrep -x sxhkd > /dev/null || sxhkd &
+$HOME/.config/bspwm/polybar/launch.sh
+
+bspc monitor -d 1 2 3 4 5 6
+
+bspc config border_width         3
+bspc config window_gap           10
+bspc config split_ratio          0
+
+bspc config focused_border_color "#fbf1c7"
+bspc config normal_border_color "#3c3836"
+bspc config active_border_color "#3c3836"
+
+bspc config borderless_monocle    true
+bspc config gapless_monocle       true
+bspc config focus_follows_pointer true
+bspc config single_monocle        false
+
+# fix pointer
+xsetroot -cursor_name left_ptr
+
+# floating windows
+declare -a floats=(Alafloat Lxappearance Arandr \
+Viewnior Pcmanfm Nm-connection-editor Matplotlib Yad)
+for i in ${floats[@]}; do
+  bspc rule -a $i state=floating follow=on focus=on; done
+
+
+killall -9 picom sxhkd dunst nm-applet ksuperkey xfce4-power-manager
+
+dunst -config $HOME/.config/bspwm/dunstrc &
+
+ polkit agent
+if [[ ! `pidof polkit-gnome-authentication-agent-1` ]]; then
+    /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 &
+fi
+
+sxhkd -c .config/bspwm/sxhkdrc &
+
+# Enable power management
+#xfce4-power-manager &
+
+nm-applet --indicator &
+
+while pgrep -u $UID -x picom >/dev/null; do sleep 1; done
+picom --experimental-backends --config  .config/bspwm/picom.conf &
+xrandr --setprovideroutputsource modesetting NVIDIA-0
+
+bspc rule -a feh state=fullscreen

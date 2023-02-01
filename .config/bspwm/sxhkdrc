@@ -1,0 +1,92 @@
+super + d
+	rofi -show drun -config .config/bspwm/rofi/config.rasi
+
+super + {_,shift + }Return
+	{alacritty, bspc node -s biggest.local}
+
+Print
+	flameshot gui
+
+super + Print
+	scrot -d 5
+
+super + e
+        nemo
+
+super + b
+	librewolf
+
+super + x
+        sh ~/.config/bspwm/rofi/powermenu
+
+super + a
+	kotatogram-desktop
+
+
+
+XF86AudioRaiseVolume
+        pamixer -i 2
+XF86AudioLowerVolume
+        pamixer -d 2
+XF86AudioMute
+        pamixer {--mute, --unmute}
+
+XF86MonBrightness{Up,Down}
+        brightnessctl s 5%{+,-}
+
+
+
+
+super + {_, shift + }q
+	bspc node -{c}
+
+super + Escape
+        pkill -USR1 -x sxhkd
+
+super + shift + {q,r}
+        bspc {quit,wm -r}
+
+
+
+
+#ПОМЕНЯТЬ СТАТУС ОКНА НА /ТАЙЛОВОЕ/ПСЕВДО ТАЙЛОВОЕ/ПЛАВАЮЩЕЕ/ПОЛНОЭКРАННОЕ
+super + {t,shift + t,s,f}
+	bspc node -t {tiled,pseudo_tiled,floating,fullscreen}
+
+
+
+
+super + {_,shift + }{Left,Down,Up,Right}
+	bspc node -{f,s} {west,south,north,east}
+
+#ВЫДЕЛИТЬ НЕСКОЛЬКО ПРИЛОЖЕНИЙ НАПРИМЕР ЧТО БЫ ПЕРЕМЕСТИТЬ ГРУППУ ПРИЛОЖЕНИЙ НА ДРУГОЙ ВОРКСПЕЙС
+super + {p,b,comma,period}
+	bspc node -f @{parent,brother,first,second}
+
+super + {_,shift + }{1-9,0}
+	bspc {desktop -f,node -d} '^{1-9,10}'
+
+
+
+
+
+#ВЫБРАТЬ ВОРКСПЕЙС НА КОТОРОМ ОТКРОЕТСЯ НОВОЕ ОКНО
+super + ctrl + {1-9}
+        bspc node -o 0.{1-9}
+
+#ОТМЕНИТЬ НАПРАВЛЕНИЕ В КОТОРОМ ОТКРОЕТСЯ НОВОЕ ОКНО
+super + ctrl + space
+	bspc query -N -d | xargs -I id -n 1 bspc node id -p cancel
+
+
+
+
+
+#УВЕЛИЧИТЬ ОКНО СДВИНУВ ОДНУ ИЗ ЕГО СТОРОН
+super + alt + {Left,Down,Up,Right}
+	bspc node -z {left -20 0,bottom 0 20,top 0 -20,right 20 0}
+
+
+#ПЕРЕМЕЩЕНИЕ ПЛАВАЮЩИХ ОКОН
+super +  ctrl + {Left,Down,Up,Right}
+        bspc node -v {-20 0,0 20,0 -20,20 0}

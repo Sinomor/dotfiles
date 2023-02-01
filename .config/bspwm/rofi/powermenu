@@ -1,0 +1,21 @@
+#! /bin/sh
+
+uptime="`uptime -p | sed -e 's/up //g'`"
+
+rofi_cmd() {
+	rofi -dmenu \
+		-p "Uptime: $uptime" \
+		-mesg "Uptime: $uptime" \
+		-theme ~/.config/bspwm/rofi/power.rasi
+}
+
+chosen=$(printf "⏻\n\n" | rofi_cmd)
+
+#chosen=$(printf "⏻\n\n" | rofi -dmenu -i -theme-str '@import "power.rasi"')
+
+case "$chosen" in
+	"⏻") loginctl poweroff ;;
+	"") loginctl reboot ;;
+	"") loginctl kill-session self ;;
+	*) exit 1 ;;
+esac

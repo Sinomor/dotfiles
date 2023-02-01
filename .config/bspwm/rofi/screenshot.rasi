@@ -1,0 +1,113 @@
+configuration {
+	show-icons: false;
+}
+
+@import "config.rasi"
+
+window {
+ 	width: 230px;
+	border-radius: 22;
+}
+
+mainbox {
+	children: [inputbar, listview];
+	padding: 10;
+}
+
+inputbar {
+	enabled: true;
+	spacing: 5;
+	padding: 0;
+	margin: 0 0 10 0;
+	border-radius: 13;
+	background-color: @background-alt;
+	children: [textbox-prompt-colon, prompt];
+}
+
+textbox-prompt-colon {
+	font: "Material 14";
+	enabled: true;
+	expand: false;
+    	str: "";
+    	padding: 10 10 0 10;	
+    	border-radius: 13;
+    	background-color: @accent-green;
+    	text-color: @background;
+}
+
+prompt {
+	enabled: true;
+	font: "Iosevka 14";
+	background-color: transparent;
+	text-color: @foreground;
+	padding: 8;
+}
+
+listview {
+	enabled: true;
+	columns: 1;
+	lines: 4;
+	cycle: true;
+	dynamic: true;
+	scrollbar: false;
+	layout: vertical;
+	reverse: false;
+	fixed-height: true;
+	fixed-columns: true;
+
+	margin: 0;
+	padding: 0;
+	border: 0;
+	border-radius: 0;
+}
+
+
+element {
+	background-color: rgba(0,0,0,0);
+	padding: 5;
+	border-radius: 13;
+}
+
+element-text {
+	font: "Iosevka 14";
+	background-color: inherit;
+	text-color: inherit;
+	padding: 4;
+}
+
+element.normal.normal {
+	background-color: @background;
+	text-color: @foreground;
+}
+element.normal.urgent {
+	background-color: @accent;
+	text-color: @background;
+}
+element.normal.active {
+	background-color: @accent;
+	text-color: @background;
+}
+element.selected.normal {
+	background-color: @accent;
+	text-color: @background;
+}
+element.selected.urgent {
+	background-color: @background;
+	text-color: @foreground;
+}
+element.selected.active {
+	background-color: @background;
+	text-color: @foreground;
+}
+element.alternate.normal {
+	background-color: @background;
+	text-color: @foreground;
+}
+element.alternate.urgent {
+	background-color: @background;
+	text-color: @foreground;
+}
+element.alternate.active {
+	background-color: @background;
+	text-color: @foreground;
+}

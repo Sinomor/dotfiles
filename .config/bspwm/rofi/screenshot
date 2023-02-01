@@ -1,0 +1,18 @@
+#! /bin/sh
+
+rofi_cmd() {
+	rofi -dmenu \
+		-p "Take screenshot" \
+		-mesg "Take screenshot" \
+		-theme ~/.config/rofi/screenshot.rasi
+}
+
+chosen=$(printf " Capture desktop\n Capture area\n Capture window\n Capture in 5s" | rofi_cmd)
+
+case "$chosen" in
+	" Capture desktop") scrot ;;
+	" Capture area") scrot --select ;;
+	" Capture window") scrot -u ;;
+	" Capture in 5s") scrot -d 5 ;;
+	*) exit 1 ;;
+esac
