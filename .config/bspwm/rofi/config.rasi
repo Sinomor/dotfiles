@@ -22,7 +22,7 @@ configuration {
 window {
 	width: 420px;
 	border-radius: 18;
-	border: 0;
+	border: 3;
 	background-color: @background;
 }
 
