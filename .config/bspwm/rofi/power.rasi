@@ -7,7 +7,8 @@ configuration {
 window {
  	width: 384px;
         border-radius: 18;
-        border: 0;
+        border: 3;
+	border-color: @accent;
 }
 
 mainbox {
