@@ -22,7 +22,7 @@ border-size = 3
 
 font-0 = "JetBrainsMono Nerd Font:size=11;3"
 
-modules-center = time bspwm cpu cava memory
+modules-center = time bspwm memory cava cpu
 
 
 [bar/center]
