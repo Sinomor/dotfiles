@@ -1,0 +1,26 @@
+;; calendar
+(defpoll calendar_day :interval "10h" "date '+%d'")
+(defpoll calendar_year :interval "10h" "date '+%Y'")
+(defpoll calendar_date :interval "24h" "date '+%A, %d %B'")
+
+(defwidget cal []
+	(box :class "cal-container" 
+	(box :class "cal-inner"
+	(calendar :class "cal-inner-elems" 
+			  :day calendar_day 
+			  :year calendar_year))))
+
+(defwidget fullcal[]
+  (box :orientation "v" :space-evenly "false" :class "cal-outer-container"
+    (box :class "cal-date" "${calendar_date}")
+    (cal)
+  )
+)
+  
+(defwindow mycal
+	:geometry (geometry :x "10px" 
+						:y "61px" 
+						:width "15%" 
+						:height "15%")
+(fullcal))
+

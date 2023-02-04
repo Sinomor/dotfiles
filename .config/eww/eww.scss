@@ -1,0 +1,76 @@
+* {
+  all: unset;
+}
+
+$base: #3c3836;
+$mantle: #3c3836;
+$crust: #11111b;
+$text: #fbf1c7;
+$subtext0: #a6adc8;
+$subtext1: #bac2de;
+$surface0: #313244;
+$surface1: #45475a;
+$surface2: #585b70;
+$overlay0: #7c6f64;
+$overlay1: #7f849c;
+$overlay2: #9399b2;
+$blue: #89b4fa;
+$lavender: #b4befe;
+$sapphire: #74c7ec;
+$sky: #89dceb;
+$teal: #94e2d5;
+$green: #a6e3a1;
+$yellow: #f9e2af;
+$peach: #fab387;
+$maroon: #eba0ac;
+$red: #f38ba8;
+$mauve: #cba6f7;
+$pink: #f5c2e7;
+$flamingo: #f2cdcd;
+$rosewater: #f5e0dc;
+$transparent: #ff0000;
+
+.cal-inner-container,
+.cal-outer-container {
+  font-family: JetBrainsMono Nerd Font;
+  font-size: 1em;
+  color: $text;
+  background-color: $base;
+  border: 3px  solid $text;
+  border-radius: 18px;
+  padding: 0em;
+}
+
+.cal-inner-elems {
+  padding: 5px;
+}
+
+.cal-outer-elems {
+  padding: 5px;
+}
+
+.cal-date {
+  font-family: JetBrainsMono Nerd Font;
+  font-size: 1.1em;
+  color: $base;
+  background-color: $text;
+  border-radius: 18px;
+  padding: 4px;
+  margin: 1em;
+}
+
+calendar.button {
+  color: $text;
+  font-weight: bold;
+}
+
+calendar.header,
+calendar.highlight,
+calendar:selected {
+  color: $text;
+  font-weight: bold;
+}
+
+calendar:indeterminate {
+  color: $overlay0;
+}
