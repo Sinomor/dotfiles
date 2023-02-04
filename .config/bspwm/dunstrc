@@ -7,11 +7,11 @@
   
   width = 300
   height = 100
-  offset = 10x55
+  offset = 10x61
   origin = top-right
 
-  frame_width = 2
-  separator_height = 2
+  frame_width = 3
+  separator_height = 3
   frame_color = "#fbf1c7"
   separator_color = "#fbf1c7"
 
