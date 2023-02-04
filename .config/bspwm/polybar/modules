@@ -54,7 +54,7 @@ label-padding = 1
 [module/net]
 type = internal/network
 interface = wlan0
-label-connected = %downspeed:9%
+label-connected = %netspeed%
 format-connected = <label-connected>
 format-connected-prefix = ""
 format-connected-prefix-foreground = ${color.fg}
