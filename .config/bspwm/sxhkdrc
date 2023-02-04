@@ -22,7 +22,8 @@ super + x
 super + a
 	kotatogram-desktop
 
-
+super + shift + a
+        sh ~/.config/eww/scripts/calendar.sh
 
 XF86AudioRaiseVolume
         pamixer -i 2
