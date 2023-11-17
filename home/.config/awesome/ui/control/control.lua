@@ -5,7 +5,7 @@ local beautiful = require("beautiful")
 local bling = require("modules.bling")
 local playerctl = bling.signal.playerctl.lib()
 local helpers = require("helpers")
-local vars = require("ui.vars")
+local user = require("user")
 require("scripts.init")
 local weather = require("ui.control.weather")
 local rubato = require("modules.rubato")
@@ -18,8 +18,8 @@ local create_arcchart_widget = function(widget, signal, bg, fg, thickness, text,
 
 local widget = wibox.widget {
 	widget = wibox.container.background,
-	bg = beautiful.background_alt,
-	forced_width = 154,
+	bg = beautiful.bg_alt,
+	forced_width = 150,
 	forced_height = 180,
 	{
 		widget = wibox.container.margin,
@@ -30,18 +30,22 @@ local widget = wibox.widget {
 			{
 				layout = wibox.layout.stack,
 				{
-					widget = wibox.container.arcchart,
-					id = "progressbar",
-					max_value = 100,
-					min_value = 0,
-					thickness = thickness,
-					bg = bg,
-					colors = {fg}
+					widget = wibox.container.margin,
+					margins = 6,
+					{
+						widget = wibox.container.arcchart,
+						id = "progressbar",
+						max_value = 100,
+						min_value = 0,
+						thickness = thickness,
+						bg = bg,
+						colors = { fg }
+					},
 				},
 				{
 					widget = wibox.widget.textbox,
 					id = "icon",
-					font = beautiful.font .." 20",
+					font = beautiful.font .. " 20",
 					text = icon,
 					halign = "center",
 					valign = "center",
@@ -85,17 +89,18 @@ end
 local resourses = wibox.widget {
 	layout = wibox.layout.fixed.horizontal,
 	spacing = 10,
-	create_arcchart_widget(cpu, "signal::cpu", beautiful.background_urgent, beautiful.red, 15, "CPU:", ""),
-	create_arcchart_widget(ram, "signal::ram", beautiful.background_urgent, beautiful.yellow, 15, "RAM:", ""),
-	create_arcchart_widget(disk, "disk::value", beautiful.background_urgent, beautiful.blue, 15, "DISK:", ""),
+	create_arcchart_widget(cpu, "signal::cpu", beautiful.bg_urgent, beautiful.red, 15, "Cpu:", ""),
+	create_arcchart_widget(ram, "signal::ram", beautiful.bg_urgent, beautiful.yellow, 15, "Ram:", ""),
+	create_arcchart_widget(disk, "disk::value", beautiful.bg_urgent, beautiful.blue, 15, "Disk:", ""),
 }
 
 -- progressbars --
 
 local create_progressbar_widget = function(color, width, icon)
+
 return wibox.widget {
 	widget = wibox.container.background,
-	bg = beautiful.background_alt,
+	bg = beautiful.bg_alt,
 	forced_height = 20,
 	{
 		layout = wibox.layout.fixed.horizontal,
@@ -122,7 +127,7 @@ return wibox.widget {
 			id = "progressbar",
 			max_value = 100,
 			forced_width = width,
-			background_color = beautiful.background_urgent,
+			background_color = beautiful.bg_urgent,
 			color = color,
 		}
 	}
@@ -130,21 +135,20 @@ return wibox.widget {
 
 end
 
-
 local volume = create_progressbar_widget(beautiful.orange, 370, "")
 
 volume:buttons  {
 	awful.button({}, 1, function()
 		awful.spawn.with_shell("amixer -D pipewire sset Master toggle")
-		updateVolumeSignals()
+		update_value_of_volume()
 	end),
 	awful.button({}, 4, function()
 		awful.spawn.with_shell("amixer -D pipewire sset Master 2%+")
-     	updateVolumeSignals()
+     	update_value_of_volume()
 	end),
 	awful.button({}, 5, function()
 		awful.spawn.with_shell("amixer -D pipewire sset Master 2%-")
-		updateVolumeSignals()
+		update_value_of_volume()
 	end),
 }
 
@@ -155,7 +159,6 @@ local anim_volume = rubato.timed {
 		volume:get_children_by_id("progressbar")[1].value = h
 	end
 }
-
 
 awesome.connect_signal("volume::value", function(value, icon)
 	anim_volume.target = value
@@ -191,7 +194,7 @@ end)
 
 local info = wibox.widget {
 	widget = wibox.container.background,
-	bg = beautiful.background_alt,
+	bg = beautiful.bg_alt,
 	forced_height = 80,
 	{
 		widget = wibox.container.margin,
@@ -207,29 +210,38 @@ local info = wibox.widget {
 
 -- profile --
 
-local create_fetch_comp = function(icon, text)
-	return wibox.widget {
-		layout = wibox.layout.flex.horizontal,
+local create_fetch_comp = function(icon, func)
+	local widget = wibox.widget {
+		widget = wibox.container.place,
+		halign = "right",
 		{
-			widget = wibox.widget.textbox,
-			text = icon,
-		},
-		{
-			widget = wibox.widget.textbox,
-			text = text,
-			halign = "right"
+			layout = wibox.layout.fixed.horizontal,
+			spacing = 20,
+			{
+				widget = wibox.widget.textbox,
+				id = "text",
+				halign = "right"
+			},
+			{
+				widget = wibox.widget.textbox,
+				text = icon,
+			}
 		}
 	}
+	awful.spawn.easy_async_with_shell(func, function(stdout)
+		widget:get_children_by_id("text")[1].text = stdout
+	end)
+	return widget
 end
 
 local fetch = wibox.widget {
 	layout = wibox.layout.flex.vertical,
-	forced_width = 322,
-	spacing = 10,
-	create_fetch_comp("", io.popen([[distro | grep "Name:" | awk '{sub(/^Name: /, ""); print}' | awk '{print $1 " " $2}']]):read("*all")),
-	create_fetch_comp("", io.popen([[uname -r]]):read("*all")),
-	create_fetch_comp("", io.popen([[xbps-query -l | wc -l]]):read("*all")),
-	create_fetch_comp("", "Awesome WM"),
+	forced_width = 314,
+	spacing = 11,
+	create_fetch_comp("", [[ distro | grep "Name:" | awk '{sub(/^Name: /, ""); print}' | awk '{print $1 " " $2}' ]]),
+	create_fetch_comp("", [[ uname -r ]]),
+	create_fetch_comp("", [[ xbps-query -l | wc -l ]]),
+	create_fetch_comp("", [[ echo Awesome WM ]]),
 }
 
 local profile_image = wibox.widget {
@@ -239,10 +251,11 @@ local profile_image = wibox.widget {
 	image = beautiful.profile_image,
 }
 
-local profile_name = wibox.widget {
-	widget = wibox.widget.textbox,
-	text = "@".. io.popen([[whoami | sed 's/.*/\u&/']]):read("*all")
-}
+local profile_name = wibox.widget.textbox()
+
+awful.spawn.easy_async_with_shell([[whoami | sed 's/.*/\u&/']], function(stdout)
+	profile_name.text = "@"..stdout
+end)
 
 local line = wibox.widget {
 	widget = wibox.container.background,
@@ -252,7 +265,7 @@ local line = wibox.widget {
 
 local profile = wibox.widget {
 	widget = wibox.container.background,
-	bg = beautiful.background_alt,
+	bg = beautiful.bg_alt,
 	forced_height = 140,
 	{
 		widget = wibox.container.margin,
@@ -269,56 +282,17 @@ local profile = wibox.widget {
 			fetch,
 			line,
 		}
-	},
-}
-
-local create_point = function(color)
-	return wibox.widget {
-		widget = wibox.container.background,
-		bg = color,
-		forced_width = 8,
-		forced_height = 8,
-	}
-end
-
-local time = wibox.widget {
-	widget = wibox.container.place,
-	halign = "center",
-	{
-		layout = wibox.layout.fixed.horizontal,
-		spacing = 20,
-		{
-			widget = wibox.widget.textclock,
-			font = beautiful.font.. " 30",
-			format = "%H",
-		},
-		{
-			widget = wibox.container.margin,
-			top = 15,
-			{
-				layout = wibox.layout.fixed.vertical,
-				spacing = 8,
-				create_point(beautiful.green),
-				create_point(beautiful.yellow),
-				create_point(beautiful.red),
-			},
-		},
-		{
-			widget = wibox.widget.textclock,
-			font = beautiful.font.. " 30",
-			format = "%M",
-		}
 	}
 }
 
 -- toggles --
 
-local create_toggle_widget = function(bg, fg, icon, name, value, arroy_visible)
+local create_toggle_widget = function(bg, fg, icon, name, value, arroy_visible, arroy_signal)
 	return wibox.widget {
 	widget = wibox.container.background,
-	forced_width = 236,
+	forced_width = 230,
 	forced_height = 80,
-	bg = beautiful.background_alt,
+	bg = beautiful.bg_alt,
 	{
 		layout = wibox.layout.fixed.horizontal,
 		spacing = 20,
@@ -371,7 +345,7 @@ local create_toggle_widget = function(bg, fg, icon, name, value, arroy_visible)
 			font = beautiful.font .. " 24",
 			visible = arroy_visible,
 			buttons = {
-				awful.button({ }, 1, function() awesome.emit_signal("summon::wifi_popup") end),
+				awful.button({ }, 1, arroy_signal),
 			}
 		}
 	}
@@ -381,16 +355,45 @@ end
 local toggle_change = function(x, widget)
 	if x == "off" then
 		widget:get_children_by_id("value")[1].text = "Off"
-		widget:get_children_by_id("icon_container")[1]:set_bg(beautiful.background_urgent)
-		widget:get_children_by_id("icon_container")[1]:set_fg(beautiful.foreground)
+		helpers.ui.transitionColor {
+			old = beautiful.accent,
+			new = beautiful.bg_urgent,
+			transformer = function(col)
+				widget:get_children_by_id("icon_container")[1]:set_bg(col)
+			end,
+			duration = 0.8
+		}
+		helpers.ui.transitionColor {
+			old = beautiful.bg,
+			new = beautiful.fg,
+			transformer = function(col)
+				widget:get_children_by_id("icon_container")[1]:set_fg(col)
+			end,
+			duration = 0.8
+		}
 	else
 		widget:get_children_by_id("value")[1].text = "On"
-		widget:get_children_by_id("icon_container")[1]:set_bg(beautiful.accent)
-		widget:get_children_by_id("icon_container")[1]:set_fg(beautiful.background)
+		helpers.ui.transitionColor {
+			old = beautiful.bg_urgent,
+			new = beautiful.accent,
+			transformer = function(col)
+				widget:get_children_by_id("icon_container")[1]:set_bg(col)
+			end,
+			duration = 0.8
+		}
+		helpers.ui.transitionColor {
+			old = beautiful.fg,
+			new = beautiful.bg,
+			transformer = function(col)
+				widget:get_children_by_id("icon_container")[1]:set_fg(col)
+			end,
+			duration = 0.8
+		}
 	end
 end
 
-local wifi = create_toggle_widget(beautiful.accent, beautiful.background, "", "Wifi", "On", true)
+local wifi = create_toggle_widget(beautiful.accent, beautiful.bg, "", "Wifi", "On", true,
+function() awesome.emit_signal("summon::wifi_popup") end)
 
 awesome.connect_signal("wifi::value", function(value)
 	if value == "disabled" then
@@ -408,6 +411,7 @@ function wifi_button()
 		else
 			toggle_change("off", wifi)
 			awful.spawn.with_shell("nmcli radio wifi off")
+			wifi:update_status()
 		end
 	end)
 end
@@ -419,7 +423,7 @@ wifi:get_children_by_id("icon_container")[1]:buttons {
 	end)
 }
 
-local micro = create_toggle_widget(beautiful.accent, beautiful.background, "", "Microphone", "On", false)
+local micro = create_toggle_widget(beautiful.accent, beautiful.bg, "", "Microphone", "On", false)
 
 awesome.connect_signal("capture_muted::value", function(value)
 	if value == "off" then
@@ -433,17 +437,17 @@ micro:get_children_by_id("icon_container")[1]:buttons {
 	awful.button({}, 1, function()
 		awful.spawn.with_shell("amixer -D pipewire sset Capture toggle")
 		updateVolumeSignals()
-	end),
+	end)
 }
 
-local float = create_toggle_widget(beautiful.accent, beautiful.background, "", "Floating", "On", false)
+local float = create_toggle_widget(beautiful.accent, beautiful.bg, "", "Floating", "On", false)
 toggle_change("off", float)
 
 float:get_children_by_id("icon_container")[1]:buttons {
 	awful.button({}, 1, function()
-		vars.float_value_default = not vars.float_value_default
+		user.float_value = not user.float_value
 		local tags = awful.screen.focused().tags
-		if not vars.float_value_default then
+		if not user.float_value then
 			toggle_change("off", float)
 			for _, tag in ipairs(tags) do
 				awful.layout.set(awful.layout.suit.tile, tag)
@@ -454,22 +458,22 @@ float:get_children_by_id("icon_container")[1]:buttons {
 				awful.layout.set(awful.layout.suit.floating, tag)
 			end
 		end
-	end),
+	end)
 }
 
-local opacity = create_toggle_widget(beautiful.accent, beautiful.background, "", "Opacity", "On", false)
+local opacity = create_toggle_widget(beautiful.accent, beautiful.bg, "", "Opacity", "On", false)
 
 opacity:get_children_by_id("icon_container")[1]:buttons {
 	awful.button({}, 1, function()
-		vars.opacity_value_default = not vars.opacity_value_default
-		if not vars.opacity_value_default then
+		user.opacity_value = not user.opacity_value
+		if not user.opacity_value then
 			toggle_change("off", opacity)
 			awful.spawn.with_shell("$HOME/.config/awesome/other/picom/launch.sh --no-opacity")
 		else
 			toggle_change("on", opacity)
 			awful.spawn.with_shell("$HOME/.config/awesome/other/picom/launch.sh --opacity")
 		end
-	end),
+	end)
 }
 
 
@@ -486,36 +490,33 @@ local toggles = wibox.widget {
 -- music player --
 
 local art = wibox.widget {
-	image = "default_image.png",
+	image = beautiful.no_song,
 	valign = "right",
-	forced_height = 140,
-	horizontal_fit_policy = "fit",
-	vertical_fit_policy = "fit",
-	forced_width = 220,
 	widget = wibox.widget.imagebox
 }
 
 local title_widget = wibox.widget {
-    markup = "Nothing Playing",
-    align = "left",
-    widget = wibox.widget.textbox
+	markup = "Nothing Playing",
+	align = "left",
+	widget = wibox.widget.textbox
 }
 
 local artist_widget = wibox.widget {
-    align = "left",
-    widget = wibox.widget.textbox
+	align = "left",
+	widget = wibox.widget.textbox
 }
 
 local create_music_button = function(text)
 	return wibox.widget {
 		widget = wibox.container.background,
-		bg = beautiful.background_urgent,
+		bg = beautiful.bg_urgent,
 		{
 			widget = wibox.container.margin,
 			margins = 5,
 			{
 				widget = wibox.widget.textbox,
-				text = text,
+				id = "icon",
+				markup = text,
 				font = beautiful.font.. " 16",
 			}
 		}
@@ -543,22 +544,14 @@ music_button:buttons {
 	end)
 }
 
-local media_slider = wibox.widget({
+local media_slider = wibox.widget {
 	widget = wibox.widget.slider,
-	bar_color = beautiful.background_urgent,
+	bar_color = beautiful.bg_urgent,
 	bar_active_color = beautiful.yellow,
 	handle_width = 0,
 	minimum = 0,
 	maximum = 100,
 	value = 0
-})
-
-local anim_media_slider = rubato.timed {
-	duration = 0.3,
-	easing = rubato.easing.linear,
-	subscribed = function(h)
-		media_slider.value = h
-	end
 }
 
 local previous_value = 0
@@ -571,17 +564,15 @@ media_slider:connect_signal("property::value", function(_, new_value)
 	end
 end)
 
-playerctl:connect_signal(
-	"position", function(_, interval_sec, length_sec)
-		internal_update = true
-		previous_value = interval_sec
-		anim_media_slider.target = interval_sec
-	end
-)
+playerctl:connect_signal("position", function(_, interval_sec, length_sec)
+	internal_update = true
+	previous_value = interval_sec
+	media_slider.value = interval_sec
+end)
 
 awful.spawn.with_line_callback("playerctl -F metadata -f '{{mpris:length}}'", {
 	stdout = function(line)
-		if line == " " then
+		if line == "" then
 			local position = 100
 			media_slider.maximum = position
 		else
@@ -594,33 +585,46 @@ awful.spawn.with_line_callback("playerctl -F metadata -f '{{mpris:length}}'", {
 })
 
 playerctl:connect_signal("metadata", function(_, title, artist, album_path, album, new, player_name)
-	art:set_image(gears.surface.load_uncached(album_path))
+	if album_path == "" then
+		art:set_image(beautiful.no_song)
+	else
+		art:set_image(gears.surface.load_uncached(album_path))
+	end
 	title_widget:set_markup_silently(title)
 	artist_widget:set_markup_silently(artist)
 end)
 
+playerctl:connect_signal("playback_status", function(_, playing, player_name)
+  music_button:get_children_by_id("icon")[1].markup = playing and
+  helpers.ui.colorizeText("", "") or helpers.ui.colorizeText("", "")
+end)
+
 local music = wibox.widget {
-	layout = wibox.container.background,
-	bg = beautiful.background_alt,
+	widget = wibox.container.background,
+	forced_height = 192,
+	bg = beautiful.bg_alt,
 	{
-		layout = wibox.layout.stack,
+		widget = wibox.container.margin,
+		margins = 10,
 		{
-			widget = wibox.container.place,
-			halign = "right",
-			art,
-		},
-		{
-			widget = wibox.container.background,
-			bg = {
-				type = "linear",
-				from = { 0, 0 },
-				to = { 460, 0 },
-				stops = { { 0, beautiful.background_alt .. "00" }, { 1, beautiful.background_alt } }
+			layout = wibox.layout.stack,
+			{
+				widget = wibox.container.place,
+				halign = "right",
+				art
 			},
-		},
-		{
-			widget = wibox.container.margin,
-			margins = 10,
+			{
+				widget = wibox.container.background,
+				bg = {
+					type = "linear",
+					from = { 0, 0 },
+					to = { 460, 0 },
+					stops = {
+						{ 0.4, beautiful.bg_alt },
+						{ 0.7, beautiful.bg_alt .. "CC" },
+						{ 1, beautiful.bg_alt .. "00" } }
+				}
+			},
 			{
 				layout = wibox.layout.fixed.horizontal,
 				spacing = 20,
@@ -631,8 +635,8 @@ local music = wibox.widget {
 						widget = wibox.container.background,
 						forced_width = 10,
 						forced_height = 6,
-						media_slider,
-					},
+						media_slider
+					}
 				},
 				{
 					layout = wibox.layout.flex.vertical,
@@ -645,9 +649,9 @@ local music = wibox.widget {
 							widget = wibox.container.scroll.horizontal,
 							step_function = wibox.container.scroll.step_functions.waiting_nonlinear_back_and_forth,
 							speed = 50,
-							title_widget,
+							title_widget
 						},
-						artist_widget,
+						artist_widget
 					},
 					{
 						widget = wibox.container.place,
@@ -658,7 +662,7 @@ local music = wibox.widget {
 							spacing = 15,
 							prev,
 							music_button,
-							next,
+							next
 						}
 					}
 				}
@@ -671,20 +675,19 @@ local music = wibox.widget {
 
 local main = wibox.widget {
 	widget = wibox.container.background,
-	bg = beautiful.background,
+	bg = beautiful.bg,
 	{
 		widget = wibox.container.margin,
 		margins = 10,
 		{
 			layout = wibox.layout.fixed.vertical,
 			spacing = 10,
-			time,
 			profile,
-			music,
-			toggles,
-			info,
 			resourses,
+			info,
+			toggles,
 			weather,
+			music,
 		}
 	}
 }
@@ -697,6 +700,7 @@ local control = awful.popup {
 	border_color = beautiful.border_color_normal,
 	minimum_height = s.geometry.height,
 	minimum_width = 490,
+	maximum_width = 490,
 	placement = function(d)
 		awful.placement.bottom_right(d,
 			{

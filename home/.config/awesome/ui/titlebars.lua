@@ -6,7 +6,7 @@ local rubato = require("modules.rubato")
 
 -- titlebars --
 
-local create_button = function(color, func)
+local create_button = function(color, name, func)
 	local widget = wibox.widget {
 		widget = wibox.container.background,
 		forced_width = 22,
@@ -18,13 +18,25 @@ local create_button = function(color, func)
 			end)
 		}
 	}
+	local popup = awful.tooltip {
+		objects = { widget },
+		timer_function = function()
+			return name
+		end,
+		mode = "outside",
+		gaps = beautiful.useless_gap,
+		margins_leftright = 10,
+		margins_topbottom = 10,
+		delay_show = 1.5
+	}
 
 	local widget_anim = rubato.timed {
 		duration = 0.3,
 		easing = rubato.easing.linear,
 		subscribed = function(h)
 			widget.forced_height = h
-	end}
+		end
+	}
 	widget_anim.target = 24
 
 	widget:connect_signal("mouse::enter", function()
@@ -39,7 +51,7 @@ end
 
 client.connect_signal("request::titlebars", function(c)
 
-local minimize = create_button(beautiful.yellow,
+local minimize = create_button(beautiful.yellow, "minimize",
 	function ()
 	gears.timer.delayed_call(function()
 		c.minimized = not c.minimized
@@ -47,13 +59,13 @@ local minimize = create_button(beautiful.yellow,
 	end
 )
 
-local maximize = create_button(beautiful.green,
+local maximize = create_button(beautiful.green, "maximize",
 	function ()
 		c.maximized = not c.maximized
 	end
 )
 
-local close = create_button(beautiful.red,
+local close = create_button(beautiful.red, "kill",
 	function ()
 		c:kill()
 	end
@@ -98,8 +110,8 @@ position = "left"
 	},
 	{
 		widget = wibox.container.background,
-		buttons = buttons,
-	},
+		buttons = buttons
+	}
 }
 
 end)

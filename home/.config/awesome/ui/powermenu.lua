@@ -37,7 +37,7 @@ local main = wibox.widget{
 local powermenu = awful.popup {
 	visible = false,
 	ontop = true,
-	bg = beautiful.background,
+	bg = beautiful.bg,
 	border_color = beautiful.border_color_normal,
 	border_width = beautiful.border_width,
 	placement = function(d)
@@ -80,7 +80,7 @@ local function add_elements()
 
 		local element_widget = wibox.widget {
 			widget = wibox.container.background,
-			bg = beautiful.background_alt,
+			bg = beautiful.bg,
 			forced_width = 140,
 			forced_height = 140,
 			buttons = {
@@ -95,7 +95,7 @@ local function add_elements()
 			},
 			{
 				widget = wibox.widget.textbox,
-				fg = beautiful.foreground,
+				fg = beautiful.fg,
 				align = "center",
 				font = beautiful.font.." 38",
 				markup = element.icon
@@ -106,7 +106,7 @@ local function add_elements()
 
 		if i == index_element then
 			element_widget.bg = beautiful.accent
-			element_widget.fg = beautiful.background
+			element_widget.fg = beautiful.bg
 		end
 
 	end

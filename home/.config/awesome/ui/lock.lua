@@ -4,23 +4,23 @@ local gears = require("gears")
 local helpers = require("helpers")
 local beautiful = require("beautiful")
 local pampath = require("gears").filesystem.get_configuration_dir() .. "liblua_pam.so"
+local pam = require("liblua_pam")
 
 screen.connect_signal("request::desktop_decoration", function(s)
 
--- Authentication
+-- authentication --
 
 awful.spawn.easy_async_with_shell("stat "..pampath.." >/dev/null 2>&1", function (_, _, _, exitcode)
-		local pam = require("liblua_pam")
 		authenticate = function(password)
 			return pam.auth_current_user(password)
 		end
 end)
 
--- Variables
+-- variables --
 
 local characters_entered = 0
 
--- Header
+-- widgets --
 
 local header = wibox.widget {
 	widget = wibox.container.place,
@@ -37,19 +37,14 @@ local header = wibox.widget {
 		{
 			widget = wibox.widget.textbox,
 			halign = "center",
-			text = "@".. io.popen([[whoami | sed 's/.*/\u&/']]):read("*all"),
+			id = "name",
 		}
 	}
 }
 
-local create_point = function(color)
-	return wibox.widget {
-		widget = wibox.container.background,
-		bg = color,
-		forced_width = 10,
-		forced_height = 10,
-	}
-end
+awful.spawn.easy_async_with_shell([[whoami | sed 's/.*/\u&/']], function(stdout)
+	header:get_children_by_id("name")[1].text = "@"..stdout
+end)
 
 local time = wibox.widget {
 	widget = wibox.container.place,
@@ -68,9 +63,9 @@ local time = wibox.widget {
 			{
 				layout = wibox.layout.fixed.vertical,
 				spacing = 10,
-				create_point(beautiful.green),
-				create_point(beautiful.yellow),
-				create_point(beautiful.red),
+				helpers.ui.create_point(beautiful.green, 10),
+				helpers.ui.create_point(beautiful.yellow, 10),
+				helpers.ui.create_point(beautiful.red, 10),
 			},
 		},
 		{
@@ -81,34 +76,16 @@ local time = wibox.widget {
 	}
 }
 
--- Prompt
-
-local icon = wibox.widget {
-	widget = wibox.container.background,
-	bg = beautiful.background_alt,
-	{
-		widget = wibox.container.margin,
-		margins = 16,
-		{
-			widget = wibox.widget.textbox,
-			font = beautiful.font .. " 24",
-			text = "",
-			align = "center",
-			valign = "center"
-		}
-	}
-}
-
 local prompt = wibox.widget {
 	widget = wibox.widget.textbox,
-	markup = helpers.ui.colorizeText("enter password", ""),
+	markup = "enter password...",
 	align = "center",
 }
 
 local main = wibox {
 	width = s.geometry.width,
 	height = s.geometry.height,
-	bg = beautiful.background,
+	bg = beautiful.bg,
 	ontop = true,
 	visible = false,
 }
@@ -132,7 +109,7 @@ main:setup {
 			header,
 			{
 				widget = wibox.container.background,
-				bg = beautiful.background_alt,
+				bg = beautiful.bg_alt,
 				{
 					widget = wibox.container.margin,
 					margins = 16,
@@ -140,18 +117,9 @@ main:setup {
 						widget = wibox.container.background,
 						forced_width = 240,
 						prompt,
-					},
+					}
 				}
 			}
-		}
-	},
-	{
-		widget = wibox.container.place,
-		valign = "bottom",
-		{
-			widget = wibox.container.margin,
-			bottom = 100,
-			icon
 		}
 	}
 }
@@ -161,14 +129,14 @@ main:setup {
 
 local function reset()
 	characters_entered = 0;
-	prompt.markup = helpers.ui.colorizeText("enter password...", "")
+	prompt.markup = "enter password..."
 end
 
 -- Fail
 
 local function fail()
 	characters_entered = 0;
-	prompt.markup = helpers.ui.colorizeText("try again...", "")
+	prompt.markup = "try again..."
 end
 
 -- Input
@@ -192,7 +160,7 @@ local function grabpassword()
 					prompt.markup = helpers.ui.colorizeText(string.rep("*", characters_entered), "")
 				else
 					characters_entered = 0
-					prompt.markup = helpers.ui.colorizeText("enter password...", "")
+					prompt.markup = "enter password..."
 				end
 			end
 		end,
@@ -209,7 +177,7 @@ local function grabpassword()
 	}
 end
 
--- Lock
+-- Lock --
 
 function lockscreen()
 	main.visible = true

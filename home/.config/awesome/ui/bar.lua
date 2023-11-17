@@ -3,8 +3,8 @@ local awful = require("awful")
 local wibox = require("wibox")
 local beautiful = require("beautiful")
 local naughty = require("naughty")
-local vars = require("ui.vars")
-require("scripts.init")
+local helpers = require("helpers")
+local user = require("user")
 local rubato = require("modules.rubato")
 
 screen.connect_signal("request::desktop_decoration", function(s)
@@ -16,7 +16,7 @@ local profile = wibox.widget {
 	{
 		widget = wibox.container.background,
 		id = "profile",
-		bg = beautiful.background_alt,
+		bg = beautiful.bg_alt,
 		{
 			widget = wibox.container.margin,
 			margins = { bottom = 8, top = 8 },
@@ -30,13 +30,27 @@ local profile = wibox.widget {
 }
 
 awesome.connect_signal("profile::control", function()
-	vars.profile_default = not vars.profile_default
-	if not vars.profile_default then
-		profile:get_children_by_id("profile")[1]:set_bg(beautiful.background_alt)
+	user.profile = not user.profile
+	if not user.profile then
+		helpers.ui.transitionColor {
+			old = beautiful.bg_urgent,
+			new = beautiful.bg_alt,
+			transformer = function(col)
+				profile:get_children_by_id("profile")[1]:set_bg(col)
+			end,
+			duration = 0.8
+		}
 		awesome.emit_signal("summon::control")
 	else
-		profile:get_children_by_id("profile")[1]:set_bg(beautiful.background_urgent)
 		awesome.emit_signal("summon::control")
+		helpers.ui.transitionColor {
+			old = beautiful.bg_alt,
+			new = beautiful.bg_urgent,
+			transformer = function(col)
+				profile:get_children_by_id("profile")[1]:set_bg(col)
+			end,
+			duration = 0.8
+		}
 	end
 end)
 
@@ -93,36 +107,36 @@ local tasklist_widget = wibox.widget {
 local mykeyboard=awful.widget.keyboardlayout()
 mykeyboard.widget.text = string.upper(mykeyboard.widget.text)
 mykeyboard.widget:connect_signal("widget::redraw_needed",
-	function(wid) wid.text = string.upper(wid.text)
-end)
+	function(wid)
+		wid.text = string.upper(wid.text)
+	end
+)
 
 local keyboard = wibox.widget {
 	widget = wibox.container.background,
-	bg = beautiful.background_alt,
+	bg = beautiful.bg_alt,
 	{
 		widget = wibox.container.margin,
-		margins = {top = 6, bottom = 6},
-		{
-			layout = wibox.layout.fixed.vertical,
-			spacing = 8,
-			{
-				widget = wibox.container.place,
-				halign = "center",
-				{
-					widget = wibox.container.margin,
-					margins = { left = -5, right = -5 },
-					mykeyboard,
-  				}
-			}
-		}
+		margins = { left = -5, right = -5, top = 6, bottom = 6 },
+		mykeyboard,
 	}
 }
 
 -- tray --
 
+local tray_widget = wibox.widget {
+	widget = wibox.container.margin,
+	margins = { top = 4, bottom = 8 },
+	{
+		widget = wibox.widget.systray,
+		horizontal = false,
+		base_size = 24
+	}
+}
+
 local tray = wibox.widget {
 	widget = wibox.container.background,
-	bg = beautiful.background_alt,
+	bg = beautiful.bg_alt,
 	{
 		layout = wibox.layout.fixed.vertical,
 		{
@@ -140,28 +154,22 @@ local tray = wibox.widget {
 			widget = wibox.container.place,
 			halign = "center",
 			{
-				widget = wibox.container.margin,
-				margins = { top = 4, bottom = 8 },
-				id = "tray",
-				visible = false,
-				{
-					widget = wibox.widget.systray,
-					horizontal = false,
-					base_size = 24,
-				}
+				layout = wibox.layout.fixed.vertical,
+				id = "tray"
 			}
 		}
 	}
 }
 
 awesome.connect_signal("show::tray", function()
-	if not tray:get_children_by_id("tray")[1].visible then
-			tray:get_children_by_id("button")[1].text = ""
-			tray:get_children_by_id("tray")[1].visible = true
-		else
-			tray:get_children_by_id("button")[1].text = ""
-			tray:get_children_by_id("tray")[1].visible = false
+	if not user.tray then
+		tray:get_children_by_id("button")[1].text = ""
+		tray:get_children_by_id("tray")[1]:insert(1, tray_widget)
+	else
+		tray:get_children_by_id("button")[1].text = ""
+		tray:get_children_by_id("tray")[1]:remove(1)
 	end
+	user.tray = not user.tray
 end)
 
 tray:buttons{
@@ -175,7 +183,7 @@ local time = wibox.widget {
 	{
 		widget = wibox.container.background,
 		id = "clock",
-		bg = beautiful.background_alt,
+		bg = beautiful.bg_alt,
 		{
 			widget = wibox.container.margin,
 			margins = { bottom = 6, top = 6 },
@@ -194,12 +202,26 @@ local time = wibox.widget {
 }
 
 awesome.connect_signal("time::calendar", function()
-	vars.time_default = not vars.time_default
-	if not vars.time_default then
-		time:get_children_by_id("clock")[1]:set_bg(beautiful.background_alt)
+	user.calendar = not user.calendar
+	if not user.calendar then
+		helpers.ui.transitionColor {
+			old = beautiful.bg_urgent,
+			new = beautiful.bg_alt,
+			transformer = function(col)
+				time:get_children_by_id("clock")[1]:set_bg(col)
+			end,
+			duration = 0.8
+		}
 		awesome.emit_signal("summon::calendar_widget")
 	else
-		time:get_children_by_id("clock")[1]:set_bg(beautiful.background_urgent)
+		helpers.ui.transitionColor {
+			old = beautiful.bg_alt,
+			new = beautiful.bg_urgent,
+			transformer = function(col)
+				time:get_children_by_id("clock")[1]:set_bg(col)
+			end,
+			duration = 0.8
+		}
 		awesome.emit_signal("summon::calendar_widget")
 	end
 end)
@@ -229,15 +251,15 @@ local taglist = awful.widget.taglist {
 		forced_height = 20,
 		forced_width  = 20,
 		widget = wibox.container.background,
-		create_callback = function (self, tag)
+		create_callback = function(self, tag)
 			self.animate = rubato.timed {
 				duration = 0.3,
 				easing = rubato.easing.linear,
-				subscribed = function (h)
+				subscribed = function(h)
 					self:get_children_by_id("background_role")[1].forced_height = h
 				end
 			}
-			self.update = function ()
+			self.update = function()
 				if tag.selected then
 					self.animate.target = 28
 				elseif #tag:clients() > 0 then
@@ -246,7 +268,7 @@ local taglist = awful.widget.taglist {
 			end
 			self.update()
 		end,
-		update_callback = function (self)
+		update_callback = function(self)
 			self.update()
 		end,
 	},
@@ -254,44 +276,39 @@ local taglist = awful.widget.taglist {
 
 local taglist_widget = wibox.widget {
 	widget = wibox.container.background,
-	bg = beautiful.background_alt,
+	bg = beautiful.bg_alt,
 	{
 		widget = wibox.container.margin,
 		margins = 12,
 		taglist
 	}
 }
+
 -- battery --
 
 local bat = wibox.widget {
-	widget = wibox.container.background,
-	bg = beautiful.background_alt,
+	layout = wibox.layout.stack,
 	{
-		layout = wibox.layout.stack,
+		widget = wibox.container.rotate,
+		direction = "east",
 		{
-			widget = wibox.container.rotate,
-			direction = "east",
-			{
-				widget = wibox.widget.progressbar,
-				id = "progressbar",
-				max_value = 100,
-				forced_width = 60,
-				background_color = beautiful.background_urgent,
-			}
-		},
-		{
-			widget = wibox.container.background,
-			fg = beautiful.background,
-			{
-				widget = wibox.widget.imagebox,
-				id = "icon",
-				valign = "center"
-			}
+			widget = wibox.widget.progressbar,
+			id = "progressbar",
+			max_value = 100,
+			forced_width = 60,
+			background_color = beautiful.bg_urgent,
 		}
+	},
+	{
+		widget = wibox.widget.textbox,
+		font = beautiful.font.. " 24",
+		halign = "center",
+		id = "icon",
+		valign = "center"
 	}
 }
 
-awesome.connect_signal("bat::value", function(value)
+awesome.connect_signal("bat::value", function(value, state)
 	bat:get_children_by_id("progressbar")[1].value = value
 	if value > 70 then
 		bat:get_children_by_id("progressbar")[1].color = beautiful.green
@@ -300,14 +317,11 @@ awesome.connect_signal("bat::value", function(value)
 	else
 		bat:get_children_by_id("progressbar")[1].color = beautiful.red
 	end
-end)
-
-awesome.connect_signal("bat::state", function(value)
-	if value == "Discharging" then
+	if state == "Discharging" then
 		bat:get_children_by_id("icon")[1].text = ""
 	else
 		bat:get_children_by_id("progressbar")[1].color = beautiful.green
-		bat:get_children_by_id("icon")[1].image = beautiful.battery_icon
+		bat:get_children_by_id("icon")[1].markup = helpers.ui.colorizeText("󱐋", beautiful.bg)
 	end
 end)
 
@@ -316,8 +330,7 @@ end)
 local dnd_button = wibox.widget {
 	widget = wibox.container.background,
 	id = "dnd",
-	bg = beautiful.background_alt,
-	fg = beautiful.foregraund,
+	bg = beautiful.bg_alt,
 	{
 		widget = wibox.container.margin,
 		margins = { top = 8, bottom = 8 },
@@ -332,8 +345,8 @@ local dnd_button = wibox.widget {
 
 
 awesome.connect_signal("signal::dnd", function()
-	vars.dnd = not vars.dnd
-	if not vars.dnd then
+	user.dnd = not user.dnd
+	if not user.dnd then
 		dnd_button:get_children_by_id("icon")[1].text = ""
 		naughty.suspend()
 	else
@@ -343,12 +356,26 @@ awesome.connect_signal("signal::dnd", function()
 end)
 
 awesome.connect_signal("notif_center::open", function()
-	vars.notif_center_default = not vars.notif_center_default
-	if not vars.notif_center_default then
-		dnd_button:get_children_by_id("dnd")[1]:set_bg(beautiful.background_alt)
+	user.notif_center = not user.notif_center
+	if not user.notif_center then
+		helpers.ui.transitionColor {
+			old = beautiful.bg_urgent,
+			new = beautiful.bg_alt,
+			transformer = function(col)
+				dnd_button:get_children_by_id("dnd")[1]:set_bg(col)
+			end,
+			duration = 0.8
+		}
 		awesome.emit_signal("summon::notif_center")
 	else
-		dnd_button:get_children_by_id("dnd")[1]:set_bg(beautiful.background_urgent)
+		helpers.ui.transitionColor {
+			old = beautiful.bg_alt,
+			new = beautiful.bg_urgent,
+			transformer = function(col)
+				dnd_button:get_children_by_id("dnd")[1]:set_bg(col)
+			end,
+			duration = 0.8
+		}
 		awesome.emit_signal("summon::notif_center")
 	end
 end)
@@ -368,7 +395,7 @@ bar = awful.wibar {
 	position = "left",
 	height = s.geometry.height + beautiful.border_width * 2,
 	width = 56,
-	bg = beautiful.background,
+	bg = beautiful.bg,
 	border_width = beautiful.border_width,
 	border_color = beautiful.border_color_normal,
 	margins = {

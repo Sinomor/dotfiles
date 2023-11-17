@@ -1,0 +1,23 @@
+@import url('https://mwittrien.github.io/BetterDiscordAddons/Themes/DiscordRecolor/DiscordRecolor.css');
+@import url(https://raw.githubusercontent.com/5TAHUR5/discord_themes/main/RoundingDestroy.theme.css);
+
+:root {
+  --accentcolor: 131,165,152;
+  --accentcolor2: 131,165,152;
+  --linkcolor: 131,165,152;
+  --mentioncolor: 254,128,25;
+  --textbrightest: 235,219,178;
+  --textbrighter: 213,196,161;
+  --textbright: 189,174,147;
+  --textdark: 168,153,132;
+  --textdarker: 146,131,116;
+  --textdarkest: 124,111,100;
+  --font: JetBrainsMono Nerd Font;
+  --backgroundaccent: 102,92,84;
+  --backgroundprimary: 40,40,40;
+  --backgroundsecondary: 40,40,40;
+  --backgroundsecondaryalt: 40,40,40;
+  --backgroundtertiary: 40,40,40;
+  --backgroundfloating: 40,40,40;
+  --settingsicons: 1;
+}

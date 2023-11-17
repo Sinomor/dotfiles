@@ -22,8 +22,9 @@ awful.keyboard.append_global_keybindings({
 
 	-- some scripts --
 
-	awful.key({ mod, ctrl }, "p", function() awful.spawn.with_shell("~/.local/bin/colorpicker", false) end),
-	awful.key({ mod, ctrl }, "q", function() awful.spawn.with_shell("~/.local/bin/qr_codes", false) end),
+	awful.key({ mod, ctrl }, "w", function() change_wall() end),
+	awful.key({ mod, ctrl }, "p", function() awful.spawn.with_shell("~/.local/bin/colorpicker") end),
+	awful.key({ mod, ctrl }, "q", function() awful.spawn.with_shell("~/.local/bin/qr_codes") end),
 
 	-- playerctl --
 
@@ -41,17 +42,17 @@ awful.keyboard.append_global_keybindings({
 
 	awful.key({}, "XF86AudioRaiseVolume", function()
 		awful.spawn.with_shell("amixer -D pipewire sset Master 2%+")
-		updateVolumeSignals()
+		update_value_of_volume()
 		awesome.emit_signal("summon::osd")
 	end),
 	awful.key({}, "XF86AudioLowerVolume", function()
 		awful.spawn.with_shell("amixer -D pipewire sset Master 2%-")
-		updateVolumeSignals()
+		update_value_of_volume()
 		awesome.emit_signal("summon::osd")
 	end),
 	awful.key({}, "XF86AudioMute", function()
 		awful.spawn.with_shell("amixer -D pipewire sset Master toggle")
-		updateVolumeSignals()
+		update_value_of_volume()
 		awesome.emit_signal("summon::osd")
 	end),
 
@@ -71,6 +72,7 @@ awful.keyboard.append_global_keybindings({
 	-- binds to widgets --
 
 	awful.key({ mod, ctrl }, "b", function() awesome.emit_signal("summon::books") end),
+	awful.key({ mod, ctrl }, "t", function() awesome.emit_signal("summon::themes") end),
 	awful.key({ mod, ctrl }, "c", function() awesome.emit_signal("summon::clipboard") end),
 	awful.key({ mod }, "d", function() awesome.emit_signal("summon::launcher") end),
 	awful.key({ mod }, "x", function() awesome.emit_signal("summon::powermenu") end),

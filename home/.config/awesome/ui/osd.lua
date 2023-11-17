@@ -7,38 +7,35 @@ local rubato = require("modules.rubato")
 -- osd --
 
 local info = wibox.widget {
-	layout = wibox.layout.fixed.horizontal,
+	widget = wibox.container.margin,
+	margins = 20,
 	{
-		widget = wibox.container.margin,
-		margins = 20,
+		layout = wibox.layout.fixed.horizontal,
+		fill_space = true,
+		spacing = 8,
 		{
-			layout = wibox.layout.fixed.horizontal,
-			fill_space = true,
-			spacing = 8,
+			widget = wibox.widget.textbox,
+			id = "icon",
+			font = beautiful.font .. " 14",
+		},
+		{
+			widget = wibox.container.background,
+			forced_width = 36,
 			{
 				widget = wibox.widget.textbox,
-				id = "icon",
-				font = beautiful.font .. " 14",
+				id = "text",
+				halign = "center"
 			},
-			{
-				widget = wibox.container.background,
-				forced_width = 36,
-				{
-					widget = wibox.widget.textbox,
-					id = "text",
-					halign = "center"
-				},
-			},
-			{
-				widget = wibox.widget.progressbar,
-				id = "progressbar",
-				max_value = 100,
-				forced_width = 380,
-				forced_height = 10,
-				background_color = beautiful.background_urgent,
-				color = beautiful.accent,
-			},
-		}
+		},
+		{
+			widget = wibox.widget.progressbar,
+			id = "progressbar",
+			max_value = 100,
+			forced_width = 380,
+			forced_height = 10,
+			background_color = beautiful.bg_urgent,
+			color = beautiful.accent,
+		},
 	}
 }
 

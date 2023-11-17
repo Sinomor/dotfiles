@@ -9,32 +9,25 @@ local beautiful = require("beautiful")
 local styles = {}
 
 styles.month = {
-	bg_color = beautiful.background,
+	bg_color = beautiful.bg,
 }
 
 styles.normal = {
-	bg_color = beautiful.background,
-	fg_color = beautiful.foreground,
 }
 
 styles.focus   = {
-	fg_color = beautiful.background,
+	fg_color = beautiful.bg,
 	bg_color = beautiful.accent,
 }
 
-styles.header = {
-	bg_color = beautiful.background_alt
-}
-
 styles.weekday = {
-	fg_color = beautiful.foreground,
+	bg_color = beautiful.bg,
 }
 
 local function create_calendar_button(icon)
 	local widget = wibox.widget {
 	widget = wibox.container.background,
-	bg = beautiful.background_alt,
-		{
+	{
 		widget = wibox.widget.textbox,
 		text = icon,
 		font = beautiful.font .. " 20",
@@ -51,45 +44,58 @@ local function decorate_cell(widget, flag, date)
 	if (cur_date.year ~= date.year or cur_date.month ~= date.month) and flag == "focus" then
 		flag = "normal"
 	end
-	if flag == "header" then
-		return wibox.widget { layout = wibox.layout.align.horizontal, button_back, widget, button_next }
-	end
 	if flag == "monthheader" and not styles.monthheader then
 		flag = "header"
 	end
+	if flag == "header" then
+		return wibox.widget {
+			widget = wibox.container.background,
+			bg = beautiful.bg_alt,
+			fg = beautiful.fg,
+			{
+				layout = wibox.layout.align.horizontal,
+				button_back,
+				widget,
+				button_next
+			}
+		}
+	end
 	if flag == "normal" or flag == "focus" then
-		widget.text=tostring(tonumber(widget.text))
-		widget.align="center"
+		widget.text = tostring(tonumber(widget.text))
+		widget.align = "center"
 	end
 
 -- Change bg color for weekends --
 
-local d = {year=date.year, month=(date.month or 1), day=(date.day or 1)}
+local d = {
+	year = date.year,
+	month = (date.month or 1),
+	day = (date.day or 1)
+}
 local weekday = tonumber(os.date("%w", os.time(d)))
-local default_bg = (weekday==0 or weekday==6) and beautiful.background_urgent or beautiful.background_alt
+local default_fg = ( weekday == 0 or weekday == 6 ) and beautiful.fg_alt or beautiful.fg
 
 local props = styles[flag] or {}
 
 local ret = wibox.widget {
-	shape = props.shape,
-	fg = props.fg_color,
-	bg = props.bg_color or default_bg,
-	widget = wibox.container.background
+	fg = props.fg_color or default_fg,
+	bg = props.bg_color,
+	widget = wibox.container.background,
 	{
-		margins = { left = 6, right = 6, top = 4, bottom = 4 },
+		margins = { left = 7, right = 7, top = 5, bottom = 5 },
 		widget  = wibox.container.margin,
-		widget,
-	},
+		widget
+	}
 }
 return ret
 end
 
 local calendar = wibox.widget {
-   date = os.date("*t"),
+	date = os.date("*t"),
 	font = beautiful.font,
 	spacing = 10,
-   fn_embed = decorate_cell,
-   widget = wibox.widget.calendar.month
+	fn_embed = decorate_cell,
+	widget = wibox.widget.calendar.month
 }
 
 local function change_mounth(number)
@@ -116,16 +122,11 @@ button_next:buttons {
 
 local main = wibox.widget {
 	widget = wibox.container.background,
-	bg = beautiful.background,
+	bg = beautiful.bg,
 	{
 		widget = wibox.container.margin,
 		margins = 10,
-		{
-			layout = wibox.layout.fixed.vertical,
-			fill_space = true,
-			spacing = 10,
-			calendar,
-		}
+		calendar,
 	}
 }
 
@@ -136,10 +137,13 @@ local calendar_widget = awful.popup {
 	border_color = beautiful.border_color_normal,
 	minimum_height = 330,
 	maximum_height = 380,
-	minimum_width = 330,
-	maximum_width = 330,
+	minimum_width = 346,
+	maximum_width = 346,
 	placement = function(d)
-		awful.placement.top_left(d, { honor_workarea = true, margins = 20 + beautiful.border_width * 2 })
+		awful.placement.top_left(d, {
+			honor_workarea = true,
+			margins = beautiful.useless_gap * 4 + beautiful.border_width * 2
+		})
 	end,
 	widget = main
 }

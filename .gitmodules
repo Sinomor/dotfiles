@@ -7,3 +7,6 @@
 [submodule "home/.config/awesome/modules/rubato"]
 	path = home/.config/awesome/modules/rubato
 	url = https://github.com/andOrlando/rubato.git
+[submodule "home/.config/awesome/modules/lua-color"]
+	path = home/.config/awesome/modules/lua-color
+	url = https://github.com/Sinomor/lua-color

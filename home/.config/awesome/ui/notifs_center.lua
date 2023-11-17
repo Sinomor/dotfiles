@@ -6,6 +6,7 @@ local helpers = require("helpers")
 local beautiful = require("beautiful")
 
 -- notification list --
+
 local notifs_count = 0
 awesome.emit_signal("notifs::count", notifs_count)
 
@@ -14,7 +15,6 @@ local label = wibox.widget {
 	align = "center",
 	widget = wibox.widget.textbox,
 }
-
 
 local notifs_clear = wibox.widget {
 	markup = helpers.ui.colorizeText("", beautiful.red),
@@ -35,7 +35,7 @@ local notifs_empty = wibox.widget {
 	{
 		layout = wibox.layout.flex.vertical,
 		{
-			markup = helpers.ui.colorizeText("No notifications", beautiful.background_urgent),
+			markup = helpers.ui.colorizeText("No notifications", beautiful.bg_urgent),
 			font = beautiful.font,
 			align = "center",
 			valign = "center",
@@ -45,20 +45,11 @@ local notifs_empty = wibox.widget {
 }
 
 local notifs_container = wibox.widget {
-	forced_width = 240,
 	forced_height = 715,
-	layout = wibox.layout.fixed.vertical,
+	layout = require("modules.overflow").vertical,
+	scrollbar_enabled = false,
 	spacing = 10,
-	spacing_widget = {
-		top = 2,
-		bottom = 2,
-		left = 6,
-		right = 6,
-		widget = wibox.container.margin,
-		{
-			widget = wibox.container.background,
-		},
-	},
+	step = 80,
 }
 
 local remove_notifs_empty = true
@@ -132,7 +123,7 @@ local text_notif = wibox.widget {
 local box = wibox.widget {
 	widget = wibox.container.background,
 	forced_height = 120,
-	bg = beautiful.background_alt,
+	bg = beautiful.bg_alt,
 	{
 		layout = wibox.layout.align.horizontal,
 		icon_widget,
@@ -143,6 +134,7 @@ local box = wibox.widget {
 				layout = wibox.layout.align.vertical,
 				{
 					layout = wibox.layout.fixed.vertical,
+					expand = "none",
 					spacing = 10,
 					{
 						layout = wibox.layout.align.horizontal,
@@ -166,24 +158,6 @@ end)))
 
 return box
 end
-
-notifs_container:buttons(gears.table.join(
-	awful.button({}, 4, nil, function()
-		if #notifs_container.children == 1 then
-		return
-		end
-	notifs_container:insert(1, notifs_container.children[#notifs_container.children])
-	notifs_container:remove(#notifs_container.children)
-end),
-
-awful.button({}, 5, nil, function()
-	if #notifs_container.children == 1 then
-		return
-	end
-	notifs_container:insert(#notifs_container.children + 1, notifs_container.children[1])
-	notifs_container:remove(1)
-end)
-))
 
 notifs_container:insert(1, notifs_empty)
 
@@ -238,7 +212,7 @@ local notifs = wibox.widget {
 
 local main = wibox.widget {
 	widget = wibox.container.background,
-	bg = beautiful.background,
+	bg = beautiful.bg,
 	{
 		widget = wibox.container.margin,
 		margins = 10,
@@ -257,10 +231,13 @@ local notif_center = awful.popup {
 	border_color = beautiful.border_color_normal,
 	minimum_height = 585,
 	maximum_height = 585,
-	minimum_width = 500,
-	maximum_width = 500,
+	minimum_width = 490,
+	maximum_width = 490,
 	placement = function(d)
-		awful.placement.bottom_left(d, { honor_workarea = true, margins = 20 + beautiful.border_width * 2 })
+		awful.placement.bottom_left(d, {
+			honor_workarea = true,
+			margins = beautiful.useless_gap * 4 + beautiful.border_width * 2
+		})
 	end,
 	widget = main
 }

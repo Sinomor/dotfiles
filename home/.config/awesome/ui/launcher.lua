@@ -1,61 +1,171 @@
 local wibox = require("wibox")
+local gears = require("gears")
 local awful = require("awful")
 local Gio = require("lgi").Gio
 local beautiful = require("beautiful")
+local user = require("user")
+local helpers = require("helpers")
 local dir = "~/.disk/Books/'10 класс'/"
+local rubato = require("modules.rubato")
 
 local prompt = wibox.widget.textbox()
 
 local entries_container = wibox.widget {
 	homogeneous = false,
-	expand = true,
-	spacing = 10,
+	expand = false,
+	spacing = 12,
+	forced_width = 330,
 	forced_num_cols = 1,
-	forced_width = 287,
 	layout = wibox.layout.grid
 }
+
+local modes = {
+	{ name = nil, icon = "", index = 1 },
+	{ name = "clipboard", icon = "", index = 2 },
+	{ name = "books", icon = "", index = 3 },
+	{ name = "themes", icon = "", index = 4 }
+}
+
+local modes_container = wibox.widget {
+	homogeneous = false,
+	expand = false,
+	forced_num_cols = 1,
+	spacing = 10,
+	layout = wibox.layout.grid
+}
+
+local function mode_change(index)
+	entries_container:reset()
+	modes_container:reset()
+	awful.keygrabber.stop()
+	open(modes[index].name)
+end
+
+function add_modes()
+
+	modes_container:reset()
+	for i, mode in ipairs(modes) do
+		local mode_widget = wibox.widget {
+			widget = wibox.container.background,
+			bg = beautiful.bg_alt,
+			forced_width = 40,
+			forced_height = 40,
+			buttons = {
+				awful.button({}, 1, function()
+					if index_mode ~= i then
+						mode_change(mode.index)
+					end
+				end),
+				awful.button({}, 4, function()
+					if index_mode > 1 then
+						index_mode = index_mode - 1
+						if index_mode >= 1 then
+							mode_change(index_mode)
+						end
+					end
+				end),
+				awful.button({}, 5, function()
+					if index_mode < 4 then
+						index_mode = index_mode + 1
+						if index_mode <= 4 then
+							mode_change(index_mode)
+						end
+					end
+				end)
+			},
+			{
+				widget = wibox.widget.textbox,
+				fg = beautiful.fg,
+				align = "center",
+				font = beautiful.font .. " 14",
+				markup = mode.icon
+			}
+		}
+
+		modes_container:add(mode_widget)
+		if i == index_mode then
+			helpers.ui.transitionColor {
+				old = beautiful.bg_alt,
+				new = beautiful.bg_urgent,
+				transformer = function(col)
+					mode_widget.bg = col
+				end,
+				duration = 0.8
+			}
+		end
+	end
+
+end
 
 local main = wibox.widget {
 	widget = wibox.container.margin,
 	margins = 10,
 	{
-		layout = wibox.layout.fixed.vertical,
+		layout = wibox.layout.fixed.horizontal,
+		forced_width = 390,
 		spacing = 10,
 		{
-			layout = wibox.layout.fixed.horizontal,
-			spacing = 10,
+			layout = wibox.layout.stack,
+			{
+				widget = wibox.widget.imagebox,
+				id = "image",
+			},
 			{
 				widget = wibox.container.background,
-				bg = beautiful.background_alt,
+				bg = {
+					type = "linear",
+					from = { 0, 0 },
+					to = { 0, 478 },
+					stops = { { 0.2, beautiful.bg_alt .. "4D" }, { 0.85, beautiful.bg } }
+				},
+			},
+			{
+				widget = wibox.container.place,
+				valign = "bottom",
+				halign = "left",
 				{
-					widget = wibox.container.margin,
-					margins = 6,
+					widget = wibox.container.background,
+					bg = beautiful.bg_alt,
+					forced_height = 56,
+					forced_width = 374,
 					{
-						widget = wibox.widget.textbox,
-						valign = "center",
-						id = "mode_icon",
-						font = beautiful.font .. " 14",
+						widget = wibox.container.margin,
+						margins = { left = 10, right = 10 },
+						prompt
 					}
 				}
-			},
-			prompt,
+			}
 		},
-		entries_container,
-	},
+		{
+			widget = wibox.container.background,
+			forced_width = 330,
+			entries_container,
+		},
+		{
+			widget = wibox.container.background,
+			bg = beautiful.bg_alt,
+			forced_width = 60,
+			{
+				widget = wibox.container.margin,
+				margins = 10,
+				modes_container,
+			}
+		}
+	}
 }
 
 local launcher = awful.popup {
-	minimum_width = 390,
-	maximum_width = 390,
+	minimum_width = 800,
+	maximum_width = 800,
 	minimum_height = 478,
 	maximum_height = 478,
-	bg = beautiful.background,
+	bg = beautiful.bg,
 	border_width = beautiful.border_width,
 	border_color = beautiful.border_color_normal,
 	ontop = true,
 	visible = false,
 	placement = function(d)
-		awful.placement.centered(d, { honor_workarea = false })
+		awful.placement.centered(d, { honor_workarea = true })
 	end,
 	widget = main
 }
@@ -81,11 +191,12 @@ end
 
 local global_mode = nil
 
-local function gen(mode)
+function gen(mode)
 
 	local list = {
-		["books"] = io.popen("ls -A " .. dir):lines(),
-		["clipboard"] = io.popen("greenclip print"):lines()
+		["books"] = io.popen("ls " .. dir):lines(),
+		["clipboard"] = io.popen("greenclip print"):lines(),
+		["themes"] = io.popen("ls .config/awesome/theme/colors/ | cut -f 1 -d '.'"):lines()
 	}
 	local entries = {}
 	if mode == nil then
@@ -96,30 +207,31 @@ local function gen(mode)
 			end
 		end
 	else
-		for entry in list[global_mode] do
+		for entry in list[mode] do
 			local open_command = {
 				["clipboard"] = "echo " .. "'" .. entry .. "'" .. " | xclip -r -sel clipboard",
 				["books"] = "cd " .. dir .. " && zathura " .. entry,
+				["themes"] = [[ awesome-client 'apply_theme("]] .. entry .. [[")' ]]
 			}
-			local appinfo = open_command[mode]
 			if entry:match("[%w+%p+]") then
-				table.insert( entries, { name = entry, appinfo = appinfo } )
+				table.insert( entries, { name = entry, appinfo = open_command[mode] } )
 			end
 		end
 	end
 	return entries
 end
 
-local function filter(cmd)
+function filter(cmd)
 
 	filtered = {}
 	regfiltered = {}
+	local clear_input = cmd:gsub("[%(%)%[%]]", "")
 
 	-- Filter entries
 	for _, entry in ipairs(unfiltered) do
-		if entry.name:lower():sub(1, cmd:len()) == cmd:lower() then
+		if entry.name:lower():sub(1, clear_input:len()) == cmd:lower() then
 			table.insert(filtered, entry)
-		elseif entry.name:lower():match(cmd:lower()) then
+		elseif entry.name:lower():match(clear_input:lower()) then
 			table.insert(regfiltered, entry)
 		end
 	end
@@ -140,8 +252,30 @@ local function filter(cmd)
 
 	-- Add filtered entries
 	for i, entry in ipairs(filtered) do
+
+		local entry_image = wibox.widget {
+			widget = wibox.widget.imagebox,
+			horizontal_fit_policy = "fit",
+			vertical_fit_policy = "fit",
+			opacity = 0.5,
+			forced_width = 350,
+			forced_height = 55,
+		}
+
+		local themes_line = wibox.widget {
+			widget = wibox.container.margin,
+			right = -beautiful.border_width * 2,
+			{
+				widget = wibox.container.background,
+				forced_width = beautiful.border_width * 2,
+				id = "bg",
+			},
+		}
+
 		local entry_widget = wibox.widget {
-			forced_height = 50,
+			widget = wibox.container.background,
+			forced_height = 55,
+			forced_width = 350,
 			buttons = {
 				-- add left double click to launch (first click to navigate entry, second to run entry)
 				awful.button({}, 1, function()
@@ -168,15 +302,24 @@ local function filter(cmd)
 					filter("")
 				end),
 			},
-			widget = wibox.container.background,
 			{
 				margins = 10,
+				id = "margin",
 				widget = wibox.container.margin,
 				{
-					text = entry.name,
-					widget = wibox.widget.textbox,
-				},
-			},
+					layout = wibox.layout.fixed.horizontal,
+					id = "entry_layout",
+					{
+						layout  = wibox.layout.stack,
+						id = "stack",
+						{
+							text = entry.name,
+							id = "text",
+							widget = wibox.widget.textbox,
+						},
+					}
+				}
+			}
 		}
 
 		if index_start <= i and i <= index_start + 6 then
@@ -185,7 +328,22 @@ local function filter(cmd)
 
 		if i == index_entry then
 			entry_widget.bg = beautiful.accent
-			entry_widget.fg = beautiful.background
+			entry_widget.fg = beautiful.bg
+		end
+
+		if global_mode == "themes" then
+			local color = require("theme.colors."..entry.name)
+			entry_widget.fg = color.fg
+			entry_widget:get_children_by_id("stack")[1]:insert(1, entry_image)
+			entry_image.image = user.home .. ".config/awesome/theme/launcher/"..entry.name..".jpg"
+			entry_widget:get_children_by_id("margin")[1].margins = 0
+			entry_widget:get_children_by_id("text")[1].halign = "center"
+			if i == index_entry then
+				entry_widget:get_children_by_id("entry_layout")[1]:insert(1, themes_line)
+				entry_widget.bg = beautiful.bg
+				entry_widget.fg = color.fg
+				themes_line:get_children_by_id("bg")[1]:set_bg(color.fg)
+			end
 		end
 	end
 
@@ -199,18 +357,23 @@ local function filter(cmd)
 	collectgarbage("collect")
 end
 
-local function open(mode)
+function open(mode)
 
-	local mode_icon = {
-		["clipboard"] = "",
-		["books"] = "",
+	main:get_children_by_id("image")[1].image = gears.surface.load_uncached(user.home .. ".config/awesome/theme/launcher/image.jpg")
+
+	local index_modes = {
+		["clipboard"] = 2,
+		["books"] = 3,
+		["themes"] = 4
 	}
 
-	if mode == nil then
-		main:get_children_by_id("mode_icon")[1].text = ""
+	if mode ~= nil then
+		index_mode = index_modes[mode]
 	else
-		main:get_children_by_id("mode_icon")[1].text = mode_icon[mode]
+		index_mode = 1
 	end
+
+	add_modes()
 
 	global_mode = mode
 	-- Reset index and page
@@ -224,9 +387,9 @@ local function open(mode)
 	awful.prompt.run {
 		prompt = "Search: ",
 		textbox = prompt,
-		bg = beautiful.background,
-		fg = beautiful.foreground,
-		bg_cursor = beautiful.background_alt,
+		bg = beautiful.bg,
+		fg = beautiful.fg,
+		bg_cursor = beautiful.bg_alt,
 		done_callback = function()
 			launcher.visible = false
 		end,
@@ -247,43 +410,48 @@ local function open(mode)
 				next()
 			elseif key == "Up" then
 				back()
+			elseif key == "Tab" then
+				index_mode = index_mode + 1
+				if index_mode <= 4 then
+					mode_change(index_mode)
+				else
+					mode_change(1)
+				end
 			end
 		end
 	}
 end
 
 -- Summon funcs --
-awesome.connect_signal("summon::books", function()
+
+function open_launcher(mode)
 	if not launcher.visible then
-		open("books")
+		open(mode)
 		launcher.visible = true
 	else
 		awful.keygrabber.stop()
 		launcher.visible = false
 	end
+end
+
+awesome.connect_signal("summon::books", function()
+	open_launcher("books")
 end)
 
 awesome.connect_signal("summon::clipboard", function()
-	if not launcher.visible then
-		open("clipboard")
-		launcher.visible = true
-	else
-		awful.keygrabber.stop()
-		launcher.visible = false
-	end
+	open_launcher("clipboard")
 end)
 
 awesome.connect_signal("summon::launcher", function()
-	if not launcher.visible then
-		open()
-		launcher.visible = true
-	else
-		awful.keygrabber.stop()
-		launcher.visible = false
-	end
+	open_launcher(nil)
+end)
+
+awesome.connect_signal("summon::themes", function()
+	open_launcher("themes")
 end)
 
 -- hide on click --
+
 client.connect_signal("button::press", function()
 	awful.keygrabber.stop()
 	launcher.visible = false

@@ -9,25 +9,61 @@
 - Visualizer: [Cava](https://github.com/karlstav/cava)
 
 ## Screenshots
-![counter](https://i.imgur.com/g0fkpfB.png)
-![counter](https://i.imgur.com/6GUBpUb.png)
+![counter](https://i.imgur.com/l7Cm0sZ.png)
+![counter](https://i.imgur.com/Jyrqr7G.png)
+
+## Features
+
+* Theme Swither
+* Control Center
+* Brightness / Volume OSD
+* Lockscreen (liblua_pam)
+* Custom Launcher (include 4 modes: apps, clipboard, zathura, theme swither)
+* Powermenu
+* Weather Widget
+* Calendar Widget
+* Wifi applet
+
+<br>
 
 <details>
-<summary><b>Some Other Stuff</b></summary>
+<summary><b>Some Previews</b></summary>
 <br>
 
-* lockscreen (liplua pam)
-![Screenshot](extra/screenshots/lockscreen.jpg)
-
+* Theme Swither mode in Launcher
+<br>
+<img src="https://i.imgur.com/gcJKCho.png" width=500>
 <br>
 
-* clipboard (greenclip)
-<img src = "extra/screenshots/clipboard.jpg" height = 500>
-
+* Control Center (also playerctl and weather widgets)
+<br>
+<img src="https://i.imgur.com/OhYCnkm.png" width=500>
 <br>
 
-* books launcher (zathura)
-<img src = "extra/screenshots/books.jpg" height = 500>
+* Calendar widget
+<br>
+<img src="https://i.imgur.com/RSPS5vs.png" width=500>
+<br>
+
+* Lockscreen
+<br>
+<img src="https://i.imgur.com/I0ulYmj.png" width=500>
+<br>
+
+* Powermenu
+<br>
+<img src="https://i.imgur.com/164IK5K.png" width=500>
+<br>
+
+* Notifications Center
+<br>
+<img src="https://i.imgur.com/PE8NEMs.png" width=500>
+<br>
+
+* OSD
+<br>
+<img src="https://i.imgur.com/jbVyqvf.png" width=500>
+<br>
 
 </details>
 
@@ -37,7 +73,7 @@
 <summary><b>Install Dependencies</b></summary>
 <br>
 
-> Setup the void-packages repo
+1. Setup the void-packages repo
 
 ```bash
 git clone --depth=1 https://github.com/void-linux/void-packages
@@ -45,37 +81,49 @@ cd void-packages
 ./xbps-src binary-bootstrap
 echo XBPS_ALLOW_RESTRICTED=yes >> etc/conf
 ```
+<br>
 
-> Build the awesome package
+2. Build the awesome package
 
 ```bash
 git clone https://github.com/Sinomor/my-templates
-mv my-templates/awesome-git srcpkgs/
+cp -r my-templates/awesome-git srcpkgs/
 ./xbps-src pkg awesome-git
 ```
+<br>
 
-> Install the awesome package
+3. Install the awesome package
 
 ```bash
 sudo xbps-install xtools
 xi awesome-git
 ```
-
 <br>
 
-> Install Other Dependencies
+4. Also build and install compfy (allusive fork of picom)
+```bash
+cp -r my-templates/compfy srcpkgs/
+./xbps-src pkg compfy
+xi compfy
+```
+<br>
+
+5. Install Other Dependencies
 
 ```bash
-sudo xbps-install feh xclip gpick xrdb picom polkit-gnome fontconfig fontconfig-32bit ImageMagick zbar slop shotgun fish-shell playerctl brightnessctl python3-distro
+sudo xbps-install feh xclip gpick xrdb picom polkit-gnome fontconfig fontconfig-32bit ImageMagick zbar slop shotgun \
+fish-shell playerctl brightnessctl python3-distro nerd-fonts-symbols-ttf xsettingsd
 ```
 
 </details>
+
+<br>
 
 <details>
 <summary><b>Install Dotfiles</b></summary>
 <br>
 
-> Recommended to backup the configs 
+1. Recommended to backup the configs 
 
 ```bash
 git clone --depth=1 --recursive https://github.com/Sinomor/dotfiles.git
@@ -85,23 +133,21 @@ cp -r home/.fonts ~/
 cp -r home/.icons ~/
 cp -r home/.local/bin ~/.local
 cp -r home/.themes ~/
+cp -r home/.walls ~/
 cp home/.xinitrc ~/
 cp home/.Xresources ~/
 cp home/.gtkrc-2.0 ~/ 
 ```
 
-> Write to awesome/config/key.lua (already exists) your password and apikey from openweather 
+2. Write to awesome/user.lua your password and apikey from openweather 
 ```lua
-local M = {
-  openweatherapi = "your_api_key",
-  password = "your_password",
-}
-
-return M
+user.opweath_api = "your_api_key"
+user.opweath_passwd = "your_password"
 ```
 
 </details>
 
+<br>
 
 ## References
 
