@@ -195,7 +195,7 @@ function gen(mode)
 
 	local list = {
 		["books"] = io.popen("ls " .. dir):lines(),
-		["clipboard"] = io.popen("greenclip print"):lines(),
+		["clipboard"] = io.popen("$HOME/.local/bin/greenclip print"):lines(),
 		["themes"] = io.popen("ls .config/awesome/theme/colors/ | cut -f 1 -d '.'"):lines()
 	}
 	local entries = {}
