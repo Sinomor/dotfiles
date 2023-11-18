@@ -16,5 +16,6 @@ colorsheme.cyan = "#ae3f8a"
 colorsheme.accent = colorsheme.violet
 
 colorsheme.lut = "~/.config/awesome/other/luts/biscuit.png"
+colorsheme.discord = "https://raw.githubusercontent.com/Sinomor/dotfiles/main/extra/discord/biscuit.css"
 
 return colorsheme

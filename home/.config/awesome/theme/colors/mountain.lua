@@ -16,5 +16,6 @@ colorsheme.cyan = "#9ec3c4"
 colorsheme.accent = colorsheme.red
 
 colorsheme.lut = "~/.config/awesome/other/luts/mountain.png"
+colorsheme.discord = "https://raw.githubusercontent.com/Sinomor/dotfiles/main/extra/discord/mountain.css"
 
 return colorsheme

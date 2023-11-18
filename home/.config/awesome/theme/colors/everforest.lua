@@ -16,5 +16,6 @@ colorsheme.cyan = "#83c092"
 colorsheme.accent = colorsheme.red
 
 colorsheme.lut = "~/.config/awesome/other/luts/everforest.png"
+colorsheme.discord = "https://raw.githubusercontent.com/Sinomor/dotfiles/main/extra/discord/everforest.css"
 
 return colorsheme

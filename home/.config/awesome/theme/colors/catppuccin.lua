@@ -16,5 +16,6 @@ colorsheme.cyan = "#94e2d5"
 colorsheme.accent = colorsheme.violet
 
 colorsheme.lut = "~/.config/awesome/other/luts/catppuccin.png"
+colorsheme.discord = "https://raw.githubusercontent.com/Sinomor/dotfiles/main/extra/discord/catppuccin.css"
 
 return colorsheme

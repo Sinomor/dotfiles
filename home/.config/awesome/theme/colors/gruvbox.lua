@@ -16,5 +16,6 @@ colorsheme.cyan = "#8ec07c"
 colorsheme.accent = colorsheme.blue
 
 colorsheme.lut = "~/.config/awesome/other/luts/gruvbox.png"
+colorsheme.discord = "https://raw.githubusercontent.com/Sinomor/dotfiles/main/extra/discord/gruvbox.css"
 
 return colorsheme

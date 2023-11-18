@@ -16,5 +16,6 @@ colorsheme.cyan = "#b87aff"
 colorsheme.accent = colorsheme.cyan
 
 colorsheme.lut = "~/.config/awesome/other/luts/stardew.png"
+colorsheme.discord = "https://raw.githubusercontent.com/Sinomor/dotfiles/main/extra/discord/stardew.css"
 
 return colorsheme

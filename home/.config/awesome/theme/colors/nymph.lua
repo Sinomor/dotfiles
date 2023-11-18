@@ -16,5 +16,6 @@ colorsheme.cyan = "#89B7B0"
 colorsheme.accent = colorsheme.cyan
 
 colorsheme.lut = "~/.config/awesome/other/luts/nymph.png"
+colorsheme.discord = "https://raw.githubusercontent.com/Sinomor/dotfiles/main/extra/discord/nymph.css"
 
 return colorsheme
