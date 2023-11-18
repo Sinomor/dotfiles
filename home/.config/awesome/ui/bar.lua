@@ -60,48 +60,6 @@ profile:buttons {
 	end)
 }
 
--- tasklist --
-
-local tasklist = awful.widget.tasklist {
-	screen = s,
-	filter = awful.widget.tasklist.filter.currenttags,
-	buttons = {
-		awful.button({ }, 1, function (c)
-			c:activate { context = "tasklist", action = "toggle_minimization" }
-		end),
-		awful.button({ }, 2, function (c)
-			c:kill { context = "tasklist", action = "close client" }
-		end),
-	},
-	layout = {
-		spacing = 10,
-		layout = wibox.layout.fixed.vertical,
-	},
-	widget_template = {
-		id = "background_role",
-		widget = wibox.container.background,
-		forced_height = 24,
-		create_callback = function(self, c, index, objects)
-			local tooltip = awful.tooltip({
-				objects = { self },
-				timer_function = function()
-					return c.name
-				end,
-			})
-			tooltip.mode = "outside"
-			tooltip.gaps = beautiful.useless_gap
-			tooltip.margins_leftright = 10
-			tooltip.margins_topbottom = 10
-		end
-	}
-}
-
-local tasklist_widget = wibox.widget {
-		widget = wibox.container.margin,
-		margins = 6,
-		tasklist
-}
-
 -- keyboard layout --
 
 local mykeyboard=awful.widget.keyboardlayout()
@@ -431,7 +389,6 @@ bar = awful.wibar {
 				margins = { left = 10, right = 10 },
 				{
 					layout = wibox.layout.fixed.vertical,
-					tasklist_widget,
 				}
 			}
 		},

@@ -23,7 +23,8 @@ local modes = {
 	{ name = nil, icon = "", index = 1 },
 	{ name = "clipboard", icon = "", index = 2 },
 	{ name = "books", icon = "", index = 3 },
-	{ name = "themes", icon = "", index = 4 }
+	{ name = "themes", icon = "", index = 4 },
+	{ name = "clients", icon = "", index = 5 }
 }
 
 local modes_container = wibox.widget {
@@ -196,7 +197,7 @@ function gen(mode)
 	local list = {
 		["books"] = io.popen("ls " .. dir):lines(),
 		["clipboard"] = io.popen("$HOME/.local/bin/greenclip print"):lines(),
-		["themes"] = io.popen("ls .config/awesome/theme/colors/ | cut -f 1 -d '.'"):lines()
+		["themes"] = io.popen("ls .config/awesome/theme/colors/ | cut -f 1 -d '.'"):lines(),
 	}
 	local entries = {}
 	if mode == nil then
@@ -205,6 +206,10 @@ function gen(mode)
 				local name = entry:get_name():gsub("&", "&amp;"):gsub("<", "&lt;"):gsub("'", "&#39;")
 				table.insert( entries, { name = name, appinfo = entry } )
 			end
+		end
+	elseif mode == "clients" then
+		for _, c in ipairs(client.get()) do
+			table.insert( entries, { name = c.name, client = c })
 		end
 	else
 		for entry in list[mode] do
@@ -282,6 +287,8 @@ function filter(cmd)
 					if index_entry == i then
 						if global_mode == nil then
 							filtered[index_entry].appinfo:launch()
+						elseif global_mode == "clients" then
+							awful.client.jumpto (filtered[index_entry].client)
 						else
 							awful.spawn.with_shell(filtered[index_entry].appinfo)
 						end
@@ -364,7 +371,8 @@ function open(mode)
 	local index_modes = {
 		["clipboard"] = 2,
 		["books"] = 3,
-		["themes"] = 4
+		["themes"] = 4,
+		["clients"] = 5
 	}
 
 	if mode ~= nil then
@@ -400,6 +408,8 @@ function open(mode)
 			if filtered[index_entry] then
 				if mode == nil then
 					filtered[index_entry].appinfo:launch()
+				elseif mode == "clients" then
+					awful.client.jumpto (filtered[index_entry].client)
 				else
 					awful.spawn.with_shell(filtered[index_entry].appinfo)
 				end
@@ -412,7 +422,7 @@ function open(mode)
 				back()
 			elseif key == "Tab" then
 				index_mode = index_mode + 1
-				if index_mode <= 4 then
+				if index_mode <= 5 then
 					mode_change(index_mode)
 				else
 					mode_change(1)
@@ -450,6 +460,9 @@ awesome.connect_signal("summon::themes", function()
 	open_launcher("themes")
 end)
 
+awesome.connect_signal("summon::clients", function()
+	open_launcher("clients")
+end)
 -- hide on click --
 
 client.connect_signal("button::press", function()

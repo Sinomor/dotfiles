@@ -18,7 +18,7 @@
 * Control Center
 * Brightness / Volume OSD
 * Lockscreen (liblua_pam)
-* Custom Launcher (include 4 modes: apps, clipboard, zathura, theme swither)
+* Custom Launcher (include 5 modes: apps, clipboard, zathura, theme swither, clients)
 * Powermenu
 * Weather Widget
 * Calendar Widget
@@ -133,6 +133,7 @@ cp -r home/.fonts ~/
 cp -r home/.icons ~/
 cp -r home/.local/bin ~/.local
 cp -r home/.themes ~/
+cp -r home/.librewolf ~/
 cp -r home/.walls ~/
 cp home/.xinitrc ~/
 cp home/.Xresources ~/
@@ -155,3 +156,5 @@ user.opweath_passwd = "your_password"
 - [Stardust-kyun](https://github.com/Stardust-kyun/dotfiles)
 - [Saimoom](https://github.com/saimoomedits/dotfiles/tree/main)
 - [Chadcat7](https://github.com/chadcat7/crystal)
+- [Tsukki](https://github.com/tsukki9696/tsukiyomi)
+- [TorchedSammy](https://github.com/TorchedSammy/dotfiles)
