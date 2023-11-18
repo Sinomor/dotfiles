@@ -9,7 +9,7 @@ local vencord_file = "~/.config/Vencord/themes/theme.css"
 local nvim_file = "~/.config/nvim/lua/core/configs.lua"
 local telegram_file = "~/.config/awesome/other/current_tg_theme.tdesktop-theme"
 local flameshot_file = "~/.config/flameshot/flameshot.ini"
-local firefox_file = "~/.librewolf/your_session/chrome/userChrome.css"
+local firefox_file = "~/.librewolf/28peazch.default-default/chrome/userChrome.css"
 local xresourses_file = "~/.Xresources"
 local zathura_file = "~/.config/zathura/zathurarc"
 
@@ -21,8 +21,8 @@ function apply_theme(entry)
 		sed -i -e "s/Net\/ThemeName .*/Net\/ThemeName \"]] ..entry.. [[\"/g" \
 		-e "s/Gtk\/CursorThemeName .*/Gtk\/CursorThemeName \"]] ..entry.. [[\"/g" ]] ..xsettingsd_file.. [[ &&
 		sed -i -e "s/- ~\/.config\/awesome.*/- ~\/.config\/awesome\/other\/alacritty\/]] ..entry.. [[.yml/g" ]] ..alacritty_file.. [[ &&
-		cp ~/.config/awesome/other/discord/]] ..entry.. [[.css ]] ..vencord_file.. [[ && 
-		cp ~/.config/awesome/other/telegram/]] ..entry.. [[.tdesktop-theme ]] ..telegram_file.. [[ &&
+		sed -i -e "s|@import url.*|@import url(']] ..color.discord.. [[')|g" ]] ..vencord_file.. [[ && 
+		cp ]] ..user.awm_config.. [[other/telegram/]] ..entry.. [[.tdesktop-theme ]] ..telegram_file.. [[ &&
 		sed -i -e "s/vim.cmd.colorscheme.*/vim.cmd.colorscheme{']] ..entry.. [['}/g" ]] ..nvim_file.. [[ &&
 		sed -i -e "s/drawColor=.*/drawColor=]] ..color.accent.. [[/g" \
 		-e "s/uiColor=.*/uiColor=]] ..color.fg_alt.. [[;/g" ]] ..flameshot_file.. [[ &&
