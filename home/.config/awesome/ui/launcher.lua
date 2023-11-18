@@ -66,9 +66,9 @@ function add_modes()
 					end
 				end),
 				awful.button({}, 5, function()
-					if index_mode < 4 then
+					if index_mode < 5 then
 						index_mode = index_mode + 1
-						if index_mode <= 4 then
+						if index_mode <= 5 then
 							mode_change(index_mode)
 						end
 					end
@@ -196,7 +196,7 @@ function gen(mode)
 
 	local list = {
 		["books"] = io.popen("ls " .. dir):lines(),
-		["clipboard"] = io.popen("$HOME/.local/bin/greenclip print"):lines(),
+		["clipboard"] = io.popen(user.bins.greenclip .. " print"):lines(),
 		["themes"] = io.popen("ls .config/awesome/theme/colors/ | cut -f 1 -d '.'"):lines(),
 	}
 	local entries = {}
