@@ -136,10 +136,8 @@ cd dotfiles
 cp -r home/.config/* ~/.config/
 cp -r home/.fonts ~/
 cp -r home/.icons ~/
-cp -r home/.local/bin ~/.local
 cp -r home/.themes ~/
 cp -r home/.librewolf ~/
-cp -r home/.walls ~/
 cp home/.xinitrc ~/
 cp home/.Xresources ~/
 cp home/.gtkrc-2.0 ~/ 
