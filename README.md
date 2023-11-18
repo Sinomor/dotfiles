@@ -108,10 +108,15 @@ xi compfy
 ```
 <br>
 
-5. Install Other Dependencies
+5. Install pipewire, wireplumber using void linux [docs](https://docs.voidlinux.org/config/media/pipewire.html)
+
+<br>
+
+6. Install Other Dependencies
 
 ```bash
-sudo xbps-install feh xclip gpick xrdb picom polkit-gnome fontconfig fontconfig-32bit ImageMagick zbar slop shotgun \
+sudo xbps-install feh xclip gpick xrdb picom polkit-gnome fontconfig \
+fontconfig-32bit ImageMagick zbar slop shotgun flameshot \
 fish-shell playerctl brightnessctl python3-distro nerd-fonts-symbols-ttf xsettingsd
 ```
 
