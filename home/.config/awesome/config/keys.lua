@@ -3,6 +3,7 @@ local awful = require("awful")
 local naughty = require("naughty")
 local beautiful = require("beautiful")
 local helpers = require("helpers")
+local user = require("user")
 require("scripts")
 
 mod = "Mod4"
@@ -23,8 +24,8 @@ awful.keyboard.append_global_keybindings({
 	-- some scripts --
 
 	awful.key({ mod, ctrl }, "w", function() change_wall() end),
-	awful.key({ mod, ctrl }, "p", function() awful.spawn.with_shell("~/.local/bin/colorpicker") end),
-	awful.key({ mod, ctrl }, "q", function() awful.spawn.with_shell("~/.local/bin/qr_codes") end),
+	awful.key({ mod, ctrl }, "p", function() awful.spawn.with_shell(user.bins.colorpicker) end),
+	awful.key({ mod, ctrl }, "q", function() awful.spawn.with_shell(user.bins.qr_codes) end),
 
 	-- playerctl --
 
@@ -74,6 +75,7 @@ awful.keyboard.append_global_keybindings({
 	awful.key({ mod, ctrl }, "b", function() awesome.emit_signal("summon::books") end),
 	awful.key({ mod, ctrl }, "t", function() awesome.emit_signal("summon::themes") end),
 	awful.key({ mod, ctrl }, "c", function() awesome.emit_signal("summon::clipboard") end),
+	awful.key({ mod, ctrl }, "a", function() awesome.emit_signal("summon::clients") end),
 	awful.key({ mod }, "d", function() awesome.emit_signal("summon::launcher") end),
 	awful.key({ mod }, "x", function() awesome.emit_signal("summon::powermenu") end),
 	awful.key({ mod }, "m", function() awesome.emit_signal("signal::dnd") end),

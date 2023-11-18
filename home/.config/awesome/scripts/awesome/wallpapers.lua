@@ -3,7 +3,7 @@ local awful = require("awful")
 local user = require("user")
 local color = require("theme.colors."..user.color)
 
-local walls = io.popen("ls ~/.walls/ | shuf"):lines()
+local walls = io.popen("ls " ..user.awm_config.. "theme/walls/ | shuf"):lines()
 local lut = color.lut
 local prev_random = 1
 
@@ -22,11 +22,10 @@ wall = walls(new_random)
 
 function change_wall()
 		awful.spawn.easy_async_with_shell([[ 
-			bash -c " 
-			$HOME/.local/bin/lutgen apply --hald-clut "]] ..lut.. [[" .walls/"]] ..wall.. [[" -o ~/.config/awesome/theme/wall.jpg &&
-			feh --bg-fill ~/.config/awesome/theme/wall.jpg &&
-			convert ~/.config/awesome/theme/wall.jpg -resize 1920x1080 \
-			+repage -crop 390x478+765+301 ~/.config/awesome/theme/launcher/image.jpg"
+			]] ..user.bins.lutgen.. [[ apply --hald-clut ]] ..lut.. [[ ]] ..user.awm_config.. [[/theme/walls/]] ..wall.. [[ -o ]] ..user.awm_config.. [[theme/wall.jpg &&
+			feh --bg-fill ]] ..user.awm_config.. [[theme/wall.jpg &&
+			convert ]] ..user.awm_config.. [[theme/wall.jpg -resize 1920x1080 \
+			+repage -crop 390x478+765+301 ]] ..user.awm_config.. [[theme/launcher/image.jpg
 		]], function()
 			return_random()
 			wall = walls(new_random)
