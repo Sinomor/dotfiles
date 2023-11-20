@@ -209,7 +209,7 @@ function gen(mode)
 		end
 	elseif mode == "clients" then
 		for _, c in ipairs(client.get()) do
-			table.insert( entries, { name = c.name, client = c })
+			table.insert( entries, { name = c.name, client = c, max = c.maximized, min = c.minimized })
 		end
 	else
 		for entry in list[mode] do
@@ -218,9 +218,7 @@ function gen(mode)
 				["books"] = "cd " .. dir .. " && zathura " .. entry,
 				["themes"] = [[ awesome-client 'apply_theme("]] .. entry .. [[")' ]]
 			}
-			if entry:match("[%w+%p+]") then
-				table.insert( entries, { name = entry, appinfo = open_command[mode] } )
-			end
+			table.insert( entries, { name = entry, appinfo = open_command[mode] } )
 		end
 	end
 	return entries
@@ -310,12 +308,12 @@ function filter(cmd)
 				end),
 			},
 			{
-				margins = 10,
-				id = "margin",
-				widget = wibox.container.margin,
+				layout = wibox.layout.fixed.horizontal,
+				id = "entry_layout",
 				{
-					layout = wibox.layout.fixed.horizontal,
-					id = "entry_layout",
+					margins = 10,
+					id = "margin",
+					widget = wibox.container.margin,
 					{
 						layout  = wibox.layout.stack,
 						id = "stack",
@@ -338,11 +336,20 @@ function filter(cmd)
 			entry_widget.fg = beautiful.bg
 		end
 
+		if global_mode == "clients" then
+			entry_widget:get_children_by_id("entry_layout")[1]:insert(1, themes_line)
+			if filtered[i].max == true then
+				themes_line:get_children_by_id("bg")[1]:set_bg(beautiful.green)
+			elseif filtered[i].min == true then
+				themes_line:get_children_by_id("bg")[1]:set_bg(beautiful.yellow)
+			end
+		end
+
 		if global_mode == "themes" then
 			local color = require("theme.colors."..entry.name)
 			entry_widget.fg = color.fg
 			entry_widget:get_children_by_id("stack")[1]:insert(1, entry_image)
-			entry_image.image = user.home .. ".config/awesome/theme/launcher/"..entry.name..".jpg"
+			entry_image.image = user.awm_config .. "theme/launcher/" ..entry.name.. ".jpg"
 			entry_widget:get_children_by_id("margin")[1].margins = 0
 			entry_widget:get_children_by_id("text")[1].halign = "center"
 			if i == index_entry then
@@ -366,7 +373,7 @@ end
 
 function open(mode)
 
-	main:get_children_by_id("image")[1].image = gears.surface.load_uncached(user.home .. ".config/awesome/theme/launcher/image.jpg")
+	main:get_children_by_id("image")[1].image = gears.surface.load_uncached(user.awm_config .. "theme/launcher/image.jpg")
 
 	local index_modes = {
 		["clipboard"] = 2,
@@ -409,7 +416,7 @@ function open(mode)
 				if mode == nil then
 					filtered[index_entry].appinfo:launch()
 				elseif mode == "clients" then
-					awful.client.jumpto (filtered[index_entry].client)
+					awful.client.jumpto(filtered[index_entry].client)
 				else
 					awful.spawn.with_shell(filtered[index_entry].appinfo)
 				end
