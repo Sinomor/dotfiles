@@ -120,7 +120,13 @@ fontconfig-32bit ImageMagick zbar slop shotgun flameshot \
 fish-shell playerctl brightnessctl python3-distro nerd-fonts-symbols-ttf xsettingsd
 ```
 
-7*. if your disto is not void linux, you need to [compile liblua pam](https://github.com/RMTT/lua-pam#complile) yourself. After that replace the liblua_pam.so file in awesomewm config folder
+<br>
+
+7*. If your disto is not void linux, you need to [compile liblua pam](https://github.com/RMTT/lua-pam#complile) yourself. After that replace the liblua_pam.so file in awesomewm config folder
+
+<br>
+
+8*. If you need working media slider (player widget) in browser, install the 'plasma-browser-integration' package. Next, install 'plasma integration' extension in your browser
 
 </details>
 
