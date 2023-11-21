@@ -9,7 +9,7 @@ local vencord_file = "~/.config/Vencord/themes/theme.css"
 local nvim_file = "~/.config/nvim/lua/core/configs.lua"
 local telegram_file = "~/.config/awesome/other/current_tg_theme.tdesktop-theme"
 local flameshot_file = "~/.config/flameshot/flameshot.ini"
-local firefox_file = "~/.librewolf/your_session/chrome/userChrome.css"
+local firefox_file = "~/.librewolf/28peazch.default-default/chrome/userChrome.css"
 local xresourses_file = "~/.Xresources"
 local zathura_file = "~/.config/zathura/zathurarc"
 

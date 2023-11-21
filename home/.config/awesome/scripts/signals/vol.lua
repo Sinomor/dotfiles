@@ -17,22 +17,14 @@ function update_value_of_volume()
 		elseif value <= 100 then
 			icon = ""
 		end
-		awesome.emit_signal("volume::value", value, icon)
-	end)
-end
-
-function update_value_of_capture()
-	awful.spawn.easy_async_with_shell("amixer sget Capture toggle", function(stdout)
-		local value = stdout:match("(%d?%d?%d)%%")
-		value = tonumber(value)
-		awesome.emit_signal("capture::value", value)
+		awesome.emit_signal("signal::volume", value, icon)
 	end)
 end
 
 function update_value_of_capture_muted()
 	awful.spawn.easy_async_with_shell("amixer sget Capture toggle", function(stdout)
 		local value = stdout:match("%[(o%D%D?)%]")
-		awesome.emit_signal("capture_muted::value", value)
+		awesome.emit_signal("signal::capture", value)
 	end)
 end
 

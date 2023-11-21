@@ -64,7 +64,7 @@ local anim = rubato.timed {
 
 -- volume --
 
-awesome.connect_signal("volume::value", function(value, icon)
+awesome.connect_signal("signal::volume", function(value, icon)
 	anim.target = value
 	info:get_children_by_id("text")[1].text = value
 	info:get_children_by_id("icon")[1].text = icon
@@ -72,7 +72,7 @@ end)
 
 -- bright --
 
-awesome.connect_signal("bright::value", function(value)
+awesome.connect_signal("signal::bright", function(value)
 	anim.target = value
 	info:get_children_by_id("text")[1].text = value
 	info:get_children_by_id("icon")[1].text = ""
@@ -99,6 +99,6 @@ local function osd_toggle()
 	end
 end
 
-awesome.connect_signal("summon::osd", function()
+awesome.connect_signal("open::osd", function()
 	osd_toggle()
 end)

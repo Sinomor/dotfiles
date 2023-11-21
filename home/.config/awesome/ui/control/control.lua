@@ -91,7 +91,7 @@ local resourses = wibox.widget {
 	spacing = 10,
 	create_arcchart_widget(cpu, "signal::cpu", beautiful.bg_urgent, beautiful.red, 15, "Cpu:", ""),
 	create_arcchart_widget(ram, "signal::ram", beautiful.bg_urgent, beautiful.yellow, 15, "Ram:", ""),
-	create_arcchart_widget(disk, "disk::value", beautiful.bg_urgent, beautiful.blue, 15, "Disk:", ""),
+	create_arcchart_widget(disk, "signal::disk", beautiful.bg_urgent, beautiful.blue, 15, "Disk:", ""),
 }
 
 -- progressbars --
@@ -160,7 +160,7 @@ local anim_volume = rubato.timed {
 	end
 }
 
-awesome.connect_signal("volume::value", function(value, icon)
+awesome.connect_signal("signal::volume", function(value, icon)
 	anim_volume.target = value
 	volume:get_children_by_id("text")[1].text = value
 	volume:get_children_by_id("icon")[1].text = icon
@@ -187,7 +187,7 @@ bright:buttons  {
 	end),
 }
 
-awesome.connect_signal("bright::value", function(value, icon)
+awesome.connect_signal("signal::bright", function(value, icon)
 	anim_bright.target = value
 	bright:get_children_by_id("text")[1].text = value
 end)
@@ -393,9 +393,9 @@ local toggle_change = function(x, widget)
 end
 
 local wifi = create_toggle_widget(beautiful.accent, beautiful.bg, "", "Wifi", "On", true,
-function() awesome.emit_signal("summon::wifi_popup") end)
+function() awesome.emit_signal("open::wifi_applet") end)
 
-awesome.connect_signal("wifi::value", function(value)
+awesome.connect_signal("signal::wifi", function(value)
 	if value == "disabled" then
 		toggle_change("off", wifi)
 	else
@@ -404,14 +404,13 @@ awesome.connect_signal("wifi::value", function(value)
 end)
 
 function wifi_button()
-	awesome.connect_signal("wifi::value", function(value)
+	awesome.connect_signal("signal::wifi", function(value)
 		if value == "disabled" then
 			toggle_change("on", wifi)
 			awful.spawn.with_shell("nmcli radio wifi on")
 		else
 			toggle_change("off", wifi)
 			awful.spawn.with_shell("nmcli radio wifi off")
-			wifi:update_status()
 		end
 	end)
 end
@@ -425,7 +424,7 @@ wifi:get_children_by_id("icon_container")[1]:buttons {
 
 local micro = create_toggle_widget(beautiful.accent, beautiful.bg, "", "Microphone", "On", false)
 
-awesome.connect_signal("capture_muted::value", function(value)
+awesome.connect_signal("signal::capture", function(value)
 	if value == "off" then
 		toggle_change("off", micro)
 	else
@@ -717,7 +716,8 @@ local control = awful.popup {
 
 -- summon functions --
 
-awesome.connect_signal("summon::control", function()
+awesome.connect_signal("open::control", function()
+	awesome.emit_signal("bar::control")
 	control.visible = not control.visible
 end)
 
@@ -725,14 +725,14 @@ end)
 
 client.connect_signal("button::press", function()
 	if control.visible == true then
-		awesome.emit_signal("profile::control")
+		awesome.emit_signal("open::control")
 	end
 end)
 
 awful.mouse.append_global_mousebinding(
 	awful.button({ }, 1, function()
 		if control.visible == true then
-			awesome.emit_signal("profile::control")
+			awesome.emit_signal("open::control")
 		end
 	end)
 )

@@ -245,7 +245,8 @@ local notif_center = awful.popup {
 
 -- summon functions --
 
-awesome.connect_signal("summon::notif_center", function()
+awesome.connect_signal("open::notif_center", function()
+	awesome.emit_signal("bar::notif_center")
 	notif_center.visible = not notif_center.visible
 end)
 
@@ -253,14 +254,14 @@ end)
 
 client.connect_signal("button::press", function()
 	if notif_center.visible == true then
-		awesome.emit_signal("notif_center::open")
+		awesome.emit_signal("open::notif_center")
 	end
 end)
 
 awful.mouse.append_global_mousebinding(
 	awful.button({ }, 1, function()
 		if notif_center.visible == true then
-			awesome.emit_signal("notif_center::open")
+			awesome.emit_signal("open::notif_center")
 		end
 	end)
 )

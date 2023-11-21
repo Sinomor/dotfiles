@@ -3,7 +3,7 @@ local user = {}
 -- widgets variables --
 
 user.notif_center = false
-user.profile = false
+user.control = false
 user.calendar = false
 user.dnd = true
 user.float_value = false

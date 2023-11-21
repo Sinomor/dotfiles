@@ -119,7 +119,7 @@ local main = wibox.widget {
 	}
 }
 
-local wifi_popup = awful.popup {
+local wifi_applet = awful.popup {
 	visible = false,
 	ontop = true,
 	border_width = beautiful.border_width,
@@ -301,7 +301,7 @@ wifi_widget_container:buttons(gears.table.join(
 ))
 
 reveal_button:buttons(gears.table.join(awful.button({}, 1, function()
-	awesome.emit_signal("summon::wifi_popup")
+	awesome.emit_signal("open::wifi_applet")
 end)))
 
 refresh_button:buttons(gears.table.join(awful.button({}, 1, function()
@@ -310,20 +310,20 @@ end)))
 
 -- summon functions --
 
-awesome.connect_signal("summon::wifi_popup", function()
-	wifi_popup.visible = not wifi_popup.visible
+awesome.connect_signal("open::wifi_applet", function()
+	wifi_applet.visible = not wifi_applet.visible
 end)
 
 -- hide on click --
 
 
 client.connect_signal("button::press", function()
-	wifi_popup.visible = false
+	wifi_applet.visible = false
 end)
 
 awful.mouse.append_global_mousebinding(
 	awful.button({ }, 1, function()
-		wifi_popup.visible = false
+		wifi_applet.visible = false
 	end)
 )
 

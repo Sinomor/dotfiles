@@ -44,17 +44,17 @@ awful.keyboard.append_global_keybindings({
 	awful.key({}, "XF86AudioRaiseVolume", function()
 		awful.spawn.with_shell("amixer -D pipewire sset Master 2%+")
 		update_value_of_volume()
-		awesome.emit_signal("summon::osd")
+		awesome.emit_signal("open::osd")
 	end),
 	awful.key({}, "XF86AudioLowerVolume", function()
 		awful.spawn.with_shell("amixer -D pipewire sset Master 2%-")
 		update_value_of_volume()
-		awesome.emit_signal("summon::osd")
+		awesome.emit_signal("open::osd")
 	end),
 	awful.key({}, "XF86AudioMute", function()
 		awful.spawn.with_shell("amixer -D pipewire sset Master toggle")
 		update_value_of_volume()
-		awesome.emit_signal("summon::osd")
+		awesome.emit_signal("open::osd")
 	end),
 
 	-- brightness up/down --
@@ -62,27 +62,30 @@ awful.keyboard.append_global_keybindings({
 	awful.key({}, "XF86MonBrightnessUp", function()
 		awful.spawn.with_shell("brightnessctl s 5%+")
 		update_value_of_bright()
-		awesome.emit_signal("summon::osd")
+		awesome.emit_signal("open::osd")
   end),
 	awful.key({}, "XF86MonBrightnessDown", function()
 		awful.spawn.with_shell("brightnessctl s 5%-")
 		update_value_of_bright()
-		awesome.emit_signal("summon::osd")
+		awesome.emit_signal("open::osd")
 	end),
 
-	-- binds to widgets --
+	-- binds to open widgets --
 
-	awful.key({ mod, ctrl }, "b", function() awesome.emit_signal("summon::books") end),
-	awful.key({ mod, ctrl }, "t", function() awesome.emit_signal("summon::themes") end),
-	awful.key({ mod, ctrl }, "c", function() awesome.emit_signal("summon::clipboard") end),
-	awful.key({ mod, ctrl }, "a", function() awesome.emit_signal("summon::clients") end),
-	awful.key({ mod }, "d", function() awesome.emit_signal("summon::launcher") end),
-	awful.key({ mod }, "x", function() awesome.emit_signal("summon::powermenu") end),
+	awful.key({ mod, ctrl }, "b", function() awesome.emit_signal("open::launcher_books") end),
+	awful.key({ mod, ctrl }, "t", function() awesome.emit_signal("open::launcher_themes") end),
+	awful.key({ mod, ctrl }, "c", function() awesome.emit_signal("open::launcher_clipboard") end),
+	awful.key({ mod, ctrl }, "a", function() awesome.emit_signal("open::launcher_clients") end),
+	awful.key({ mod }, "d", function() awesome.emit_signal("open::launcher_apps") end),
+	awful.key({ mod }, "x", function() awesome.emit_signal("open::powermenu") end),
+	awful.key({ mod }, "w", function() awesome.emit_signal("open::wifi_applet") end),
+	awful.key({ mod }, "n", function() awesome.emit_signal("open::notif_center") end),
+	awful.key({ mod }, "c", function() awesome.emit_signal("open::calendar") end),
+	awful.key({ mod }, "p", function() awesome.emit_signal("open::control") end),
+
+	-- other widgets binds --
+
 	awful.key({ mod }, "m", function() awesome.emit_signal("signal::dnd") end),
-	awful.key({ mod }, "w", function() awesome.emit_signal("summon::wifi_popup") end),
-	awful.key({ mod }, "n", function() awesome.emit_signal("notif_center::open") end),
-	awful.key({ mod }, "c", function() awesome.emit_signal("time::calendar") end),
-	awful.key({ mod }, "p", function() awesome.emit_signal("profile::control") end),
 	awful.key({ mod, shift }, "b", function() awesome.emit_signal("hide::bar") end),
 	awful.key({ mod }, "t", function() awesome.emit_signal("show::tray") end),
 

@@ -286,7 +286,7 @@ function filter(cmd)
 						if global_mode == nil then
 							filtered[index_entry].appinfo:launch()
 						elseif global_mode == "clients" then
-							awful.client.jumpto (filtered[index_entry].client)
+							awful.client.jumpto(filtered[index_entry].client)
 						else
 							awful.spawn.with_shell(filtered[index_entry].appinfo)
 						end
@@ -451,23 +451,23 @@ function open_launcher(mode)
 	end
 end
 
-awesome.connect_signal("summon::books", function()
+awesome.connect_signal("open::launcher_books", function()
 	open_launcher("books")
 end)
 
-awesome.connect_signal("summon::clipboard", function()
+awesome.connect_signal("open::launcher_clipboard", function()
 	open_launcher("clipboard")
 end)
 
-awesome.connect_signal("summon::launcher", function()
+awesome.connect_signal("open::launcher_apps", function()
 	open_launcher(nil)
 end)
 
-awesome.connect_signal("summon::themes", function()
+awesome.connect_signal("open::launcher_themes", function()
 	open_launcher("themes")
 end)
 
-awesome.connect_signal("summon::clients", function()
+awesome.connect_signal("open::launcher_clients", function()
 	open_launcher("clients")
 end)
 -- hide on click --

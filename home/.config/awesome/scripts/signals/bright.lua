@@ -7,7 +7,7 @@ function update_value_of_bright()
 	awful.spawn.easy_async_with_shell(command, function(stdout)
 		local value = stdout:match("(%d?%d?%d?)%%")
 		value = tonumber(value)
-		awesome.emit_signal("bright::value", value, icon)
+		awesome.emit_signal("signal::bright", value, icon)
 	end)
 end
 

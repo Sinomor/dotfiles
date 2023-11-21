@@ -150,7 +150,8 @@ local calendar_widget = awful.popup {
 
 -- summon functions --
 
-awesome.connect_signal("summon::calendar_widget", function()
+awesome.connect_signal("open::calendar", function()
+	awesome.emit_signal("bar::calendar")
 	calendar:set_date(os.date("*t"))
 	calendar_widget.visible = not calendar_widget.visible
 end)
@@ -159,14 +160,14 @@ end)
 
 client.connect_signal("button::press", function()
 	if calendar_widget.visible == true then
-		awesome.emit_signal("time::calendar")
+		awesome.emit_signal("open::calendar")
 	end
 end)
 
 awful.mouse.append_global_mousebinding(
 	awful.button({ }, 1, function()
 		if calendar_widget.visible == true then
-			awesome.emit_signal("time::calendar")
+			awesome.emit_signal("open::calendar")
 		end
 	end)
 )

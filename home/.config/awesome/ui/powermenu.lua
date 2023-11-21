@@ -152,7 +152,7 @@ local function close()
 end
 
 -- summon functions --
-awesome.connect_signal("summon::powermenu", function()
+awesome.connect_signal("open::powermenu", function()
 	if not powermenu.visible then
 		open()
 	else

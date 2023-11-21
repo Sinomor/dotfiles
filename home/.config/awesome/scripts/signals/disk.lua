@@ -7,5 +7,5 @@ local disk_script = [[
 
 awful.widget.watch(disk_script, update_interval, function(widget, stdout)
 	local value = stdout:match("%s(%d+)%%")
-	awesome.emit_signal("disk::value", value)
+	awesome.emit_signal("signal::disk", value)
 end)

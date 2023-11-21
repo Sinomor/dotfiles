@@ -9,13 +9,13 @@ local rubato = require("modules.rubato")
 
 screen.connect_signal("request::desktop_decoration", function(s)
 
--- profile --
+-- control --
 
-local profile = wibox.widget {
+local control = wibox.widget {
 	layout = wibox.layout.fixed.vertical,
 	{
 		widget = wibox.container.background,
-		id = "profile",
+		id = "control",
 		bg = beautiful.bg_alt,
 		{
 			widget = wibox.container.margin,
@@ -29,34 +29,32 @@ local profile = wibox.widget {
 	}
 }
 
-awesome.connect_signal("profile::control", function()
-	user.profile = not user.profile
-	if not user.profile then
+awesome.connect_signal("bar::control", function()
+	user.control = not user.control
+	if not user.control then
 		helpers.ui.transitionColor {
 			old = beautiful.bg_urgent,
 			new = beautiful.bg_alt,
 			transformer = function(col)
-				profile:get_children_by_id("profile")[1]:set_bg(col)
+				control:get_children_by_id("control")[1]:set_bg(col)
 			end,
 			duration = 0.8
 		}
-		awesome.emit_signal("summon::control")
 	else
-		awesome.emit_signal("summon::control")
 		helpers.ui.transitionColor {
 			old = beautiful.bg_alt,
 			new = beautiful.bg_urgent,
 			transformer = function(col)
-				profile:get_children_by_id("profile")[1]:set_bg(col)
+				control:get_children_by_id("control")[1]:set_bg(col)
 			end,
 			duration = 0.8
 		}
 	end
 end)
 
-profile:buttons {
+control:buttons {
 	awful.button({}, 1, function()
-		awesome.emit_signal("profile::control")
+		awesome.emit_signal("open::control")
 	end)
 }
 
@@ -159,7 +157,7 @@ local time = wibox.widget {
 	}
 }
 
-awesome.connect_signal("time::calendar", function()
+awesome.connect_signal("bar::calendar", function()
 	user.calendar = not user.calendar
 	if not user.calendar then
 		helpers.ui.transitionColor {
@@ -170,7 +168,6 @@ awesome.connect_signal("time::calendar", function()
 			end,
 			duration = 0.8
 		}
-		awesome.emit_signal("summon::calendar_widget")
 	else
 		helpers.ui.transitionColor {
 			old = beautiful.bg_alt,
@@ -180,13 +177,12 @@ awesome.connect_signal("time::calendar", function()
 			end,
 			duration = 0.8
 		}
-		awesome.emit_signal("summon::calendar_widget")
 	end
 end)
 
 time:buttons {
 	awful.button({}, 1, function()
-		awesome.emit_signal("time::calendar")
+		awesome.emit_signal("open::calendar")
 	end)
 }
 
@@ -266,7 +262,7 @@ local bat = wibox.widget {
 	}
 }
 
-awesome.connect_signal("bat::value", function(value, state)
+awesome.connect_signal("signal::battery", function(value, state)
 	bat:get_children_by_id("progressbar")[1].value = value
 	if value > 70 then
 		bat:get_children_by_id("progressbar")[1].color = beautiful.green
@@ -313,7 +309,7 @@ awesome.connect_signal("signal::dnd", function()
 	end
 end)
 
-awesome.connect_signal("notif_center::open", function()
+awesome.connect_signal("bar::notif_center", function()
 	user.notif_center = not user.notif_center
 	if not user.notif_center then
 		helpers.ui.transitionColor {
@@ -324,7 +320,6 @@ awesome.connect_signal("notif_center::open", function()
 			end,
 			duration = 0.8
 		}
-		awesome.emit_signal("summon::notif_center")
 	else
 		helpers.ui.transitionColor {
 			old = beautiful.bg_alt,
@@ -334,13 +329,12 @@ awesome.connect_signal("notif_center::open", function()
 			end,
 			duration = 0.8
 		}
-		awesome.emit_signal("summon::notif_center")
 	end
 end)
 
 dnd_button:buttons {
 	awful.button({}, 1, function()
-		awesome.emit_signal("notif_center::open")
+		awesome.emit_signal("open::notif_center")
 	end),
 	awful.button({}, 3, function()
 		awesome.emit_signal("signal::dnd")
@@ -374,7 +368,7 @@ bar = awful.wibar {
 				{
 					layout = wibox.layout.fixed.vertical,
 					spacing = 10,
-					profile,
+					control,
 					time,
 					taglist_widget,
 				}
