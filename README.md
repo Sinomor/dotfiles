@@ -126,7 +126,9 @@ fish-shell playerctl brightnessctl python3-distro nerd-fonts-symbols-ttf xsettin
 
 <br>
 
-8*. If you need working media slider (player widget) in browser, install the 'plasma-browser-integration' package. Next, install 'plasma integration' extension in your browser
+8*. If you need working media slider (player widget) in browser, install the `plasma-browser-integration`
+package. Next, install `plasma integration` extension in your browser and uncheck `Enhanced Media Control`
+in extension settings
 
 </details>
 
