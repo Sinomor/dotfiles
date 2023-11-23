@@ -1,26 +1,23 @@
-@import url(https://mwittrien.github.io/BetterDiscordAddons/Themes/DiscordRecolor/DiscordRecolor.css);
-@import url(https://raw.githubusercontent.com/5TAHUR5/discord_themes/main/RoundingDestroy.theme.css);
+@import url('https://mwittrien.github.io/BetterDiscordAddons/Themes/DiscordRecolor/DiscordRecolor.css');
+@import url('https://raw.githubusercontent.com/5TAHUR5/discord_themes/main/RoundingDestroy.theme.css');
 
 :root {
-	--font: JetBrainsMono Nerd Font;
-	--settingsicons: 1;
-	--accentcolor: 227,156,69;
-	--accentcolor2: 227,156,69;
-	--linkcolor: 227,156,69;
-	--mentioncolor: 149,154,107;				/*	Highlight Color		 - 	default:	250,166,26		 - 	hex:	#faa61a		*/
-	--successcolor: 118,143,128;				/*	Success Color		 - 	default:	59,165,92		 - 	hex:	#3ba55c		*/
-	--warningcolor: 149,154,107;				/*	Warning Color		 - 	default:	250,166,26		 - 	hex:	#faa61a		*/
-	--dangercolor: 174,71,80;				/*	Danger Color		 - 	default:	237,66,69		 - 	hex:	#ed4245		*/
-	--textbrightest: 255,233,199;			/*	Text Color 1		 - 	default:	255,255,255		 - 	hex:	#ffffff		*/
-	--textbrighter: 255,233,199;			/*	Text Color 2		 - 	default:	220,221,222		 - 	hex:	#dcddde		*/
-	--textbright: 255,233,199;			/*	Text Color 3		 - 	default:	185,187,190		 - 	hex:	#b9bbbe		*/
-	--textdark: 220,201,188;			/*	Text Color 4		 - 	default:	142,146,151		 - 	hex:	#8e9297		*/
-	--textdarker: 156,129,129;			/*	Text Color 5		 - 	default:	114,118,125		 - 	hex:	#72767d		*/
-	--textdarkest: 156,129,129;				/*	Text Color 6		 - 	default:	79,84,92		 - 	hex:	#4f545c		*/
-	--backgroundaccent: 45,36,36;				/*	Background Accent	 - 	default:	64,68,75		 - 	hex:	#40444b		*/
-	--backgroundprimary: 26,21,21;				/*	Background 1		 - 	default:	54,57,63		 - 	hex:	#36393f		*/
-	--backgroundsecondary: 26,21,21;				/*	Background 2		 - 	default:	47,49,54		 - 	hex:	#2f3136		*/
-	--backgroundsecondaryalt: 26,21,21;				/*	Background 3		 - 	default:	41,43,47		 - 	hex:	#292b2f		*/
-	--backgroundtertiary: 26,21,21;				/*	Background 4		 - 	default:	32,34,37		 - 	hex:	#202225		*/
-	--backgroundfloating: 26,21,21;					/*	Background Elevated	 - 	default:	24,25,28		 - 	hex:	#18191c		*/
+  --accentcolor: 227,156,69;
+  --accentcolor2: 227,156,69;
+  --linkcolor: 227,156,69;
+  --mentioncolor: 149,154,107;
+  --textbrightest: 255,233,199;
+  --textbrighter: 255,233,199;
+  --textbright: 255,233,199;
+  --textdark: 220,201,188;
+  --textdarker: 156,129,129;
+  --textdarkest: 156,129,129;
+  --font: JetBrainsMono Nerd Font;
+  --backgroundaccent: 45,36,36;
+  --backgroundprimary: 26,21,21;
+  --backgroundsecondary: 26,21,21;
+  --backgroundsecondaryalt: 26,21,21;
+  --backgroundtertiary: 26,21,21;
+  --backgroundfloating: 26,21,21;
+  --settingsicons: 1;
 }

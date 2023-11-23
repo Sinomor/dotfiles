@@ -1,29 +1,23 @@
-@import url(https://mwittrien.github.io/BetterDiscordAddons/Themes/DiscordRecolor/DiscordRecolor.css);
-@import url(https://raw.githubusercontent.com/5TAHUR5/discord_themes/main/RoundingDestroy.theme.css);
+@import url('https://mwittrien.github.io/BetterDiscordAddons/Themes/DiscordRecolor/DiscordRecolor.css');
+@import url('https://raw.githubusercontent.com/5TAHUR5/discord_themes/main/RoundingDestroy.theme.css');
 
 :root {
-	--font: 						JetBrainsMono Nerd Font;		/*	General Font			*/
-	--settingsicons:			1;						/*	Use Settings Icons in User Settings: 1 = yes, 0 = no						*/
-	
-	--accentcolor:  				124,155,180;				/*	Blurple				 - 	default:	88,101,242		 - 	hex:	#5865f2		*/
-	--accentcolor2:  			124,155,180;			/*	Boostpink			 - 	default:	255,115,250		 - 	hex:	#ff73fa		*/
-	--linkcolor:  				124,155,180;				/*	Link Color			 - 	default:	0,176,244		 - 	hex:	#00b0f4		*/
-	--mentioncolor:  			201,149,119;				/*	Highlight Color		 - 	default:	250,166,26		 - 	hex:	#faa61a		*/
-	--successcolor:  			159,188,133;				/*	Success Color		 - 	default:	59,165,92		 - 	hex:	#3ba55c		*/
-	--warningcolor:  			201,149,119;				/*	Warning Color		 - 	default:	250,166,26		 - 	hex:	#faa61a		*/
-	--dangercolor:   			188,113,113;				/*	Danger Color		 - 	default:	237,66,69		 - 	hex:	#ed4245		*/
-	
-	--textbrightest:  			188,196,201;			/*	Text Color 1		 - 	default:	255,255,255		 - 	hex:	#ffffff		*/
-	--textbrighter:  			181,188,197;			/*	Text Color 2		 - 	default:	220,221,222		 - 	hex:	#dcddde		*/
-	--textbright:  				175,183,192;			/*	Text Color 3		 - 	default:	185,187,190		 - 	hex:	#b9bbbe		*/
-	--textdark:  				169,178,188;			/*	Text Color 4		 - 	default:	142,146,151		 - 	hex:	#8e9297		*/
-	--textdarker:  				163,172,184;			/*	Text Color 5		 - 	default:	114,118,125		 - 	hex:	#72767d		*/
-	--textdarkest:  				157,166,180;				/*	Text Color 6		 - 	default:	79,84,92		 - 	hex:	#4f545c		*/
-	
-	--backgroundaccent:  		55,61,64;				/*	Background Accent	 - 	default:	64,68,75		 - 	hex:	#40444b		*/
-	--backgroundprimary:  		26,32,35;				/*	Background 1		 - 	default:	54,57,63		 - 	hex:	#36393f		*/
-	--backgroundsecondary:  		26,32,35;				/*	Background 2		 - 	default:	47,49,54		 - 	hex:	#2f3136		*/
-	--backgroundsecondaryalt:  	26,32,35;				/*	Background 3		 - 	default:	41,43,47		 - 	hex:	#292b2f		*/
-	--backgroundtertiary:  		26,32,35;				/*	Background 4		 - 	default:	32,34,37		 - 	hex:	#202225		*/
-	--backgroundfloating:  		26,32,35;					/*	Background Elevated	 - 	default:	24,25,28		 - 	hex:	#18191c		*/
+  --accentcolor: 137,183,176;
+  --accentcolor2: 137,183,176;
+  --linkcolor: 137,183,176;
+  --mentioncolor: 201,149,119;
+  --textbrightest: 188,196,201;
+  --textbrighter: 181,188,197;
+  --textbright: 175,183,192;
+  --textdark: 169,178,188;
+  --textdarker: 163,172,184;
+  --textdarkest: 157,166,180;
+  --font: JetBrainsMono Nerd Font;
+  --backgroundaccent: 55,61,64;
+  --backgroundprimary: 26,32,35;
+  --backgroundsecondary: 26,32,35;
+  --backgroundsecondaryalt: 26,32,35;
+  --backgroundtertiary: 26,32,35;
+  --backgroundfloating: 26,32,35;
+  --settingsicons: 1;
 }
