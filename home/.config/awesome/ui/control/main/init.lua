@@ -112,8 +112,8 @@ Main.dnd_toggle = Create_toggle({
 	value = "On",
 	arroy_visible = false,
 	click_func = function()
-		local Bar = require("ui.bar")
-		Bar:dnd_toggle()
+		local Info = require("ui.bar.modules.info")
+		Info:dnd_toggle()
 		if naughty.is_suspended() then
 			Main.dnd_toggle.change("on")
 		else

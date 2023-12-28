@@ -12,7 +12,9 @@ local Wall = require("scripts.awesome.wallpapers")
 local Launcher = require("ui.launcher")
 local Powermenu = require("ui.powermenu")
 local Control = require("ui.control")
+local Info = require("ui.bar.modules.info")
 local Bar = require("ui.bar")
+local tray = require("ui.bar.modules.tray")
 local Wifi_applet = require("ui.control.main.wifi_applet")
 
 mod = "Mod4"
@@ -84,9 +86,9 @@ awful.keyboard.append_global_keybindings({
 
 	-- other widgets binds --
 
-	awful.key({ mod }, "m", function() Bar:dnd_toggle() end),
+	awful.key({ mod }, "m", function() Info:dnd_toggle() end),
 	awful.key({ mod, shift }, "b", function() Bar:toggle() end),
-	awful.key({ mod }, "t", function() Bar:tray_toggle() end),
+	awful.key({ mod }, "t", function() tray:toggle() end),
 
 	-- switching a focus client -- 
 
