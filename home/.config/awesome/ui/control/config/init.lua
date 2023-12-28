@@ -233,8 +233,12 @@ awesome.connect_signal("droplist::change", function(var, value)
 	if var == "wall_tile_type" then
 		Wall:change_wall("Tile", value)
 	end
-	if var == "wall_type" and value == "Random" then
-		Wall:change_wall("Random")
+	if var == "wall_type" then
+		if value == "Random" then
+			Wall:change_wall("Random")
+		elseif value == "Tile" then
+			Wall:change_wall("Tile")
+		end
 	end
 end)
 
