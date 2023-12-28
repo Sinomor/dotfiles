@@ -299,39 +299,32 @@ end)
 
 -- info --
 
-Bar.info_volume = wibox.widget {
-	widget = wibox.widget.textbox,
-	halign = "center",
-	font = beautiful.font_name .. " " .. tostring(beautiful.font_size + 1)
-}
+Bar.info_wifi = Bar:create_container({
+	widget = {
+		widget = wibox.widget.textbox,
+		text = "",
+		halign = "center",
+		font = beautiful.font_name .. " " .. tostring(beautiful.font_size + 1)
+	}
+})
 
-Bar.info_wifi = wibox.widget {
-	widget = wibox.widget.textbox,
-	halign = "center",
-	font = beautiful.font_name .. " " .. tostring(beautiful.font_size + 1)
-}
-
-Bar.info_dnd = wibox.widget {
-	widget = wibox.container.background,
-	fg = beautiful.fg,
-	{
+Bar.info_dnd = Bar:create_container({
+	widget = {
 		widget = wibox.widget.textbox,
 		text = "",
 		halign = "center",
 		font = beautiful.font_name .. " " .. tostring(beautiful.font_size + 1)
 	}
-}
+})
 
-Bar.bluetooth = wibox.widget {
-	widget = wibox.container.background,
-	fg = beautiful.fg,
-	{
+Bar.bluetooth = Bar:create_container({
+	widget = {
 		widget = wibox.widget.textbox,
 		text = "",
 		halign = "center",
 		font = beautiful.font_name .. " " .. tostring(beautiful.font_size + 1)
 	}
-}
+})
 
 Bar.info_v = Bar:create_container({
 	widget = wibox.widget {
@@ -363,10 +356,6 @@ end)
 Bar.info_v:buttons { Bar.info_button }
 Bar.info_h:buttons { Bar.info_button }
 
-awesome.connect_signal("signal::volume", function(value, icon)
-	Bar.info_volume.text = icon
-end)
-
 awesome.connect_signal("signal::bluetooth", function(value)
 	if value then
 		Bar.bluetooth:set_fg(beautiful.fg)
@@ -376,10 +365,10 @@ awesome.connect_signal("signal::bluetooth", function(value)
 end)
 
 awesome.connect_signal("wifi:status", function(value)
-	if not value then
-		Bar.info_wifi.text = ""
+	if value then
+		Bar.info_wifi:set_fg(beautiful.fg)
 	else
-		Bar.info_wifi.text = ""
+		Bar.info_wifi:set_fg(beautiful.fg_alt)
 	end
 end)
 
