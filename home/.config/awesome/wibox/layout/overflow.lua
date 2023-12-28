@@ -190,8 +190,7 @@ function overflow:layout(context, orig_width, orig_height)
 
     for i, w in ipairs(widgets) do
         local content_x, content_y
-        local content_w, content_h = base.fit_widget(self, context, w,
-            need_scrollbar and width - self._private.scrollbar_spacing or width, height)
+        local content_w, content_h = base.fit_widget(self, context, w, need_scrollbar and width - self._private.scrollbar_spacing or width, height)
 
         -- When scrolling down, the content itself moves up -> substract
         local scrolled_pos = pos - (scroll_position * interval)
@@ -224,20 +223,19 @@ function overflow:layout(context, orig_width, orig_height)
             if i > 1 and spacing_widget then
                 table.insert(result,
                     base.place_widget_at(spacing_widget, -- The way how spacing is added for regular widgets
-                        -- and the `spacing_widget` is disconnected:
-                        -- The offset for regular widgets is added to `pos` one
-                        -- iteration _before_ the one where the widget is actually
-                        -- placed.
-                        -- Because of that, the placement for the spacing widget
-                        -- needs to substract that offset to be placed right after
-                        -- the previous regular widget.
-                        math.floor(is_y and content_x or (content_x - spacing)),
+                    -- and the `spacing_widget` is disconnected:
+                    -- The offset for regular widgets is added to `pos` one
+                    -- iteration _before_ the one where the widget is actually
+                    -- placed.
+                    -- Because of that, the placement for the spacing widget
+                    -- needs to substract that offset to be placed right after
+                    -- the previous regular widget.
+                    math.floor(is_y and content_x or (content_x - spacing)),
                         math.floor(is_y and (content_y - spacing) or content_y),
                         math.floor(is_y and content_w or spacing), math.floor(is_y and spacing or content_h)))
             end
             table.insert(result, base.place_widget_at(w, math.floor(content_x), math.floor(content_y),
-                math.floor(need_scrollbar and content_w - self._private.scrollbar_spacing or content_w),
-                math.floor(content_h)))
+                math.floor(need_scrollbar and content_w - self._private.scrollbar_spacing or content_w), math.floor(content_h)))
         end
     end
 
@@ -302,9 +300,9 @@ function overflow:set_scroll_factor(factor)
     local current = self._private.scroll_factor
     local interval = self._private.used_in_dir - self._private.avail_in_dir
     if current == factor -- the content takes less space than what is available, i.e. everything
-        -- is already visible
-        or interval <= 0 -- the scroll factor is out of range
-        or (current <= 0 and factor < 0) or (current >= 1 and factor > 1) then
+    -- is already visible
+    or interval <= 0 -- the scroll factor is out of range
+    or (current <= 0 and factor < 0) or (current >= 1 and factor > 1) then
         return
     end
 
@@ -408,7 +406,7 @@ local function build_grabber(container, initial_x, initial_y, geo)
     -- transformed by something like `wibox.container.rotate`.
     local matrix_from_device = geo.hierarchy:get_matrix_from_device()
     local wgeo = geo.drawable.drawable:geometry()
-    local matrix = matrix_from_device:translate( -wgeo.x, -wgeo.y)
+    local matrix = matrix_from_device:translate(-wgeo.x, -wgeo.y)
 
     return function(mouse)
         if not mouse.buttons[1] then
@@ -459,6 +457,7 @@ function overflow:get_scrollbar_widget()
     return self._private.scrollbar_widget
 end
 
+
 function overflow:set_scrollbar_spacing(spacing)
     self._private.scrollbar_spacing = spacing
 
@@ -499,7 +498,7 @@ local function new(dir, ...)
 
     ret:connect_signal('button::press', function(self, _, _, button)
         if button == 4 then
-            self:scroll( -1)
+            self:scroll(-1)
         elseif button == 5 then
             self:scroll(1)
         end
@@ -531,4 +530,3 @@ function overflow.vertical(...)
 end
 
 return setmetatable(overflow, overflow.mt)
-

@@ -1,81 +1,81 @@
-local awful = require("awful")
-local gears = require("gears")
-local user = require("user")
 local json = require("modules.json")
-
-local GET_FORECAST_CMD = [[bash -c "curl -s --show-error -X GET '%s'"]]
-
-local icon_map = {
-		["01d"] = "",
-		["02d"] = "",
-		["03d"] = "",
-		["04d"] = "",
-		["09d"] = "",
-		["10d"] = "",
-		["11d"] = "",
-		["13d"] = "",
-		["50d"] = "",
-		["01n"] = "",
-		["02n"] = "",
-		["03n"] = "",
-		["04n"] = "",
-		["09n"] = "",
-		["10n"] = "",
-		["11n"] = "",
-		["13n"] = "",
-		["50n"] = ""
-	}
+local helpers = require("helpers")
+local user = require("user")
 
 local api_key = user.opweath_api
-local coordinates = user.coordinates
-
-local show_hourly_forecast = true
-local show_daily_forecast = true
+local lat = user.coordinates.lat
+local lon = user.coordinates.lon
+local update_interval = 1600
 local units = "metric"
+local tmp_file = "/tmp/awesomewm_weather_json"
 
-local url = (
-	"https://api.openweathermap.org/data/2.5/onecall"
-	.. "?lat="
-	.. coordinates[1]
-	.. "&lon="
-	.. coordinates[2]
-	.. "&appid="
-	.. api_key
-	.. "&units="
-	.. units
-	.. "&exclude=minutely"
-	.. (show_hourly_forecast == false and ",hourly" or "")
-	.. (show_daily_forecast == false and ",daily" or "")
-)
-
-awful.widget.watch(string.format(GET_FORECAST_CMD, url), 900, function(_, stdout, stderr)
-local result = json.decode(stdout)
--- Current weather setup
-local out = {
-	desc = result.current.weather[1].description:gsub("^%l", string.upper),
-	humidity = result.current.humidity,
-	temp = math.floor(result.current.temp),
-	feelsLike = math.floor(result.current.feels_like),
-	image = icon_map[result.current.weather[1].icon],
-	hourly = {
-		result.hourly[1],
-		result.hourly[2],
-		result.hourly[3],
-		result.hourly[4],
-		result.hourly[5],
-		result.hourly[6],
-		result.hourly[7],
-		result.hourly[8],
-		result.hourly[9],
-	},
-	daily = {
-		result.daily[1],
-		result.daily[2],
-		result.daily[3],
-		result.daily[4],
-		result.daily[5],
-		result.daily[6],
-	}
+local icon_map = {
+	["01d"] = "",
+	["02d"] = "",
+	["03d"] = "",
+	["04d"] = "",
+	["09d"] = "",
+	["10d"] = "",
+	["11d"] = "",
+	["13d"] = "",
+	["50d"] = "",
+	["01n"] = "",
+	["02n"] = "",
+	["03n"] = "",
+	["04n"] = "",
+	["09n"] = "",
+	["10n"] = "",
+	["11n"] = "",
+	["13n"] = "",
+	["50n"] = ""
 }
-awesome.emit_signal("connect::weather", out)
+
+local forecast_cmd = "curl -sf 'https://api.openweathermap.org/data/2.5/onecall?lat="
+.. lat .. "&lon="
+.. lon .. "&appid="
+.. api_key .. "&units="
+.. units .. "&exclude=minutely'"
+
+helpers.time.remote_watch(forecast_cmd, update_interval, tmp_file, function(out)
+	local decoded = json.decode(out)
+
+	local c = decoded.current
+	local weather = {
+		timezone = decoded.timezone,
+		current = {
+			dt = c.dt,
+			temp = math.floor(c.temp),
+			feels_like = math.floor(c.feels_like),
+			desc = c.weather[1].description:gsub("^%l", string.upper),
+			icon = icon_map[c.weather[1].icon],
+			humidity = math.floor(c.humidity),
+			wind_speed = math.floor(c.wind_speed),
+			wind_deg = c.wind_deg
+		},
+		hourly = {},
+		daily = {}
+	}
+
+	local h = decoded.hourly
+	for i = 1, #h, 2 do
+		table.insert(weather.hourly, {
+			dt = h[i].dt,
+			temp = math.floor(h[i].temp),
+			desc = h[i].weather[1].description:gsub("^%l", string.upper),
+			icon = icon_map[h[i].weather[1].icon],
+		})
+	end
+
+	local d = decoded.daily
+	for i = 2, #d, 1 do
+		table.insert(weather.daily, {
+			dt = d[i].dt,
+			temp_day = math.floor(d[i].temp.day),
+			temp_night = math.floor(d[i].temp.night),
+			desc = d[i].weather[1].description:gsub("^%l", string.upper),
+			icon = icon_map[d[i].weather[1].icon],
+		})
+	end
+
+	awesome.emit_signal("signal::weather", weather)
 end)

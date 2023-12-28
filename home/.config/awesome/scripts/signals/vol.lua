@@ -1,42 +1,74 @@
 local awful = require("awful")
 local gears = require("gears")
 
-local icon = ""
+local Osd = require("ui.osd")
+local Vol = {}
 
-function update_value_of_volume()
+Vol.icon = ""
+
+function Vol:update_value()
 	awful.spawn.easy_async_with_shell("amixer -D pipewire sget Master", function(stdout)
 		local value = stdout:match("(%d?%d?%d)%%")
 		local muted = stdout:match("%[(o%D%D?)%]")
 		value = tonumber(value)
 		if muted == "off" then
-			icon = ""
+			self.icon = ""
 		elseif value <= 33 then
-			icon = ""
+			self.icon = ""
 		elseif value <= 66 then
-			icon = ""
+			self.icon = ""
 		elseif value <= 100 then
-			icon = ""
+			self.icon = ""
 		end
-		awesome.emit_signal("signal::volume", value, icon)
+		awesome.emit_signal("signal::volume", value, self.icon)
 	end)
 end
 
-function update_value_of_capture_muted()
+function Vol:update_value_capture()
 	awful.spawn.easy_async_with_shell("amixer sget Capture toggle", function(stdout)
 		local value = stdout:match("%[(o%D%D?)%]")
 		awesome.emit_signal("signal::capture", value)
 	end)
 end
 
-function updateVolumeSignals()
-	update_value_of_volume()
-	update_value_of_capture_muted()
+Vol.script = [[
+	bash -c "pactl subscribe | rg --line-buffered "change""
+]]
+
+awful.spawn.easy_async({'pkill', '--full', '--uid', os.getenv('USER'), '^pactl subscribe'}, function()
+	awful.spawn.with_line_callback(Vol.script, {
+		stdout = function() Vol:update_value() end
+	})
+end)
+
+function Vol:change_value(x)
+	if x == "up" then
+		awful.spawn.with_shell("amixer -D pipewire sset Master 2%+")
+	elseif x == "down" then
+		awful.spawn.with_shell("amixer -D pipewire sset Master 2%-")
+	else
+		awful.spawn.with_shell("amixer -D pipewire sset Master toggle")
+	end
+	Osd:open()
+end
+
+function Vol:set_value(value)
+	awful.spawn.with_shell("amixer -D pipewire sset Master " ..value.. "%")
+end
+
+function Vol:toggle_capture()
+	awful.spawn.with_shell("amixer -D pipewire sset Capture toggle")
+	self:update_value_capture()
 end
 
 gears.timer {
-	call_now = true,
 	autostart = true,
-	timeout = 2,
-	callback = updateVolumeSignals,
-	single_shot = true
+	timeout = 1,
+	single_shot = true,
+	callback = function()
+		Vol:update_value()
+		Vol:update_value_capture()
+	end
 }
+
+return Vol

@@ -1,14 +1,25 @@
+local gears = require("gears")
+local beautiful = require("beautiful")
+
 local user = {}
 
--- widgets variables --
+user.font_name = 'JetbrainsMono Nerd Font'
+user.font_size = 11
+user.useless_gap = 5
+user.border_width = 2
+user.bar_size = 56
 
-user.notif_center = false
-user.control = false
-user.calendar = false
-user.dnd = true
-user.float_value = false
-user.opacity_value = true
-user.tray = false
+-- username --
+
+user.name = os.getenv("USER")
+
+user.titlebar_pos = 'Top'
+user.launcher_fullscreen = false
+user.control_fullscreen = false
+user.bar_pos = 'Bottom'
+user.notifs_pos = 'top_middle'
+user.bar_float = true
+user.opacity_value = false
 
 -- actual colorsheme --
 
@@ -16,14 +27,28 @@ user.color = 'nymph'
 
 -- openweather --
 
-user.opweath_api = "your_api_key"
-user.opweath_passwd = "your_password"
-user.coordinates = { "53.9", "27.566667" }
+user.opweath_api = "e434b5435a979de6e155570590bee89b"
+user.coordinates = { lat = 53.9, lon = 27.566667 }
 
 -- user home and awm config --
 
 user.home = os.getenv("HOME") .. "/"
 user.awm_config = user.home .. ".config/awesome/"
+
+-- walls --
+
+user.wall_type = 'Random'
+user.wall_update = 1800
+user.wallpaper = '/home/sinomor/wall.jpg'
+user.wall_color = '#fbf1c7'
+user.wall_tile_size = 30
+user.wall_tile_type = 'Diagonal Line'
+
+-- applications --
+
+user.terminal = 'alacritty'
+user.browser = "librewolf"
+user.file_manager = "thunar"
 
 -- bins --
 
@@ -32,6 +57,17 @@ user.bins = {
 	greenclip = user.awm_config .. "/other/bin/greenclip",
 	colorpicker = user.awm_config .. "other/bin/colorpicker",
 	qr_codes = user.awm_config .. "other/bin/qr_codes"
+}
+
+user.books_path = "~/.disk/Books/'10 класс'/"
+
+user.autostart = {
+	[[ bash -c "pgrep -x polkit-gnome-au > /dev/null || /usr/libexec/polkit-gnome-authentication-agent-1" ]],
+	[[ bash -c "pgrep -x greenclip > /dev/null || $HOME/.config/awesome/other/bin/greenclip daemon" ]],
+	[[ bash -c "pkill xsettingsd \
+		while pgrep -u $UID -x xsettingsd >/dev/null; do sleep 1; done \
+		xsettingsd" 
+	]]
 }
 
 return user

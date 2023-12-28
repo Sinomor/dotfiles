@@ -1,16 +1,37 @@
 local awful = require("awful")
 local wibox = require("wibox")
 local beautiful = require("beautiful")
-require("ui.lock")
+local Lock = require("ui.lock")
 
-local elements = {
-	{"poweroff", command = "loginctl poweroff", icon = ""},
-	{"exit", command = "awesome-client 'awesome.quit()'", icon = ""},
-	{"reboot", command = "loginctl reboot", icon = ""},
-	{"suspend", command = "awesome-client 'lockscreen()'", icon = ""},
+local Powermenu = {}
+
+Powermenu.elements = {
+	{
+		command =  function ()
+			awful.spawn("loginctl poweroff")
+		end,
+		icon = ""},
+	{
+		command = function ()
+			awesome.quit()
+		end,
+		icon = ""
+	},
+	{
+		command = function ()
+			awful.spawn("loginctl reboot")
+		end,
+		icon = ""
+	},
+	{
+		command = function ()
+			Lock:lockscreen()
+		end,
+		icon = ""
+	},
 }
 
-local elements_container = wibox.widget {
+Powermenu.main_layout = wibox.widget {
 	homogeneous = false,
 	expand = true,
 	forced_num_cols = 2,
@@ -19,22 +40,22 @@ local elements_container = wibox.widget {
 	layout = wibox.layout.grid
 }
 
-local prompt = wibox.widget {
+Powermenu.prompt = wibox.widget {
 	widget = wibox.widget.textbox,
 	visible = false
 }
 
-local main = wibox.widget{
+Powermenu.main_widget = wibox.widget{
 	widget = wibox.container.margin,
 	margins = 10,
 	{
 		layout = wibox.layout.fixed.vertical,
-		prompt,
-		elements_container
+		Powermenu.prompt,
+		Powermenu.main_layout
 	}
 }
 
-local powermenu = awful.popup {
+Powermenu.popup = awful.popup {
 	visible = false,
 	ontop = true,
 	bg = beautiful.bg,
@@ -43,40 +64,40 @@ local powermenu = awful.popup {
 	placement = function(d)
 		awful.placement.centered(d)
 	end,
-	widget = main
+	widget = Powermenu.main_widget
 }
 
-local function next()
-	if index_element == 2 then
-		index_element = index_element + 2
-	elseif index_element ~= #elements then
-		index_element = index_element + 1
+function Powermenu:next()
+	if self.index_element == 2 then
+		self.index_element = self.index_element + 2
+	elseif index_element ~= #self.elements then
+		self.index_element = self.index_element + 1
 	end
 end
 
-local function back()
-	if index_element ~= 1 and index_element ~= 3 then
-		index_element = index_element - 1
+function Powermenu:back()
+	if self.index_element ~= 1 and self.index_element ~= 3 then
+		self.index_element = self.index_element - 1
 	end
 end
 
-local function up()
-	if index_element > 2 then
-		index_element = index_element - 2
+function Powermenu:up()
+	if self.index_element > 2 then
+		self.index_element = self.index_element - 2
 	end
 end
 
-local function down()
-	if index_element < 3 then
-		index_element = index_element + 2
+function Powermenu:down()
+	if self.index_element < 3 then
+		self.index_element = self.index_element + 2
 	end
 end
 
-local function add_elements()
+function Powermenu:add_elements()
 
-	elements_container:reset()
+	self.main_layout:reset()
 
-	for i, element in ipairs(elements) do
+	for i, element in ipairs(self.elements) do
 
 		local element_widget = wibox.widget {
 			widget = wibox.container.background,
@@ -86,10 +107,10 @@ local function add_elements()
 			buttons = {
 				awful.button({}, 1, function()
 					if index_element == i then
-						awful.spawn(elements[index_element].command)
+						element:command()
 					else
-						index_element = i
-						add_elements()
+						self.index_element = i
+						self:add_elements()
 					end
 				end)
 			},
@@ -97,14 +118,14 @@ local function add_elements()
 				widget = wibox.widget.textbox,
 				fg = beautiful.fg,
 				align = "center",
-				font = beautiful.font.." 38",
+				font = beautiful.font_name .. " " .. tostring(beautiful.font_size + 26),
 				markup = element.icon
 			}
 		}
 
-		elements_container:add(element_widget)
+		self.main_layout:add(element_widget)
 
-		if i == index_element then
+		if i == self.index_element then
 			element_widget.bg = beautiful.accent
 			element_widget.fg = beautiful.bg
 		end
@@ -113,60 +134,51 @@ local function add_elements()
 
 end
 
-local function open()
-
-	powermenu.visible = true
-	index_element = 1
-	add_elements()
-
+function Powermenu:run_prompt()
 	awful.prompt.run {
-		textbox = prompt,
+		textbox = self.prompt,
 		exe_callback = function()
-			awful.spawn(elements[index_element].command)
+			self.elements[self.index_element]:command()
 		end,
 		keypressed_callback = function(_, key)
 			if key == "Right" or key == "l" then
-				next()
-				add_elements()
+				self:next()
+				self:add_elements()
 			elseif key == "Left" or key == "h" then
-				back()
-				add_elements()
+				self:back()
+				self:add_elements()
 			elseif key == "Up" or key == "k" then
-				up()
-				add_elements()
+				self:up()
+				self:add_elements()
 			elseif key == "Down" or key == "j" then
-				down()
-				add_elements()
+				self:down()
+				self:add_elements()
 			end
 		end,
 		done_callback = function()
-			powermenu.visible = false
+			self.popup.visible = false
 		end
 	}
-
 end
 
-local function close()
+function Powermenu:open()
+	self.popup.visible = true
+	self.index_element = 1
+	self:add_elements()
+	self:run_prompt()
+end
+
+function Powermenu:close()
 	awful.keygrabber.stop()
-	powermenu.visible = false
+	self.popup.visible = false
 end
 
--- summon functions --
-awesome.connect_signal("open::powermenu", function()
-	if not powermenu.visible then
-		open()
+function Powermenu:toggle()
+	if not self.popup.visible then
+		self:open()
 	else
-		close()
+		self:close()
 	end
-end)
+end
 
--- hide on click --
-client.connect_signal("button::press", function()
-	close()
-end)
-
-awful.mouse.append_global_mousebinding(
-	awful.button({ }, 1, function()
-		close()
-	end)
-)
+return Powermenu

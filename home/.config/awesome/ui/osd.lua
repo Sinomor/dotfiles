@@ -4,42 +4,44 @@ local wibox = require("wibox")
 local beautiful = require("beautiful")
 local rubato = require("modules.rubato")
 
--- osd --
+local Osd = {}
 
-local info = wibox.widget {
+Osd.icon = wibox.widget {
+	widget = wibox.widget.textbox,
+	font = beautiful.font_name .. " " .. tostring(beautiful.font_size + 3),
+}
+
+Osd.value_text = wibox.widget {
+	widget = wibox.widget.textbox,
+	halign = "center"
+}
+
+Osd.progressbar = wibox.widget {
+	widget = wibox.widget.progressbar,
+	max_value = 100,
+	forced_height = 10,
+	background_color = beautiful.bg_urgent,
+	color = beautiful.accent,
+}
+
+Osd.main_widget = wibox.widget {
 	widget = wibox.container.margin,
 	margins = 20,
 	{
 		layout = wibox.layout.fixed.horizontal,
 		fill_space = true,
 		spacing = 8,
-		{
-			widget = wibox.widget.textbox,
-			id = "icon",
-			font = beautiful.font .. " 14",
-		},
+		Osd.icon,
 		{
 			widget = wibox.container.background,
 			forced_width = 36,
-			{
-				widget = wibox.widget.textbox,
-				id = "text",
-				halign = "center"
-			},
+			Osd.value_text,
 		},
-		{
-			widget = wibox.widget.progressbar,
-			id = "progressbar",
-			max_value = 100,
-			forced_width = 380,
-			forced_height = 10,
-			background_color = beautiful.bg_urgent,
-			color = beautiful.accent,
-		},
+		Osd.progressbar,
 	}
 }
 
-local osd = awful.popup {
+Osd.popup = awful.popup {
 	visible = false,
 	ontop = true,
 	border_width = beautiful.border_width,
@@ -49,56 +51,48 @@ local osd = awful.popup {
 	minimum_width = 290,
 	maximum_width = 290,
 	placement = function(d)
-		awful.placement.bottom(d, { margins = 20 + beautiful.border_width * 2 })
+		awful.placement.bottom(d, {
+			margins = beautiful.useless_gap * 4 + beautiful.border_width * 2
+		})
 	end,
-	widget = info,
-}
-
-local anim = rubato.timed {
-	duration = 0.3,
-	easing = rubato.easing.linear,
-	subscribed = function(value)
-		info:get_children_by_id("progressbar")[1].value = value
-	end
+	widget = Osd.main_widget,
 }
 
 -- volume --
 
 awesome.connect_signal("signal::volume", function(value, icon)
-	anim.target = value
-	info:get_children_by_id("text")[1].text = value
-	info:get_children_by_id("icon")[1].text = icon
+	Osd.progressbar.value = value
+	Osd.value_text.text = value
+	Osd.icon.text = icon
 end)
 
 -- bright --
 
-awesome.connect_signal("signal::bright", function(value)
-	anim.target = value
-	info:get_children_by_id("text")[1].text = value
-	info:get_children_by_id("icon")[1].text = ""
+awesome.connect_signal("signal::bright", function(value, icon)
+	Osd.progressbar.value = value
+	Osd.value_text.text = value
+	Osd.icon.text = icon
 end)
 
--- function --
-
-local function osd_hide()
-	osd.visible = false
-	osd_timer:stop()
+function Osd:close()
+	self.popup.visible = false
+	self.timer:stop()
 end
 
-local osd_timer = gears.timer {
-	timeout = 4,
-	callback = osd_hide
+Osd.timer = gears.timer {
+	timeout = 3,
+	callback = function()
+		Osd:close()
+	end
 }
 
-local function osd_toggle()
-	if not osd.visible then
-		osd.visible = true
-		osd_timer:start()
+function Osd:open()
+	if self.popup.visible then
+		self.timer:again()
 	else
-		osd_timer:again()
+		self.popup.visible = true
+		self.timer:start()
 	end
 end
 
-awesome.connect_signal("open::osd", function()
-	osd_toggle()
-end)
+return Osd

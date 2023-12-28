@@ -1,7 +1,9 @@
 local gears = require("gears")
 local awful = require("awful")
 
-function reload_nvim(entry)
+local NV = {}
+
+function NV:reload_nvim(entry)
 	awful.spawn.easy_async_with_shell("ls -1 /run/user/1000/ | grep nvim ", function(stdout)
 		for line in stdout:gmatch("[^\n]+") do
 			awful.spawn([[
@@ -10,3 +12,5 @@ function reload_nvim(entry)
 		end
 	end)
 end
+
+return NV

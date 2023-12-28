@@ -1,485 +1,563 @@
-local wibox = require("wibox")
-local gears = require("gears")
 local awful = require("awful")
-local Gio = require("lgi").Gio
+local naughty = require("naughty")
+local wibox = require("wibox")
+local lgi = require("lgi")
+local Gio = lgi.Gio
+local Gtk = lgi.require("Gtk", "3.0")
 local beautiful = require("beautiful")
-local user = require("user")
 local helpers = require("helpers")
+local user = require("user")
+local gears = require("gears")
 local dir = "~/.disk/Books/'10 класс'/"
-local rubato = require("modules.rubato")
+local Powermenu = require("ui.powermenu")
+local icon_theme = Gtk.IconTheme.get_default()
 
-local prompt = wibox.widget.textbox()
+local Launcher = {}
+local Tabbar = {}
 
-local entries_container = wibox.widget {
-	homogeneous = false,
-	expand = false,
-	spacing = 12,
-	forced_width = 330,
-	forced_num_cols = 1,
-	layout = wibox.layout.grid
-}
-
-local modes = {
-	{ name = nil, icon = "", index = 1 },
-	{ name = "clipboard", icon = "", index = 2 },
-	{ name = "books", icon = "", index = 3 },
-	{ name = "themes", icon = "", index = 4 },
-	{ name = "clients", icon = "", index = 5 }
-}
-
-local modes_container = wibox.widget {
-	homogeneous = false,
-	expand = false,
-	forced_num_cols = 1,
-	spacing = 10,
-	layout = wibox.layout.grid
-}
-
-local function mode_change(index)
-	entries_container:reset()
-	modes_container:reset()
-	awful.keygrabber.stop()
-	open(modes[index].name)
+if user.launcher_fullscreen then
+	Launcher.entries_count = 13
+else
+	Launcher.entries_count = 7
 end
 
-function add_modes()
+Tabbar.elems = {
+	{ name = "launcher", icon = "", index = 1 },
+	{ name = "clipboard", icon = "", index = 2 },
+	{ name = "books", icon = "", index = 3 },
+	{ name = "clients", icon = "", index = 4 }
+}
 
-	modes_container:reset()
-	for i, mode in ipairs(modes) do
-		local mode_widget = wibox.widget {
+if user.control_fullscreen then
+	Tabbar.e_container = wibox.widget {
+		homogeneous = false,
+		expand = false,
+		forced_num_cols = 4,
+		spacing = 10,
+		layout = wibox.layout.grid
+	}
+else
+	Tabbar.e_container = wibox.widget {
+		homogeneous = false,
+		expand = false,
+		forced_num_rows = 4,
+		spacing = 10,
+		layout = wibox.layout.grid
+	}
+end
+
+function Tabbar:next_el()
+	if self.el_index > 1 then
+		self.el_index = self.el_index - 1
+		Launcher:change_mode(Tabbar.elems[self.el_index].name)
+	end
+end
+
+function Tabbar:prev_el()
+	if self.el_index < 4 then
+		self.el_index = self.el_index + 1
+		Launcher:change_mode(Tabbar.elems[self.el_index].name)
+	end
+end
+
+function Tabbar:add_modes()
+	Tabbar.e_container:reset()
+
+	for i, el in ipairs(self.elems) do
+		local el_widget = wibox.widget {
 			widget = wibox.container.background,
 			bg = beautiful.bg_alt,
 			forced_width = 40,
 			forced_height = 40,
 			buttons = {
 				awful.button({}, 1, function()
-					if index_mode ~= i then
-						mode_change(mode.index)
+					if self.el_index ~= i then
+						Launcher:change_mode(el.name)
 					end
 				end),
 				awful.button({}, 4, function()
-					if index_mode > 1 then
-						index_mode = index_mode - 1
-						if index_mode >= 1 then
-							mode_change(index_mode)
-						end
-					end
+					self:next_el()
 				end),
 				awful.button({}, 5, function()
-					if index_mode < 5 then
-						index_mode = index_mode + 1
-						if index_mode <= 5 then
-							mode_change(index_mode)
-						end
-					end
+					self:prev_el()
 				end)
 			},
 			{
 				widget = wibox.widget.textbox,
 				fg = beautiful.fg,
 				align = "center",
-				font = beautiful.font .. " 14",
-				markup = mode.icon
+				font = beautiful.font_name .. " " .. tostring(beautiful.font_size + 3),
+				markup = el.icon
 			}
 		}
 
-		modes_container:add(mode_widget)
-		if i == index_mode then
+		Tabbar.e_container:add(el_widget)
+
+		if i == self.el_index then
 			helpers.ui.transitionColor {
 				old = beautiful.bg_alt,
 				new = beautiful.bg_urgent,
 				transformer = function(col)
-					mode_widget.bg = col
+					el_widget.bg = col
 				end,
 				duration = 0.8
 			}
 		end
 	end
-
 end
 
-local main = wibox.widget {
-	widget = wibox.container.margin,
-	margins = 10,
+Tabbar.power_button = wibox.widget {
+	widget = wibox.container.background,
+	forced_height = 40,
+	forced_width = 40,
 	{
-		layout = wibox.layout.fixed.horizontal,
-		forced_width = 390,
-		spacing = 10,
+		widget = wibox.widget.textbox,
+		markup = helpers.ui.colorizeText("", beautiful.red),
+		font = beautiful.font_name .. " " .. tostring(beautiful.font_size + 3),
+		halign = "center"
+	}
+}
+
+Tabbar.power_button:buttons {
+	awful.button({}, 1, function()
+		Powermenu:toggle()
+		Launcher:toggle()
+	end)
+}
+
+Tabbar.power_button:connect_signal("mouse::enter", function()
+	helpers.ui.transitionColor {
+		old = beautiful.bg_alt,
+		new = beautiful.bg_urgent,
+		transformer = function(col)
+			Tabbar.power_button.bg = col
+		end,
+		duration = 0.8
+	}
+end)
+
+Tabbar.power_button:connect_signal("mouse::leave", function()
+	helpers.ui.transitionColor {
+		old = beautiful.bg_urgent,
+		new = beautiful.bg_alt,
+		transformer = function(col)
+			Tabbar.power_button.bg = col
+		end,
+		duration = 0.8
+	}
+end)
+
+Tabbar.main_widget = {
+	widget = wibox.container.background,
+	bg = beautiful.bg_alt,
+	{
+		widget = wibox.container.margin,
+		margins = 10,
 		{
-			layout = wibox.layout.stack,
-			{
-				widget = wibox.widget.imagebox,
-				id = "image",
-			},
+			layout = wibox.layout.align.horizontal,
+			Tabbar.e_container,
+			nil,
+			Tabbar.power_button
+		}
+	}
+}
+if user.launcher_fullscreen then
+	Tabbar.main_widget.forced_height = 60
+else
+	Tabbar.main_widget.forced_width = 60
+end
+
+Launcher.prompt = wibox.widget.textbox()
+
+Launcher.promptbox = wibox.widget {
+	widget = wibox.container.background,
+	bg = beautiful.border_color,
+	forced_height = 60,
+	buttons = {
+		awful.button({}, 1, function()
+			Launcher:run_prompt()
+		end)
+	},
+	{
+		widget = wibox.container.background,
+		bg = beautiful.border_color_normal,
+		{
+			widget = wibox.container.margin,
+			bottom = beautiful.border_width,
 			{
 				widget = wibox.container.background,
-				bg = {
-					type = "linear",
-					from = { 0, 0 },
-					to = { 0, 478 },
-					stops = { { 0.2, beautiful.bg_alt .. "4D" }, { 0.85, beautiful.bg } }
-				},
-			},
-			{
-				widget = wibox.container.place,
-				valign = "bottom",
-				halign = "left",
-				{
-					widget = wibox.container.background,
-					bg = beautiful.bg_alt,
-					forced_height = 56,
-					forced_width = 374,
-					{
-						widget = wibox.container.margin,
-						margins = { left = 10, right = 10 },
-						prompt
-					}
-				}
-			}
-		},
-		{
-			widget = wibox.container.background,
-			forced_width = 330,
-			entries_container,
-		},
-		{
-			widget = wibox.container.background,
-			bg = beautiful.bg_alt,
-			forced_width = 60,
-			{
-				widget = wibox.container.margin,
-				margins = 10,
-				modes_container,
+				bg = beautiful.bg,
+				Launcher.prompt
 			}
 		}
 	}
 }
 
-local launcher = awful.popup {
-	minimum_width = 800,
-	maximum_width = 800,
-	minimum_height = 478,
-	maximum_height = 478,
-	bg = beautiful.bg,
-	border_width = beautiful.border_width,
-	border_color = beautiful.border_color_normal,
-	ontop = true,
-	visible = false,
-	placement = function(d)
-		awful.placement.centered(d, { honor_workarea = true })
-	end,
-	widget = main
+Launcher.entries_container = wibox.widget {
+	layout = wibox.layout.fixed.vertical,
+	spacing = 10,
+	forced_height = 60 * (Launcher.entries_count + 1) + 10 * (Launcher.entries_count),
+}
+if user.launcher_fullscreen then
+	Launcher.entries_container.forced_width = 470
+else
+	Launcher.entries_container.forced_width = 400
+end
+Launcher.main_widget = wibox.widget {
+	widget = wibox.container.margin,
+	margins = 20,
+	{
+		layout = user.launcher_fullscreen and wibox.layout.fixed.vertical or wibox.layout.fixed.horizontal,
+		spacing = 10,
+		Launcher.entries_container,
+		Tabbar.main_widget
+	}
 }
 
--- Functions --
-local function next()
-	if index_entry ~= #filtered then
-		index_entry = index_entry + 1
-		if index_entry > index_start + 6 then
-			index_start = index_start + 1
-		end
-	end
-end
-
-local function back()
-	if index_entry ~= 1 then
-		index_entry = index_entry - 1
-		if index_entry < index_start then
-			index_start = index_start - 1
-		end
-	end
-end
-
-local global_mode = nil
-
-function gen(mode)
-
-	local list = {
-		["books"] = io.popen("ls " .. dir):lines(),
-		["clipboard"] = io.popen(user.bins.greenclip .. " print"):lines(),
-		["themes"] = io.popen("ls .config/awesome/theme/colors/ | cut -f 1 -d '.'"):lines(),
+if user.launcher_fullscreen then
+	Launcher.popup = awful.popup {
+		ontop = true,
+		visible = false,
+		x = 56,
+		minimum_height = screen[1].geometry.height,
+		minimum_width = 510 + beautiful.border_width,
+		maximum_width = 510 + beautiful.border_width,
+		placement = function(d) awful.placement.right(d) end,
+		widget = wibox.widget {
+			widget = wibox.container.background,
+			bg = beautiful.border_color_normal,
+			{
+				widget = wibox.container.margin,
+				left = beautiful.border_width,
+				{
+					widget = wibox.container.background,
+					bg = beautiful.bg,
+					Launcher.main_widget
+				}
+			}
+		}
 	}
-	local entries = {}
-	if mode == nil then
-		for _, entry in ipairs(Gio.AppInfo.get_all()) do
-			if entry:should_show() then
-				local name = entry:get_name():gsub("&", "&amp;"):gsub("<", "&lt;"):gsub("'", "&#39;")
-				table.insert( entries, { name = name, appinfo = entry } )
-			end
-		end
-	elseif mode == "clients" then
-		for _, c in ipairs(client.get()) do
-			table.insert( entries, { name = c.name, client = c, max = c.maximized, min = c.minimized })
+else
+	Launcher.popup = awful.popup {
+		ontop = true,
+		visible = false,
+		x = 56,
+		minimum_height = 60 * Launcher.entries_count + 10 * 12 + 40,
+		maximum_height = 60 * Launcher.entries_count + 10 * 12 + 40,
+		minimum_width = 510 + beautiful.border_width,
+		maximum_width = 510 + beautiful.border_width,
+		border_width = beautiful.border_width,
+		border_color = beautiful.border_color_normal,
+		widget = Launcher.main_widget
+	}
+end
+
+function Launcher:next()
+	if self.index_entry ~= #self.filtered and #self.filtered > 1 then
+		self.index_entry = self.index_entry + 1
+		if self.index_entry > self.index_start + Launcher.entries_count - 1 then
+			self.index_start = self.index_start + 1
 		end
 	else
-		for entry in list[mode] do
-			local open_command = {
-				["clipboard"] = "echo " .. "'" .. entry .. "'" .. " | xclip -r -sel clipboard",
-				["books"] = "cd " .. dir .. " && zathura " .. entry,
-				["themes"] = [[ awesome-client 'apply_theme("]] .. entry .. [[")' ]]
-			}
-			table.insert( entries, { name = entry, appinfo = open_command[mode] } )
+		self.index_entry = 1
+		self.index_start = 1
+	end
+end
+
+function Launcher:back()
+	if self.index_entry ~= 1 and #self.filtered > 1 then
+		self.index_entry = self.index_entry - 1
+		if self.index_entry < self.index_start then
+			self.index_start = self.index_start - 1
+		end
+	else
+		self.index_entry = #self.filtered
+		if #self.filtered < Launcher.entries_count then
+			self.index_start = 1
+		else
+			self.index_start = #self.filtered - Launcher.entries_count + 1
+		end
+	end
+end
+
+function Launcher:get_apps()
+	local entries = {}
+	for _, entry in ipairs(Gio.AppInfo.get_all()) do
+		if entry:should_show() then
+			local name = entry:get_name():gsub("&", "&amp;"):gsub("<", "&lt;"):gsub("'", "&#39;")
+			table.insert(entries, { name = name, appinfo = entry })
 		end
 	end
 	return entries
 end
 
-function filter(cmd)
+function Launcher:get_clients()
+	local entries = {}
+	for _, c in ipairs(client.get()) do
+		table.insert( entries, { name = c.name, client = c, max = c.maximized, min = c.minimized })
+	end
+	return entries
+end
 
-	filtered = {}
-	regfiltered = {}
-	local clear_input = cmd:gsub("[%(%)%[%]]", "")
+function Launcher:get_books()
+	local entries = {}
+	awful.spawn.easy_async_with_shell("ls -1 " .. dir, function(stdout, stderr, reason, code)
+		for line in stdout:gmatch("[^\n]+") do
+			local exe_command = "cd " .. dir .. " && zathura " .. line
+			table.insert(entries, { name = line, appinfo = exe_command  })
+		end
+		if reason == "exit" then
+			awesome.emit_signal("get_books::finished", entries)
+		end
+	end)
+end
 
-	-- Filter entries
-	for _, entry in ipairs(unfiltered) do
-		if entry.name:lower():sub(1, clear_input:len()) == cmd:lower() then
-			table.insert(filtered, entry)
+awesome.connect_signal("get_books::finished", function(entries)
+	Launcher.unfiltered = entries
+	Launcher:filter("")
+	Launcher:add_entries("")
+end)
+
+function Launcher:get_clipboard()
+	local entries = {}
+	awful.spawn.easy_async_with_shell(user.bins.greenclip .. " print", function(stdout, stderr, reason, code)
+		for line in stdout:gmatch("[^\n]+") do
+			local exe_command = "echo " .. "'" .. line .. "'" .. " | xclip -selection c"
+			table.insert(entries, { name = line, appinfo = exe_command })
+		end
+		if reason == "exit" then
+			awesome.emit_signal("get_clipboard::finished", entries)
+		end
+	end)
+end
+
+awesome.connect_signal("get_clipboard::finished", function(entries)
+	Launcher.unfiltered = entries
+	Launcher:filter("")
+	Launcher:add_entries("")
+end)
+
+function Launcher:filter(input)
+	local clear_input = input:gsub("[%(%)%[%]%%]", "")
+
+	self.filtered = {}
+	self.regfiltered = {}
+
+	for _, entry in ipairs(self.unfiltered) do
+		if entry.name:lower():sub(1, clear_input:len()) == clear_input:lower() then
+			table.insert(self.filtered, entry)
 		elseif entry.name:lower():match(clear_input:lower()) then
-			table.insert(regfiltered, entry)
+			table.insert(self.regfiltered, entry)
 		end
 	end
-
-	-- Sort entries
-	if global_mode ~= "clipboard" then
-		table.sort(filtered, function(a, b) return a.name:lower() < b.name:lower() end)
-	end
-	table.sort(regfiltered, function(a, b) return a.name:lower() < b.name:lower() end)
-
-	-- Merge entries
-	for i = 1, #regfiltered do
-		filtered[#filtered+1] = regfiltered[i]
+	if self.mode ~= "clipboard" then
+		table.sort(self.filtered, function(a, b) return a.name:lower() < b.name:lower() end)
+		table.sort(self.regfiltered, function(a, b) return a.name:lower() < b.name:lower() end)
 	end
 
-	-- Clear entries
-	entries_container:reset()
+	for i = 1, #self.regfiltered do
+		self.filtered[#self.filtered + 1] = self.regfiltered[i]
+	end
 
-	-- Add filtered entries
-	for i, entry in ipairs(filtered) do
+end
 
-		local entry_image = wibox.widget {
-			widget = wibox.widget.imagebox,
-			horizontal_fit_policy = "fit",
-			vertical_fit_policy = "fit",
-			opacity = 0.5,
-			forced_width = 350,
-			forced_height = 55,
-		}
+function Launcher:add_entries(input)
+	self.entries_container:reset()
+	self.entries_container:add(self.promptbox)
 
-		local themes_line = wibox.widget {
-			widget = wibox.container.margin,
-			right = -beautiful.border_width * 2,
-			{
-				widget = wibox.container.background,
-				forced_width = beautiful.border_width * 2,
-				id = "bg",
-			},
-		}
+	if self.index_entry > #self.filtered and #self.filtered ~= 0 then
+		self.index_start, self.index_entry = 1, 1
+	elseif self.index_entry < 1 then
+		self.index_entry, self.index_start = 1, 1
+	end
 
+	for i, entry in ipairs(self.filtered) do
 		local entry_widget = wibox.widget {
-			widget = wibox.container.background,
-			forced_height = 55,
-			forced_width = 350,
+			forced_height = 60,
 			buttons = {
-				-- add left double click to launch (first click to navigate entry, second to run entry)
 				awful.button({}, 1, function()
-					if index_entry == i then
-						if global_mode == nil then
-							filtered[index_entry].appinfo:launch()
-						elseif global_mode == "clients" then
-							awful.client.jumpto(filtered[index_entry].client)
+					if self.index_entry == i then
+						if self.mode == nil then
+							entry.appinfo:launch()
+						elseif self.mode == "clients" then
+							awful.client.jumpto(entry.client)
 						else
-							awful.spawn.with_shell(filtered[index_entry].appinfo)
+							awful.spawn.with_shell(entry.appinfo)
 						end
-						awful.keygrabber.stop()
-						launcher.visible = false
+						self:close()
 					else
-						index_entry = i
-						filter("")
+						self.index_entry = i
+						self:filter(input)
+						self:add_entries(input)
 					end
 				end),
-				-- add mouse scroll
 				awful.button({}, 4, function()
-					back()
-					filter("")
+					self:back()
+					self:filter(input)
+					self:add_entries(input)
 				end),
 				awful.button({}, 5, function()
-					next()
-					filter("")
+					self:next()
+					self:filter(input)
+					self:add_entries(input)
 				end),
 			},
+			widget = wibox.container.background,
 			{
-				layout = wibox.layout.fixed.horizontal,
-				id = "entry_layout",
+				margins = 10,
+				widget = wibox.container.margin,
 				{
-					margins = 10,
-					id = "margin",
-					widget = wibox.container.margin,
-					{
-						layout  = wibox.layout.stack,
-						id = "stack",
-						{
-							text = entry.name,
-							id = "text",
-							widget = wibox.widget.textbox,
-						},
-					}
+					text = entry.name,
+					widget = wibox.widget.textbox,
 				}
 			}
 		}
 
-		if index_start <= i and i <= index_start + 6 then
-			entries_container:add(entry_widget)
+		if self.index_start <= i and i <= self.index_start + Launcher.entries_count - 1 then
+			self.entries_container:add(entry_widget)
 		end
 
-		if i == index_entry then
+		if i == self.index_entry then
 			entry_widget.bg = beautiful.accent
 			entry_widget.fg = beautiful.bg
 		end
-
-		if global_mode == "clients" then
-			entry_widget:get_children_by_id("entry_layout")[1]:insert(1, themes_line)
-			if filtered[i].max == true then
-				themes_line:get_children_by_id("bg")[1]:set_bg(beautiful.green)
-			elseif filtered[i].min == true then
-				themes_line:get_children_by_id("bg")[1]:set_bg(beautiful.yellow)
-			end
-		end
-
-		if global_mode == "themes" then
-			local color = require("theme.colors."..entry.name)
-			entry_widget.fg = color.fg
-			entry_widget:get_children_by_id("stack")[1]:insert(1, entry_image)
-			entry_image.image = user.awm_config .. "theme/launcher/" ..entry.name.. ".jpg"
-			entry_widget:get_children_by_id("margin")[1].margins = 0
-			entry_widget:get_children_by_id("text")[1].halign = "center"
-			if i == index_entry then
-				entry_widget:get_children_by_id("entry_layout")[1]:insert(1, themes_line)
-				entry_widget.bg = beautiful.bg
-				entry_widget.fg = color.fg
-				themes_line:get_children_by_id("bg")[1]:set_bg(color.fg)
-			end
-		end
 	end
-
-	-- Fix position
-	if index_entry > #filtered then
-		index_entry, index_start = 1, 1
-	elseif index_entry < 1 then
-		index_entry = 1
-	end
-
 	collectgarbage("collect")
 end
 
-function open(mode)
+function Launcher:send_signal()
+	awesome.emit_signal("launcher:state", self.state)
+end
 
-	main:get_children_by_id("image")[1].image = gears.surface.load_uncached(user.awm_config .. "theme/launcher/image.jpg")
-
-	local index_modes = {
-		["clipboard"] = 2,
-		["books"] = 3,
-		["themes"] = 4,
-		["clients"] = 5
-	}
-
-	if mode ~= nil then
-		index_mode = index_modes[mode]
-	else
-		index_mode = 1
-	end
-
-	add_modes()
-
-	global_mode = mode
-	-- Reset index and page
-	index_start, index_entry = 1, 1
-
-	-- Get entries
-	unfiltered = gen(mode)
-	filter("")
-
-	-- Prompt
+function Launcher:run_prompt()
 	awful.prompt.run {
 		prompt = "Search: ",
-		textbox = prompt,
-		bg = beautiful.bg,
-		fg = beautiful.fg,
+		textbox = self.prompt,
 		bg_cursor = beautiful.bg_alt,
 		done_callback = function()
-			launcher.visible = false
+			self:close()
 		end,
-		changed_callback = function(cmd)
-			filter(cmd)
+		changed_callback = function(input)
+			self:filter(input)
+			self:add_entries(input)
 		end,
-		exe_callback = function()
-			if filtered[index_entry] then
-				if mode == nil then
-					filtered[index_entry].appinfo:launch()
-				elseif mode == "clients" then
-					awful.client.jumpto(filtered[index_entry].client)
+		exe_callback = function(input)
+			if self.filtered[self.index_entry] then
+				if self.mode == "launcher" then
+					self.filtered[self.index_entry].appinfo:launch()
+				elseif self.mode == "clients" then
+					awful.client.jumpto(self.filtered[self.index_entry].client)
 				else
-					awful.spawn.with_shell(filtered[index_entry].appinfo)
+					awful.spawn.with_shell(self.filtered[self.index_entry].appinfo)
 				end
+			else
+				awful.spawn.with_shell(input)
 			end
 		end,
 		keypressed_callback = function(_, key)
 			if key == "Down" then
-				next()
+				self:next()
 			elseif key == "Up" then
-				back()
+				self:back()
 			elseif key == "Tab" then
-				index_mode = index_mode + 1
-				if index_mode <= 5 then
-					mode_change(index_mode)
+				Tabbar.el_index = Tabbar.el_index + 1
+				if Tabbar.el_index <= 4 then
+					Launcher:change_mode(Tabbar.elems[Tabbar.el_index].name)
 				else
-					mode_change(1)
+					Launcher:change_mode()
 				end
 			end
 		end
 	}
 end
 
--- Summon funcs --
+function Launcher:change_mode(mode)
+	if not self.state then return end
+	self.state = false
+	Launcher.entries_container:reset()
+	Tabbar.e_container:reset()
+	Launcher:open(mode)
+end
 
-function open_launcher(mode)
-	if not launcher.visible then
-		open(mode)
-		launcher.visible = true
+function Launcher:open(mode)
+	if self.state then return end
+	self.state = true
+	if self.state then
+		local Bar = require("ui.bar")
+		Bar:change_bg_container(Bar.launcher_v, "on")
+		Bar:change_bg_container(Bar.launcher_h, "on")
+		self.popup.visible = true
+		if user.bar_pos == "Left" and user.launcher_fullscreen then
+			self.popup.placement = function(d)
+				awful.placement.right(d)
+			end
+		elseif (user.bar_pos == "Left" or user.bar_pos == "Top") and not user.launcher_fullscreen then
+			self.popup.placement = function(d)
+				awful.placement.top_left(d, { honor_workarea = true, margins = beautiful.useless_gap*2 })
+			end
+		elseif user.bar_pos == "Right" and not user.launcher_fullscreen then
+			self.popup.placement = function(d)
+				awful.placement.top_right(d, { honor_workarea = true, margins = beautiful.useless_gap*2 })
+			end
+		elseif user.bar_pos == "Bottom" and not user.launcher_fullscreen then
+			self.popup.placement = function(d)
+				awful.placement.bottom_left(d, { honor_workarea = true, margins = beautiful.useless_gap*2 })
+			end
+		elseif user.bar_pos == "Right" and user.launcher_fullscreen then
+			self.popup.placement = function(d)
+				awful.placement.left(d)
+			end
+		end
+	end
+
+	mode = mode or "launcher"
+	self.mode = mode
+	self.index_start, self.index_entry = 1, 1
+	if self.mode == "launcher" then
+		self.unfiltered = self:get_apps()
+		Tabbar.el_index = 1
+	elseif mode == "clipboard" then
+		self:get_clipboard()
+		Tabbar.el_index = 2
+	elseif mode == "books" then
+		self:get_books()
+		Tabbar.el_index = 3
+	elseif mode == "clients" then
+		self.unfiltered = self:get_clients()
+		Tabbar.el_index = 4
+	end
+	Tabbar:add_modes()
+
+	self:send_signal()
+
+	if self.mode ~= ("clipboard" or "books") then
+		self:filter("")
+		self:add_entries("")
+	end
+
+	awful.keygrabber.stop()
+	self:run_prompt()
+end
+
+function Launcher:close()
+	if not self.state then return end
+	self.state = false
+
+	local Bar = require("ui.bar")
+	Bar:change_bg_container(Bar.launcher_v, "off")
+	Bar:change_bg_container(Bar.launcher_h, "off")
+	awful.keygrabber.stop()
+	self.popup.visible = false
+	self:send_signal()
+end
+
+function Launcher:toggle(mode)
+	if not self.popup.visible then
+		self:open(mode)
 	else
-		awful.keygrabber.stop()
-		launcher.visible = false
+		self:close()
 	end
 end
 
-awesome.connect_signal("open::launcher_books", function()
-	open_launcher("books")
-end)
 
-awesome.connect_signal("open::launcher_clipboard", function()
-	open_launcher("clipboard")
-end)
-
-awesome.connect_signal("open::launcher_apps", function()
-	open_launcher(nil)
-end)
-
-awesome.connect_signal("open::launcher_themes", function()
-	open_launcher("themes")
-end)
-
-awesome.connect_signal("open::launcher_clients", function()
-	open_launcher("clients")
-end)
--- hide on click --
-
-client.connect_signal("button::press", function()
-	awful.keygrabber.stop()
-	launcher.visible = false
-end)
-
-awful.mouse.append_global_mousebinding(
-	awful.button({ }, 1, function()
-		awful.keygrabber.stop()
-		launcher.visible = false
-	end)
-)
+return Launcher

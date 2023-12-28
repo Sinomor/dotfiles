@@ -4,7 +4,16 @@ local naughty = require("naughty")
 local beautiful = require("beautiful")
 local helpers = require("helpers")
 local user = require("user")
-require("scripts")
+
+local Bright = require("scripts.signals.bright")
+local Volume = require("scripts.signals.vol")
+local Wall = require("scripts.awesome.wallpapers")
+
+local Launcher = require("ui.launcher")
+local Powermenu = require("ui.powermenu")
+local Control = require("ui.control")
+local Bar = require("ui.bar")
+local Wifi_applet = require("ui.control.main.wifi_applet")
 
 mod = "Mod4"
 alt = "Mod1"
@@ -15,15 +24,15 @@ awful.keyboard.append_global_keybindings({
 
 	-- launch programms --
 
-	awful.key({ mod }, "Return", function() awful.spawn("alacritty") end),
-	awful.key({ mod }, "e", function() awful.spawn("thunar") end),
-	awful.key({ mod }, "b", function() awful.spawn("librewolf") end),
+	awful.key({ mod }, "Return", function() awful.spawn(user.terminal) end),
+	awful.key({ mod }, "e", function() awful.spawn(user.file_manager) end),
+	awful.key({ mod }, "b", function() awful.spawn(user.browser) end),
 	awful.key({ mod }, "a", function() awful.spawn("ayugram-desktop" or "telegram-desktop") end),
 	awful.key({}, "Print", function() awful.spawn("flameshot gui") end),
 
 	-- some scripts --
 
-	awful.key({ mod, ctrl }, "w", function() change_wall() end),
+	awful.key({ mod, ctrl }, "w", function() Wall:change_wall("Random") end),
 	awful.key({ mod, ctrl }, "p", function() awful.spawn.with_shell(user.bins.colorpicker) end),
 	awful.key({ mod, ctrl }, "q", function() awful.spawn.with_shell(user.bins.qr_codes) end),
 
@@ -42,52 +51,42 @@ awful.keyboard.append_global_keybindings({
 	-- volume up/down/mute --
 
 	awful.key({}, "XF86AudioRaiseVolume", function()
-		awful.spawn.with_shell("amixer -D pipewire sset Master 2%+")
-		update_value_of_volume()
-		awesome.emit_signal("open::osd")
+		Volume:change_value("up")
 	end),
 	awful.key({}, "XF86AudioLowerVolume", function()
-		awful.spawn.with_shell("amixer -D pipewire sset Master 2%-")
-		update_value_of_volume()
-		awesome.emit_signal("open::osd")
+		Volume:change_value("down")
 	end),
 	awful.key({}, "XF86AudioMute", function()
-		awful.spawn.with_shell("amixer -D pipewire sset Master toggle")
-		update_value_of_volume()
-		awesome.emit_signal("open::osd")
+		Volume:change_value("mute")
 	end),
 
 	-- brightness up/down --
 
 	awful.key({}, "XF86MonBrightnessUp", function()
-		awful.spawn.with_shell("brightnessctl s 5%+")
-		update_value_of_bright()
-		awesome.emit_signal("open::osd")
-  end),
+		Bright:change_value("up")
+	end),
 	awful.key({}, "XF86MonBrightnessDown", function()
-		awful.spawn.with_shell("brightnessctl s 5%-")
-		update_value_of_bright()
-		awesome.emit_signal("open::osd")
+		Bright:change_value("down")
 	end),
 
 	-- binds to open widgets --
 
-	awful.key({ mod, ctrl }, "b", function() awesome.emit_signal("open::launcher_books") end),
-	awful.key({ mod, ctrl }, "t", function() awesome.emit_signal("open::launcher_themes") end),
-	awful.key({ mod, ctrl }, "c", function() awesome.emit_signal("open::launcher_clipboard") end),
-	awful.key({ mod, ctrl }, "a", function() awesome.emit_signal("open::launcher_clients") end),
-	awful.key({ mod }, "d", function() awesome.emit_signal("open::launcher_apps") end),
-	awful.key({ mod }, "x", function() awesome.emit_signal("open::powermenu") end),
-	awful.key({ mod }, "w", function() awesome.emit_signal("open::wifi_applet") end),
-	awful.key({ mod }, "n", function() awesome.emit_signal("open::notif_center") end),
-	awful.key({ mod }, "c", function() awesome.emit_signal("open::calendar") end),
-	awful.key({ mod }, "p", function() awesome.emit_signal("open::control") end),
+	awful.key({ mod, ctrl }, "b", function() Launcher:open("books") end),
+	awful.key({ mod, ctrl }, "c", function() Launcher:open("clipboard") end),
+	awful.key({ mod, ctrl }, "a", function() Launcher:open("clients") end),
+	awful.key({ mod }, "d", function() Launcher:open() end),
+	awful.key({ mod }, "x", function() Powermenu:open() end),
+	awful.key({ mod }, "w", function() Wifi_applet:toggle() end),
+	awful.key({ mod }, "c", function() Control:toggle("moment") end),
+	awful.key({ mod }, "p", function() Control:toggle("main") end),
+	awful.key({ mod }, "o", function() Control:toggle("system") end),
+	awful.key({ mod }, "i", function() Control:toggle("config") end),
 
 	-- other widgets binds --
 
-	awful.key({ mod }, "m", function() awesome.emit_signal("signal::dnd") end),
-	awful.key({ mod, shift }, "b", function() awesome.emit_signal("hide::bar") end),
-	awful.key({ mod }, "t", function() awesome.emit_signal("show::tray") end),
+	awful.key({ mod }, "m", function() Bar:dnd_toggle() end),
+	awful.key({ mod, shift }, "b", function() Bar:toggle() end),
+	awful.key({ mod }, "t", function() Bar:tray_toggle() end),
 
 	-- switching a focus client -- 
 
@@ -140,26 +139,7 @@ awful.keyboard.append_global_keybindings({
 		helpers.client.resize_client(client.focus, "right")
 	end),
 
-	-- change padding tag on fly --
-
-	awful.key({ mod, shift }, "=", function()
-		helpers.client.resize_padding(5)
-	end),
-	awful.key({ mod, shift }, "-", function()
-		helpers.client.resize_padding(-5)
-	end),
-
-	-- change useless gap on fly --
-
-	awful.key({ mod }, "=", function()
-		helpers.client.resize_gaps(5)
-	end),
-	awful.key({ mod }, "-", function()
-		helpers.client.resize_gaps(-5)
-	end),
-
 })
-
 
 -- mouse binds --
 
@@ -233,4 +213,17 @@ client.connect_signal("request::default_keybindings", function()
 
 end)
 
+client.connect_signal("button::press", function()
+	Launcher:close()
+	Powermenu:close()
+	Control:close(Control.mode)
+end)
+
+awful.mouse.append_global_mousebinding(
+	awful.button({}, 1, function()
+		Launcher:close()
+		Powermenu:close()
+		Control:close(Control.mode)
+	end)
+)
 

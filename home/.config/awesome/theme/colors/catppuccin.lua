@@ -1,8 +1,8 @@
 local colorsheme = {}
 
 colorsheme.bg = "#1e1e2e"
-colorsheme.bg_alt = "#313244"
-colorsheme.bg_urgent = "#45475a"
+colorsheme.bg_alt = "#28283e"
+colorsheme.bg_urgent = "#32324d"
 colorsheme.fg_alt = "#585b70"
 colorsheme.fg = "#cdd6f4"
 

@@ -3,26 +3,20 @@ local wibox = require("wibox")
 local gears = require("gears")
 local helpers = require("helpers")
 local beautiful = require("beautiful")
-local pampath = require("gears").filesystem.get_configuration_dir() .. "liblua_pam.so"
+local user = require("user")
 local pam = require("liblua_pam")
+
+local Lock = {}
 
 screen.connect_signal("request::desktop_decoration", function(s)
 
--- authentication --
+function Lock:authenticate(password)
+	return pam.auth_current_user(password)
+end
 
-awful.spawn.easy_async_with_shell("stat "..pampath.." >/dev/null 2>&1", function (_, _, _, exitcode)
-		authenticate = function(password)
-			return pam.auth_current_user(password)
-		end
-end)
+Lock.characters_entered = 0
 
--- variables --
-
-local characters_entered = 0
-
--- widgets --
-
-local header = wibox.widget {
+Lock.header = wibox.widget {
 	widget = wibox.container.place,
 	halign = "center",
 	{
@@ -37,16 +31,12 @@ local header = wibox.widget {
 		{
 			widget = wibox.widget.textbox,
 			halign = "center",
-			id = "name",
+			text = "@" .. user.name:gsub("^%l", string.upper)
 		}
 	}
 }
 
-awful.spawn.easy_async_with_shell([[whoami | sed 's/.*/\u&/']], function(stdout)
-	header:get_children_by_id("name")[1].text = "@"..stdout
-end)
-
-local time = wibox.widget {
+Lock.time = wibox.widget {
 	widget = wibox.container.place,
 	halign = "center",
 	{
@@ -54,7 +44,7 @@ local time = wibox.widget {
 		spacing = 20,
 		{
 			widget = wibox.widget.textclock,
-			font = beautiful.font.. " 38",
+			font = beautiful.font_name .. " " .. tostring(beautiful.font_size + 26),
 			format = "%H",
 		},
 		{
@@ -70,27 +60,47 @@ local time = wibox.widget {
 		},
 		{
 			widget = wibox.widget.textclock,
-			font = beautiful.font.. " 38",
+			font = beautiful.font_name .. " " .. tostring(beautiful.font_size + 26),
 			format = "%M",
 		}
 	}
 }
 
-local prompt = wibox.widget {
+Lock.prompt = wibox.widget {
 	widget = wibox.widget.textbox,
-	markup = "enter password...",
-	align = "center",
+	markup = "type...",
 }
 
-local main = wibox {
-	width = s.geometry.width,
-	height = s.geometry.height,
-	bg = beautiful.bg,
-	ontop = true,
-	visible = false,
+Lock.prompt_pass = wibox.widget.textbox()
+
+Lock.button = wibox.widget {
+	widget = wibox.widget.textbox,
+	text = "",
+	font = beautiful.font_name .. " " .. tostring(beautiful.font_size + 1),
 }
 
-main:setup {
+Lock.promptbox = wibox.widget {
+	widget = wibox.container.background,
+	bg = beautiful.bg_alt,
+	forced_width = 240,
+	forced_height = 60,
+	{
+		widget = wibox.container.margin,
+		margins = { right = 10, left = 10 },
+		{
+			layout = wibox.layout.align.horizontal,
+			{
+				layout = wibox.layout.fixed.horizontal,
+				id = "main",
+				Lock.prompt,
+			},
+			nil,
+			Lock.button
+		}
+	}
+}
+
+Lock.main_widget = wibox.widget {
 	layout = wibox.layout.stack,
 	{
 		widget = wibox.container.place,
@@ -98,7 +108,7 @@ main:setup {
 		{
 			widget = wibox.container.margin,
 			top = 40,
-			time,
+			Lock.time,
 		}
 	},
 	{
@@ -106,82 +116,99 @@ main:setup {
 		valign = "center",
 		{
 			layout = wibox.layout.fixed.vertical,
-			header,
-			{
-				widget = wibox.container.background,
-				bg = beautiful.bg_alt,
-				{
-					widget = wibox.container.margin,
-					margins = 16,
-					{
-						widget = wibox.container.background,
-						forced_width = 240,
-						prompt,
-					}
-				}
-			}
+			spacing = 10,
+			Lock.header,
+			Lock.promptbox,
 		}
 	}
 }
 
+Lock.popup = awful.popup {
+	screen = s,
+	visible = false,
+	ontop = true,
+	minimum_height = s.geometry.height,
+	minimum_width = s.geometry.width,
+	placement = function(d) awful.placement.centered(d) end,
+	widget = Lock.main_widget
+}
 
--- Reset
 
-local function reset()
-	characters_entered = 0;
-	prompt.markup = "enter password..."
+Lock.pass_hide = true
+
+function Lock:toggle_password()
+	self.promptbox:get_children_by_id("main")[1]:remove(1)
+	if self.pass_hide then
+		self.promptbox:get_children_by_id("main")[1]:insert(1, self.prompt_pass)
+		self.button.text = ""
+	else
+		self.promptbox:get_children_by_id("main")[1]:insert(1, self.prompt)
+		self.button.text = ""
+	end
+	self.pass_hide = not self.pass_hide
 end
 
--- Fail
+Lock.button:buttons {
+	awful.button({}, 1, function()
+		Lock:toggle_password()
+	end)
+}
 
-local function fail()
-	characters_entered = 0;
-	prompt.markup = "try again..."
+function Lock:reset()
+	self.characters_entered = 0;
+	self.prompt.markup = "type..."
 end
 
--- Input
+function Lock:fail()
+	self.characters_entered = 0;
+	self.prompt.markup = "try again..."
+end
 
-local function grabpassword()
+function Lock:grabpassword()
 	awful.prompt.run {
 		hooks = {
-			{{ }, "Escape", function(_)
-					reset()
-					grabpassword()
+			{{}, "Escape", function(_)
+					self:reset()
+					self:grabpassword()
 				end
 			}
 		},
-		keypressed_callback  = function(_, key)
+		keypressed_callback = function(_, key)
 			if #key == 1 then
-				characters_entered = characters_entered + 1
-				prompt.markup = helpers.ui.colorizeText(string.rep("*", characters_entered), "")
+				self.characters_entered = self.characters_entered + 1
+				self.prompt.markup = helpers.ui.size_text(string.rep("󰧞", self.characters_entered), 11)
 			elseif key == "BackSpace" then
-				if characters_entered > 1 then
-					characters_entered = characters_entered - 1
-					prompt.markup = helpers.ui.colorizeText(string.rep("*", characters_entered), "")
+				if self.characters_entered > 1 then
+					self.characters_entered = self.characters_entered - 1
+					self.prompt.markup = helpers.ui.size_text(string.rep("󰧞", self.characters_entered), 11)
 				else
-					characters_entered = 0
-					prompt.markup = "enter password..."
+					self.characters_entered = 0
+					self.prompt.markup = "type..."
 				end
+			elseif key == "Tab" then
+				self:toggle_password()
 			end
 		end,
 		exe_callback = function(input)
-			if authenticate(input) then
-				reset()
-				main.visible = false
+			if self:authenticate(input) then
+				self:reset()
+				self.popup.visible = false
 			else
-				fail()
-				grabpassword()
+				self:fail()
+				self:grabpassword()
 			end
 		end,
-		textbox = wibox.widget.textbox()
+		textbox = self.prompt_pass,
+		bg_cursor = beautiful.bg_alt,
 	}
 end
 
--- Lock --
-
-function lockscreen()
-	main.visible = true
-	grabpassword()
+function Lock:lockscreen()
+	self.popup.visible = true
+	self:grabpassword()
+	awful.spawn.with_shell("playerctl pause")
 end
 
 end)
+
+return Lock
