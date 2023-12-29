@@ -13,9 +13,9 @@ local Inputbox = require("ui.control.config.create_inputbox")
 local Numberbox = require("ui.control.config.create_numberbox")
 local Toggle = require("ui.control.config.create_toggle")
 local Dropmenu = require("ui.control.config.create_dropmenu")
-local Themer = require("ui.control.config.create_themer")
+local Themer_widget = require("ui.control.config.create_themer")
 
-local Themers = require("scripts.awesome.apply_theme")
+local Themer = require("daemons.themer")
 local Wall = require("scripts.awesome.wallpapers")
 
 local Config = {}
@@ -27,8 +27,8 @@ Config.apply_widget = wibox.widget {
 	forced_width = 100,
 	buttons = {
 		awful.button({}, 1, function()
-			if Themer.colorshemes[Themer.index] ~= user.color then
-				Themers:apply_theme(Themer.colorshemes[Themer.index])
+			if Themer_widget.colorshemes[Themer_widget.index] ~= user.color then
+				Themer:apply_theme(Themer_widget.colorshemes[Themer_widget.index])
 			else
 				awesome.restart()
 			end
@@ -139,7 +139,7 @@ Config.colorsheme_layout = wibox.widget {
 	layout = wibox.layout.fixed.vertical,
 	spacing = 10,
 	Config:create_titlebar("Colorsheme"),
-	Themer:create_themes(user.color)
+	Themer_widget:create_themes(user.color)
 }
 Config.colorsheme = Config:create_container(Config.colorsheme_layout)
 

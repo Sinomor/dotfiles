@@ -5,7 +5,7 @@ local naughty = require("naughty")
 local helpers = require("helpers")
 local beautiful = require("beautiful")
 
-local wifi_daemon = require("scripts.signals.wifi")
+local wifi_daemon = require("daemons.wifi")
 
 local Wifi = {}
 local Sidebar = {}

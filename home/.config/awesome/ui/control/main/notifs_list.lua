@@ -54,7 +54,7 @@ Notifs_list.container = wibox.widget {
 	step = 80,
 }
 if not user.control_fullscreen then
-	Notifs_list.container.forced_height = 430
+	Notifs_list.container.forced_height = 420
 end
 
 Notifs_list.remove_notifs_empty = true

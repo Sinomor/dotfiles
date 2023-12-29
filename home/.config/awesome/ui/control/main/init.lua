@@ -10,10 +10,10 @@ local naughty = require("naughty")
 local Create_toggle = require("ui.control.main.toggle")
 local Create_slider = require("ui.control.main.slider")
 
-local Bluetooth = require("scripts.signals.bluetooth")
+local Bluetooth = require("daemons.bluetooth")
 local Bright = require("scripts.signals.bright")
-local Volume = require("scripts.signals.vol")
-local Wifi_daemon = require("scripts.signals.wifi")
+local Volume = require("daemons.pipewire")
+local Wifi = require("daemons.wifi")
 local Wifi_applet = require("ui.control.main.wifi_applet")
 local Notifs_list = require("ui.control.main.notifs_list")
 local Music = require("ui.control.main.music")
@@ -62,7 +62,7 @@ Main.wifi_toggle = Create_toggle({
 	name = "Wifi",
 	value = "On",
 	arroy_visible = true,
-	click_func = function() Wifi_daemon:toggle() end,
+	click_func = function() Wifi:toggle() end,
 	arroy_func = function() Wifi_applet:toggle() end
 })
 

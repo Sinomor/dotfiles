@@ -25,7 +25,7 @@ ruled.notification.connect_signal('request::rules', function()
 			screen = awful.screen.preferred,
 			implicit_timeout = 4,
 			position = user.notifs_pos,
-			spacing = 10,
+			spacing = beautiful.useless_gap * 2,
 			bg = beautiful.bg,
 			fg = beautiful.fg,
 			border_width = beautiful.border_width,
@@ -39,7 +39,7 @@ ruled.notification.connect_signal('request::rules', function()
 			screen = awful.screen.preferred,
 			implicit_timeout = 4,
 			position = user.notifs_pos,
-			spacing = 10,
+			spacing = beautiful.useless_gap * 2,
 			bg = beautiful.bg,
 			fg = beautiful.fg,
 			border_width = beautiful.border_width,
@@ -97,29 +97,29 @@ naughty.connect_signal("request::display", function(n)
 					{
 						widget = wibox.container.margin,
 						margins = {  bottom = 8 },
-					{
-						widget = wibox.container.background,
-						bg = beautiful.bg_alt,
-						forced_height = beautiful.border_width,
-					},
+						{
+							widget = wibox.container.background,
+							bg = beautiful.bg_alt,
+							forced_height = beautiful.border_width,
+						},
 					},
 					{
 						widget = wibox.container.margin,
 						margins = { left = 8, right = 8, bottom = 8 },
-					{
-						layout = wibox.layout.fixed.horizontal,
-						spacing = 20,
-						fill_space = true,
 						{
-							widget = wibox.container.background,
-							naughty.widget.icon,
-						},
-						{
-							widget = wibox.widget.textbox,
-							markup = n.message,
+							layout = wibox.layout.fixed.horizontal,
+							spacing = 20,
+							fill_space = true,
+							{
+								widget = wibox.container.background,
+								naughty.widget.icon,
+							},
+							{
+								widget = wibox.widget.textbox,
+								markup = n.message,
+							}
 						}
 					}
-				}
 				}
 			}
 		}

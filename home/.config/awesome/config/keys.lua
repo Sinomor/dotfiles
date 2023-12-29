@@ -6,7 +6,7 @@ local helpers = require("helpers")
 local user = require("user")
 
 local Bright = require("scripts.signals.bright")
-local Volume = require("scripts.signals.vol")
+local Volume = require("daemons.pipewire")
 local Wall = require("scripts.awesome.wallpapers")
 
 local Launcher = require("ui.launcher")

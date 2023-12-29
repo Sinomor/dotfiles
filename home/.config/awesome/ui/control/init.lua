@@ -64,7 +64,6 @@ else
 	Tabbar.main_widget = wibox.widget {
 		widget = wibox.container.background,
 		forced_width = 60,
-		forced_height = 480,
 		bg = beautiful.bg_alt,
 		{
 			widget = wibox.container.margin,
@@ -159,7 +158,7 @@ Control.main_widget = wibox.widget {
 	bg = beautiful.bg,
 	{
 		widget = wibox.container.margin,
-		margins = 20,
+		margins = user.control_fullscreen and 20 or 10,
 		Control.main_layout
 	}
 }
@@ -188,10 +187,10 @@ else
 	Control.popup = awful.popup {
 		visible = false,
 		ontop = true,
-		minimum_height = 510,
+		minimum_height = 490,
 		maximum_height = 760,
 		minimum_width = 1040,
-		maximum_width = 1080,
+		maximum_width = 1040,
 		border_width = beautiful.border_width,
 		border_color = beautiful.border_color_normal,
 		widget = Control.main_widget

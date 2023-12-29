@@ -174,7 +174,7 @@ Music.main_widget = wibox.widget {
 		}
 	}
 	if not user.control_fullscreen then
-		Music.main_widget.forced_height = 190
+		Music.main_widget.forced_height = 180
 	end
 
 	playerctl:connect_signal("playback_status", function(_, playing, player_name)

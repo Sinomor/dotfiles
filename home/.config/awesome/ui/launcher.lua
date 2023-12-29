@@ -15,10 +15,22 @@ local icon_theme = Gtk.IconTheme.get_default()
 local Launcher = {}
 local Tabbar = {}
 
+-- bar module --
+
+local Bar = require("ui.bar")
+local launcher = require("ui.bar.modules.launcher")
+launcher.text:buttons {
+	awful.button({}, 1, function()
+		Launcher:toggle()
+	end)
+}
+
+-- launcher --
+
 if user.launcher_fullscreen then
 	Launcher.entries_count = 13
 else
-	Launcher.entries_count = 7
+	Launcher.entries_count = 6
 end
 
 Tabbar.elems = {
@@ -201,11 +213,11 @@ Launcher.entries_container = wibox.widget {
 if user.launcher_fullscreen then
 	Launcher.entries_container.forced_width = 470
 else
-	Launcher.entries_container.forced_width = 400
+	Launcher.entries_container.forced_width = 420
 end
 Launcher.main_widget = wibox.widget {
 	widget = wibox.container.margin,
-	margins = 20,
+	margins = user.launcher_fullscreen and 20 or 10,
 	{
 		layout = user.launcher_fullscreen and wibox.layout.fixed.vertical or wibox.layout.fixed.horizontal,
 		spacing = 10,
@@ -242,8 +254,8 @@ else
 		ontop = true,
 		visible = false,
 		x = 56,
-		minimum_height = 60 * Launcher.entries_count + 10 * 12 + 40,
-		maximum_height = 60 * Launcher.entries_count + 10 * 12 + 40,
+		minimum_height = 60 * Launcher.entries_count + 10 * 12 + 20,
+		maximum_height = 60 * Launcher.entries_count + 10 * 12 + 20,
 		minimum_width = 510 + beautiful.border_width,
 		maximum_width = 510 + beautiful.border_width,
 		border_width = beautiful.border_width,
@@ -483,9 +495,7 @@ function Launcher:open(mode)
 	if self.state then return end
 	self.state = true
 	if self.state then
-		local Bar = require("ui.bar")
-		Bar:change_bg_container(Bar.launcher_v, "on")
-		Bar:change_bg_container(Bar.launcher_h, "on")
+		Bar:change_bg_container(launcher.widget, "on")
 		self.popup.visible = true
 		if user.bar_pos == "Left" and user.launcher_fullscreen then
 			self.popup.placement = function(d)
@@ -543,9 +553,7 @@ function Launcher:close()
 	if not self.state then return end
 	self.state = false
 
-	local Bar = require("ui.bar")
-	Bar:change_bg_container(Bar.launcher_v, "off")
-	Bar:change_bg_container(Bar.launcher_h, "off")
+	Bar:change_bg_container(launcher.widget, "off")
 	awful.keygrabber.stop()
 	self.popup.visible = false
 	self:send_signal()

@@ -38,10 +38,6 @@ function Bar:change_bg_container(widget, x)
 	end
 end
 
-awesome.connect_signal("bar::info", function(x)
-	Bar:change_bg_container(info.widget, x)
-end)
-
 -- bar --
 
 function Bar:create_bar_v(s, pos, margins)
