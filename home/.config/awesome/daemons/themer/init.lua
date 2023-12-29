@@ -14,7 +14,7 @@ T.vencord_file = "~/.config/Vencord/themes/theme.css"
 T.nvim_file = "~/.config/nvim/lua/core/configs.lua"
 T.telegram_file = "~/.config/awesome/other/current_tg_theme.tdesktop-theme"
 T.flameshot_file = "~/.config/flameshot/flameshot.ini"
-T.firefox_file = "~/.librewolf/28peazch.default-default/chrome/userChrome.css"
+T.firefox_file = "~/.librewolf/your_session/chrome/userChrome.css"
 T.xresourses_file = "~/.Xresources"
 T.zathura_file = "~/.config/zathura/zathurarc"
 
