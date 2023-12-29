@@ -74,7 +74,7 @@ function Weather:add_days(out)
 		local day_desc = wibox.widget {
 			halign = "center",
 			valign = "top",
-			forced_height = 62,
+			forced_height = 56,
 			widget = wibox.widget.textbox,
 		}
 
@@ -84,7 +84,7 @@ function Weather:add_days(out)
 		local day_widget = wibox.widget {
 			layout = wibox.layout.fixed.vertical,
 			spacing = 10,
-			forced_width = 130,
+			forced_width = 150,
 			day,
 			day_icon,
 			day_desc,

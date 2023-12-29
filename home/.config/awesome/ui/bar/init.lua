@@ -4,8 +4,6 @@ local wibox = require("wibox")
 local beautiful = require("beautiful")
 local helpers = require("helpers")
 local user = require("user")
-local rubato = require("modules.rubato")
-
 
 local launcher = require("ui.bar.modules.launcher")
 local keyboard = require("ui.bar.modules.keyboard")
@@ -39,14 +37,6 @@ function Bar:change_bg_container(widget, x)
 		}
 	end
 end
-
-awesome.connect_signal("bar::launcher", function(x)
-	Bar:change_bg_container(launcher.widget, x)
-end)
-
-awesome.connect_signal("bar::clock", function(x)
-	Bar:change_bg_container(clock.widget, x)
-end)
 
 awesome.connect_signal("bar::info", function(x)
 	Bar:change_bg_container(info.widget, x)

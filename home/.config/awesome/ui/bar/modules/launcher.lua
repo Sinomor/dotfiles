@@ -2,7 +2,6 @@ local beautiful = require("beautiful")
 local awful = require("awful")
 local wibox = require("wibox")
 
-local Launcher = require("ui.launcher")
 local L = {}
 
 L.text = wibox.widget {
@@ -37,11 +36,5 @@ function L:create_h()
 	}
 	return self.widget
 end
-
-L.text:buttons {
-	awful.button({}, 1, function()
-		Launcher:toggle()
-	end)
-}
 
 return L

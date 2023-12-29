@@ -34,8 +34,8 @@ function Cal:create_day_widget(day, is_current, is_another_month)
 
 	return wibox.widget {
 		widget = wibox.container.background,
-		forced_width = 36,
-		forced_height = 36,
+		forced_width = 40,
+		forced_height = 40,
 		fg = fg_color,
 		bg = bg_color,
 		{
@@ -50,11 +50,11 @@ Cal.m_layout = wibox.widget {
 	forced_num_rows = 7,
 	forced_num_cols = 7,
 	vertical_spacing = 12,
-	horizontal_spacing = 28,
+	horizontal_spacing = 26,
 	layout = wibox.layout.grid,
 }
 if not user.control_fullscreen then
-	Cal.m_layout.vertical_spacing = 28
+	Cal.m_layout.vertical_spacing = 20
 end
 
 

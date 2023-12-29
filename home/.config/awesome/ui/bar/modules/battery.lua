@@ -54,8 +54,8 @@ awesome.connect_signal("signal::battery", function(value, state)
 		B.battery_charge_icon.markup = ""
 	else
 		B.battery_progressbar.color = beautiful.green
-		if value < 45 then
-			B.battery_charge_icon.markup = helpers.ui.colorizeText("󱐋", beautiful.fg_alt)
+		if value < 60 then
+			B.battery_charge_icon.markup = helpers.ui.colorizeText("󱐋", beautiful.fg)
 		else
 			B.battery_charge_icon.markup = helpers.ui.colorizeText("󱐋", beautiful.bg)
 		end

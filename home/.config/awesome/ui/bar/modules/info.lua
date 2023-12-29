@@ -4,14 +4,7 @@ local wibox = require("wibox")
 local naughty = require("naughty")
 local gears = require("gears")
 
-local Control = require("ui.control")
 local I = {}
-
-I.button = gears.table.join(
-awful.button({}, 1, function()
-	Control:toggle("main")
-end)
-)
 
 I.wifi = wibox.widget {
 	widget = wibox.container.background,

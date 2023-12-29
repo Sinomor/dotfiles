@@ -15,6 +15,25 @@ local Calendar = require("ui.control.moment.calendar")
 local Tabbar = {}
 local Control = {}
 
+-- bar modules --
+
+local Bar = require("ui.bar")
+local Clock = require("ui.bar.modules.clock")
+local Info = require("ui.bar.modules.info")
+
+Clock.widget:buttons {
+	awful.button({}, 1, function()
+		Control:toggle("moment")
+	end)
+}
+Info.widget:buttons {
+	awful.button({}, 1, function()
+		Control:toggle("main")
+	end)
+}
+
+-- main --
+
 if user.control_fullscreen then
 	Tabbar.main_layour = wibox.widget {
 		homogeneous = false,
@@ -207,14 +226,10 @@ function Control:open(mode)
 	self.mode = mode
 	if mode == "main" then
 		Tabbar:tab_change(Tabbar.tabs[1].to, Tabbar.tabs[1].i)
-		local Bar = require("ui.bar")
-		Bar:change_bg_container(Bar.info_v, "on")
-		Bar:change_bg_container(Bar.info_h, "on")
+		Bar:change_bg_container(Info.widget, "on")
 	elseif mode == "moment" then
 		Tabbar:tab_change(Tabbar.tabs[2].to, Tabbar.tabs[2].i)
-		local Bar = require("ui.bar")
-		Bar:change_bg_container(Bar.time_h, "on")
-		Bar:change_bg_container(Bar.time_v, "on")
+		Bar:change_bg_container(Clock.widget, "on")
 	elseif mode == "system" then
 		Tabbar:tab_change(Tabbar.tabs[3].to, Tabbar.tabs[3].i)
 	elseif mode == "config" then
@@ -228,13 +243,9 @@ function Control:close()
 	if self.popup.visible then
 		self.popup.visible = false
 		if self.mode == "main" then
-			local Bar = require("ui.bar")
-			Bar:change_bg_container(Bar.info_v, "off")
-			Bar:change_bg_container(Bar.info_h, "off")
+			Bar:change_bg_container(Info.widget, "off")
 		elseif self.mode == "moment" then
-			local Bar = require("ui.bar")
-			Bar:change_bg_container(Bar.time_v, "off")
-			Bar:change_bg_container(Bar.time_h, "off")
+			Bar:change_bg_container(Clock.widget, "off")
 		end
 	end
 end
