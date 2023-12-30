@@ -41,7 +41,7 @@ ruled.notification.connect_signal('request::rules', function()
 			position = user.notifs_pos,
 			spacing = beautiful.useless_gap * 2,
 			bg = beautiful.bg,
-			fg = beautiful.fg,
+			fg = beautiful.red,
 			border_width = beautiful.border_width,
 			border_color = beautiful.border_color_normal,
 			icon = beautiful.notification_error,
@@ -52,73 +52,69 @@ end)
 
 naughty.connect_signal("request::display", function(n)
 
-	if not n.app_icon then
-		n.app_icon = beautiful.notification_icon
+	local appicon = n.icon or n.app_icon
+	if not appicon then
+		appicon = beautiful.notification_icon
 	elseif n.app_name == "flameshot" then
-		n.app_icon = beautiful.notification_icon_screenshot
+		appicon = beautiful.notification_icon_screenshot
 	end
+
+	local icon = wibox.widget {
+		widget = wibox.widget.imagebox,
+		image = appicon,
+		halign = "center",
+		valign = "top",
+	}
+
+	if n.app_name == "AyuGram Desktop" or n.app_name == "Telegram Desktop" then
+		icon.clip_shape = helpers.ui.rrect(100)
+	end
+
+	local title = wibox.widget {
+		widget = wibox.widget.textbox,
+		halign = "left",
+		valign = "center",
+		forced_height = 20,
+		markup = n.title
+	}
+
+	local text = wibox.widget {
+		widget = wibox.widget.textbox,
+		valign = "top",
+		halign = "left",
+		markup = n.message or n.text,
+	}
 
 	naughty.layout.box {
 		notification = n,
-		minimum_width = 200,
-		maximum_width = 800,
-		maximum_height = 200,
+		minimum_width = 300,
+		maximum_width = 300,
+		maximum_height = 120,
+		minimum_height = 120,
 		widget_template = {
-			widget = wibox.container.constraint,
-			strategy = "max",
+			widget = naughty.container.background,
+			id = "background_role",
 			{
-				widget = naughty.container.background,
-				id = "background_role",
+				layout = wibox.layout.fixed.vertical,
+				spacing = 10,
 				{
-					layout = wibox.layout.fixed.vertical,
+					widget = wibox.container.margin,
+					margins = { left = 10, right = 10, top = 10 },
+					title,
+				},
+				{
+					widget = wibox.container.background,
+					bg = beautiful.bg_alt,
+					forced_height = beautiful.border_width,
+				},
+				{
+					widget = wibox.container.margin,
+					margins = { left = 10, right = 10, bottom = 10 },
 					{
-						widget = wibox.container.background,
-						bg = beautiful.bg,
-						forced_height = 40,
-						{
-							widget = wibox.container.margin,
-							margins = { left = 8, right = 8 },
-							{
-								layout = wibox.layout.align.horizontal,
-								{
-									widget = wibox.widget.textbox,
-									valign = "center",
-									markup = n.title
-								},
-								nil,
-								{
-									widget = wibox.widget.textbox,
-									valign = "center",
-									markup = helpers.ui.colorizeText("", beautiful.red)
-								}
-							}
-						}
-					},
-					{
-						widget = wibox.container.margin,
-						margins = {  bottom = 8 },
-						{
-							widget = wibox.container.background,
-							bg = beautiful.bg_alt,
-							forced_height = beautiful.border_width,
-						},
-					},
-					{
-						widget = wibox.container.margin,
-						margins = { left = 8, right = 8, bottom = 8 },
-						{
-							layout = wibox.layout.fixed.horizontal,
-							spacing = 20,
-							fill_space = true,
-							{
-								widget = wibox.container.background,
-								naughty.widget.icon,
-							},
-							{
-								widget = wibox.widget.textbox,
-								markup = n.message,
-							}
-						}
+						layout = wibox.layout.fixed.horizontal,
+						spacing = 20,
+						icon,
+						text
 					}
 				}
 			}

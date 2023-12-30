@@ -75,155 +75,170 @@ end
 
 function Notifs_list:create_notif(icon, n, width)
 
-local time = os.date "%H:%M:%S"
+	local time = os.date "%H:%M:%S"
 
-local box_arroy = false
+	local n_icon = wibox.widget {
+		widget = wibox.widget.imagebox,
+		forced_width = 80,
+		forced_height = 80,
+		image = icon,
+		halign = "center",
+		valign = "top",
+	}
 
-local box = wibox.widget {
-	widget = wibox.container.background,
-	forced_height = 120,
-	bg = beautiful.bg_alt,
-	{
+	local n_title = wibox.widget {
+		widget = wibox.widget.textbox,
+		markup = n.title,
+		halign = "left",
+	}
+
+	local n_time = {
+		widget = wibox.widget.textbox,
+		text = time,
+		align = "right",
+	}
+
+	local n_text = wibox.widget {
+		markup = n.message or n.text,
+		halign = "left",
+		valign = "top",
+		widget = wibox.widget.textbox,
+	}
+
+	local time_arroy = wibox.widget {
+		layout = wibox.layout.fixed.horizontal,
+		spacing = 10,
+		n_time,
+	}
+
+	local icon_text = wibox.widget {
+		layout = wibox.layout.fixed.horizontal,
+		spacing = 20,
+		n_icon,
+		n_text
+	}
+
+
+	local title_layout = wibox.widget {
 		layout = wibox.layout.align.horizontal,
 		{
-			widget = wibox.container.margin,
-			margins = 20,
-			{
-				widget = wibox.widget.imagebox,
-				image = icon,
-				id = "img",
-				forced_height = 80,
-				forced_width = 80,
-				halign = "center",
-				valign = "top",
-			},
+			widget = wibox.container.scroll.horizontal,
+			step_function = wibox.container.scroll.step_functions.waiting_nonlinear_back_and_forth,
+			speed = 50,
+			forced_width = 300,
+			n_title,
 		},
+		nil,
+		time_arroy
+	}
+
+	local box_arroy = false
+
+	local box = wibox.widget {
+		widget = wibox.container.constraint,
+		height = 150,
+		strategy = "max",
 		{
-			widget = wibox.container.margin,
-			margins = 10,
+			widget = wibox.container.background,
+			bg = beautiful.bg_alt,
 			{
-				layout = wibox.layout.align.vertical,
+				widget = wibox.container.margin,
+				margins = 10,
 				{
-					layout = wibox.layout.fixed.vertical,
-					spacing = 20,
+					widget = wibox.layout.fixed.vertical,
+					spacing = 10,
+					title_layout,
 					{
-						layout = wibox.layout.align.horizontal,
-						{
-							widget = wibox.container.scroll.horizontal,
-							step_function = wibox.container.scroll.step_functions.waiting_nonlinear_back_and_forth,
-							speed = 50,
-							forced_width = 160,
-							{
-								widget = wibox.widget.textbox,
-								markup = n.title,
-								align = "left",
-							},
-						},
-						nil,
-						{
-							layout = wibox.layout.fixed.horizontal,
-							spacing = 20,
-							id = "arroy",
-							{
-								widget = wibox.widget.textbox,
-								text = time,
-								align = "right",
-							},
-						},
+						widget = wibox.container.background,
+						bg = beautiful.bg_urgent,
+						forced_height = beautiful.border_width
 					},
-					{
-						markup = n.message or n.text,
-						halign = "left",
-						valign = "bottom",
-						forced_width = 165,
-						widget = wibox.widget.textbox,
-					}
+					icon_text
 				}
 			}
 		}
 	}
-}
 
-if n.app_name == "AyuGram Desktop" or n.app_name == "Telegram Desktop" then
-	box:get_children_by_id("img")[1].clip_shape = helpers.ui.rrect(100)
-end
-
-local anim = rubato.timed {
-	duration = 0.3,
-	easing = rubato.easing.linear,
-	subscribed = function(h)
-		box.forced_height = h
+	if n.app_name == "AyuGram Desktop" or n.app_name == "Telegram Desktop" then
+		n_icon.clip_shape = helpers.ui.rrect(100)
 	end
-}
 
-anim.target = 120
+	local anim = rubato.timed {
+		duration = 0.3,
+		easing = rubato.easing.linear,
+		subscribed = function(h)
+			box.height = h
+		end
+	}
 
-local arroy = wibox.widget {
-	widget = wibox.container.background,
-	{
-		widget = wibox.container.margin,
-		margins = { left = 4, right = 4 },
+	anim.target = 150
+
+	local arroy_icon = wibox.widget {
+		widget = wibox.widget.textbox,
+		font = beautiful.font_name .. " " .. tostring(beautiful.font_size + 3),
+		text = ""
+	}
+
+	local arroy = wibox.widget {
+		widget = wibox.container.background,
 		{
-			widget = wibox.widget.textbox,
-			id = "arroy",
-			font = beautiful.font_name .. " " .. tostring(beautiful.font_size + 3),
-			text = ""
+			widget = wibox.container.margin,
+			margins = { left = 4, right = 4 },
+			arroy_icon
 		}
 	}
-}
 
-arroy:connect_signal("mouse::enter", function()
-	helpers.ui.transitionColor {
-		old = beautiful.bg_alt,
-		new = beautiful.bg_urgent,
-		transformer = function(col)
-			arroy:set_bg(col)
-		end,
-		duration = 0.8
-	}
-end)
-arroy:connect_signal("mouse::leave", function()
-	helpers.ui.transitionColor {
-		old = beautiful.bg_urgent,
-		new = beautiful.bg_alt,
-		transformer = function(col)
-		arroy:set_bg(col)
-		end,
-		duration = 0.8
-	}
-end)
-
-local box_height = math.min(string.len(n.message), 400) + 120
-
-if string.len(n.message) > 60 then
-	box:get_children_by_id("arroy")[1]:insert(2, arroy)
-end
-
-arroy:buttons {
-	awful.button({}, 1, function()
-		if not box_arroy then
-			anim.target = box_height
-			arroy:get_children_by_id("arroy")[1].text = ""
-		else
-			anim.target = 120
-			arroy:get_children_by_id("arroy")[1].text = ""
-		end
-		box_arroy = not box_arroy
+	arroy:connect_signal("mouse::enter", function()
+		helpers.ui.transitionColor {
+			old = beautiful.bg_alt,
+			new = beautiful.bg_urgent,
+			transformer = function(col)
+				arroy:set_bg(col)
+			end,
+			duration = 0.8
+		}
 	end)
-}
-
-box:buttons {
-	awful.button({}, 3, function()
-		self:remove_notif(box)
-		if self.remove_notifs_empty then
-			self.count_widget.text = ""
-		else
-			self.count_widget.text = "(" .. #self.container.children .. ")"
-		end
+	arroy:connect_signal("mouse::leave", function()
+		helpers.ui.transitionColor {
+			old = beautiful.bg_urgent,
+			new = beautiful.bg_alt,
+			transformer = function(col)
+				arroy:set_bg(col)
+			end,
+			duration = 0.8
+		}
 	end)
-}
 
-return box
+
+	if string.len(n.message) > 90 then
+		time_arroy:insert(2, arroy)
+	end
+
+	arroy:buttons {
+		awful.button({}, 1, function()
+			if not box_arroy then
+				anim.target = 500
+				arroy_icon.text = ""
+			else
+				anim.target = 150
+				arroy_icon.text = ""
+			end
+			box_arroy = not box_arroy
+		end)
+	}
+
+	box:buttons {
+		awful.button({}, 3, function()
+			self:remove_notif(box)
+			if self.remove_notifs_empty then
+				self.count_widget.text = ""
+			else
+				self.count_widget.text = "(" .. #self.container.children .. ")"
+			end
+		end)
+	}
+
+	return box
 end
 
 Notifs_list.container:insert(1, Notifs_list.empty_container)
