@@ -43,20 +43,24 @@ require("lazy").setup({
 	},
 	-- colorschemes
 	{ dir = '~/.config/nvim/colors/nymph' },
+	{ dir = '~/.config/nvim/colors/satyr' },
 	{ dir = '~/.config/nvim/colors/biscuit' },
 	{ dir = '~/.config/nvim/colors/mountain' },
 	{ dir = '~/.config/nvim/colors/gruvbox' },
+	{ dir = '~/.config/nvim/colors/gruvbox_light' },
 	{ dir = '~/.config/nvim/colors/everforest' },
 	{ dir = '~/.config/nvim/colors/catppuccin' },
+	{ dir = '~/.config/nvim/colors/catppuccin_latte' },
+	{ dir = '~/.config/nvim/colors/rosepine_dawn' },
 	{ dir = '~/.config/nvim/colors/stardew' },
-	  {
-    "NvChad/nvim-colorizer.lua",
-    config = function(_, opts)
-    require("colorizer").setup(opts)
-      -- execute colorizer as soon as possible
-      vim.defer_fn(function()
-        require("colorizer").attach_to_buffer(0)
-      end, 0)
-    end,
-  },
+	{
+		"NvChad/nvim-colorizer.lua",
+		config = function(_, opts)
+			require("colorizer").setup(opts)
+			-- execute colorizer as soon as possible
+			vim.defer_fn(function()
+				require("colorizer").attach_to_buffer(0)
+				end, 0)
+		end,
+	},
 })

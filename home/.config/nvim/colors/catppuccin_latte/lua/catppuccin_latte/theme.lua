@@ -1,4 +1,4 @@
-local p = require('biscuit.palette')
+local p = require('catppuccin_latte.palette')
 local M = {}
 
 function M.set_colors()

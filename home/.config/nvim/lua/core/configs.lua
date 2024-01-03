@@ -1,4 +1,5 @@
 -- Config --
+vim.opt.whichwrap:append "<>[]hl"
 vim.wo.number = true
 vim.wo.relativenumber = true
 vim.g.did_load_filetypes = 1
@@ -17,7 +18,7 @@ vim.opt.mouse = "a"
 vim.opt.mousefocus = true
 -- Line Numbers
 vim.opt.number = true
-vim.opt.relativenumber = false
+vim.opt.relativenumber = true
 vim.opt.cursorline = true
 vim.opt.cursorlineopt = "number"
 -- Splits

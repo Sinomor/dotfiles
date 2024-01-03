@@ -21,3 +21,7 @@ vim.keymap.set('n', '<leader>lf', vim.diagnostic.open_float)
 vim.keymap.set('n', '[l', vim.diagnostic.goto_prev)
 vim.keymap.set('n', ']l', vim.diagnostic.goto_next)
 vim.keymap.set('n', '<leader>ll', vim.diagnostic.setloclist)
+vim.keymap.set("n", "<leader>ff", "gg0vG=")
+
+vim.keymap.set("v", "p", 'p:let @+=@0<CR>:let @"=@0<CR>', { silent = true })
+

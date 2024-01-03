@@ -1,19 +1,20 @@
-local palette = {
-	bg = '#1A1515',
-	bg_alt = '#2D2424',
-	bg_urgent = '#453636',
-	fg_alt  = "#4c4c4c",
-	fg = '#FFE9C7',
+local p = {}
 
-	orange = '#F07342',
-	red = '#AE4750',
-	green = '#949f6b',
-	yellow = '#E39C45',
-	blue = '#614F76',
-	magenta = '#756D94',
-	cyan = '#ae3f8a',
+p.bg = '#181515'
+p.bg_alt = '#2B2626'
+p.bg_urgent = '#423939'
+p.fg_alt  = "#978787"
+p.fg = '#F4E6D2'
 
-	none = "NONE",
-}
+p.orange = '#E46A3A'
+p.red = '#AE4750'
+p.green = '#989F56'
+p.yellow = '#E39C45'
+p.blue = '#4A5A8D'
+p.magenta = '#9F569A'
+p.cyan = '#629386'
+p.accent = p.yellow
 
-return palette
+p.none = "NONE"
+
+return p

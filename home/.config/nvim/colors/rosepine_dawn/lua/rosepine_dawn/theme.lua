@@ -1,4 +1,4 @@
-local p = require('biscuit.palette')
+local p = require('rosepine_dawn.palette')
 local M = {}
 
 function M.set_colors()
@@ -17,16 +17,16 @@ function M.set_colors()
 		QuickFixLine = { bg = p.bg },
 		Terminal = { fg= p.fg, bg = p.fg },
 
-		IncSearch = { fg = p.bg, bg = p.accent },
-		Search = { fg = p.bg, bg = p.accent },
-		Visual = { fg = p.bg, bg = p.accent },
+		IncSearch = { fg = p.bg, bg = p.cyan },
+		Search = { fg = p.bg, bg = p.cyan },
+		Visual = { fg = p.bg, bg = p.cyan },
 		VisualNOS = { bg = p.bg },
 
 		Cursor = { fg = p.fg, bg = p.fg },
 		CursorColumn = { bg = p.bg_alt },
 		CursorIM = { fg = p.fg, bg = p.fg },
 		CursorLine = { bg = p.bg_alt },
-		CursorLineNr = { fg = p.accent },
+		CursorLineNr = { fg = p.cyan },
 		lCursor = { fg = p.fg, bg = p.fg },
 		LineNr = { fg = p.fg_alt, bg = p.bg },
 		TermCursor = { fg = p.fg, bg = p.fg },
@@ -44,7 +44,7 @@ function M.set_colors()
 		MoreMsg = { fg = p.fg },
 		MsgArea = { fg = p.fg, bg = p.bg },
 		MsgSeparator = { fg = p.bg_urgent, bg = p.bg },
-		Question = { fg = p.accent },
+		Question = { fg = p.cyan },
 
 		MatchParen = { fg = p.yellow },
 		NonText = { fg = p.fg_alt },
@@ -53,20 +53,20 @@ function M.set_colors()
 
 		Pmenu = { fg = p.fg, bg = p.bg_alt },
 		PmenuSbar = { bg = p.bg_urgent },
-		PmenuSel = { fg = p.bg, bg = p.accent },
-		PmenuThumb = { bg = p.accent },
+		PmenuSel = { fg = p.bg, bg = p.cyan },
+		PmenuThumb = { bg = p.cyan },
 		WildMenu = { fg = p.fg, bg = p.bg_alt },
 		NormalFloat = { fg = p.fg, bg = p.bg_alt },
 
 		TabLine = { fg = p.fg, bg = p.bg },
 		TabLineFill = { fg = p.fg, bg = p.bg },
-		TabLineSel = { fg = p.accent, bg = p.bg },
+		TabLineSel = { fg = p.cyan, bg = p.bg },
 		StatusLine = { fg = p.fg, bg = p.bg },
 		StatusLineNC = { bg = p.bg, fg = p.bg },
 
 		SpellBad = { fg = p.red },
 		SpellCap = { fg = p.blue },
-		SpellLocal = { fg = p.accent },
+		SpellLocal = { fg = p.cyan },
 		SpellRare = { fg = p.magenta },
 
 		-- syntax
@@ -97,7 +97,7 @@ function M.set_colors()
 		StorageClass = { fg = p.blue },
 		String = { fg = p.green },
 		Structure = { fg = p.blue },
-		Substitute = { fg = p.accent },
+		Substitute = { fg = p.cyan },
 		Tag = { fg = p.red },
 		Title = { fg = p.magenta },
 		Type = { fg = p.blue },
@@ -114,11 +114,11 @@ function M.set_colors()
 
 		-- bufferline.nvim: https://github.com/akinsho/bufferline.nvim
 		BufferLineFill = { fg = p.bg, bg = p.bg },
-		BufferLineIndicatorSelected = { fg = p.accent },
+		BufferLineIndicatorSelected = { fg = p.cyan },
 
 		-- Diagnostic
 		DiagnosticError = { fg = p.red },
-		DiagnosticHint = { fg = p.accent },
+		DiagnosticHint = { fg = p.cyan },
 		DiagnosticInfo = { fg = p.blue },
 		DiagnosticWarn = { fg = p.yellow },
 
@@ -150,10 +150,10 @@ function M.set_colors()
 		NvimTreeGitDirty = { fg = p.red },
 		NvimTreeGitNew = { fg = p.blue },
 		NvimTreeImageFile = { fg = p.fg_alt },
-		NvimTreeIndentMarker = { fg = p.accent },
+		NvimTreeIndentMarker = { fg = p.cyan },
 		NvimTreeNormal = { fg = p.fg, bg = p.bg },
 		NvimTreeNormalNC = { fg = p.fg, bg = p.bg },
-		NvimTreeOpenedFolderName = { fg = p.accent },
+		NvimTreeOpenedFolderName = { fg = p.cyan },
 		NvimTreeRootFolder = { fg = p.fg_alt },
 		NvimTreeSpecialFile = { fg = p.red },
 		NvimTreeStatusLineNC = { bg = p.bg, fg = p.bg },
@@ -166,12 +166,12 @@ function M.set_colors()
 		["@character"] = { fg = p.orange },
 		["@comment"] = { fg = p.fg_alt },
 		["@conditional"] = { fg = p.magenta },
-		["@constant"] = { fg = p.accent },
-		["@constant.builtin"] = { fg = p.accent },
-		["@constant.macro"] = { fg = p.accent },
+		["@constant"] = { fg = p.cyan },
+		["@constant.builtin"] = { fg = p.cyan },
+		["@constant.macro"] = { fg = p.cyan },
 		["@constructor"] = { fg = p.blue },
 		["@exception"] = { fg = p.magenta },
-		["@field"] = { fg = p.accent },
+		["@field"] = { fg = p.cyan },
 		["@float"] = { fg = p.yellow },
 		["@function"] = { fg = p.blue },
 		["@function.builtin"] = { fg = p.blue },
@@ -181,14 +181,14 @@ function M.set_colors()
 		["@keyword.function"] = { fg = p.red },
 		["@keyword.operator"] = { fg = p.red },
 		["@keyword.return"] = { fg = p.red },
-		["@label"] = { fg = p.accent },
+		["@label"] = { fg = p.cyan },
 		["@method"] = { fg = p.blue },
-		["@namespace"] = { fg = p.accent },
+		["@namespace"] = { fg = p.cyan },
 		["@number"] = { fg = p.yellow },
 		["@operator"] = { fg = p.red },
 		["@parameter"] = { fg = p.yellow },
 		["@parameter.reference"] = { fg = p.yellow },
-		["@property"] = { fg = p.accent },
+		["@property"] = { fg = p.cyan },
 		["@punctuation.bracket"] = { fg = p.fg },
 		["@punctuation.delimiter"] = { fg = p.fg },
 		["@punctuation.special"] = { fg = p.fg },
@@ -240,7 +240,7 @@ function M.set_colors()
 		-- telescope.nvim: https://github.com/nvim-telescope/telescope.nvim
 		TelescopeBorder = { fg = p.fg_alt, bg = p.bg },
 		TelescopeNormal = { fg = p.fg, bg = p.bg },
-		TelescopeSelection = { fg = p.bg, bg = p.accent },
+		TelescopeSelection = { fg = p.bg, bg = p.cyan },
 	}
 
 	vim.g.terminal_color_0 = p.bg
