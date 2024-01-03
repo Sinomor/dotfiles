@@ -1,5 +1,6 @@
 local colorsheme = {}
 
+colorsheme.name = "Stardew"
 colorsheme.bg = "#16161a"
 colorsheme.bg_alt = "#212126"
 colorsheme.bg_urgent = "#2a2a30"

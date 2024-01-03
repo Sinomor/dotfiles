@@ -5,14 +5,14 @@ local beautiful = require("beautiful")
 local helpers = require("helpers")
 local user = require("user")
 
-local launcher = require("ui.bar.modules.launcher")
-local keyboard = require("ui.bar.modules.keyboard")
-local tray = require("ui.bar.modules.tray")
-local clock = require("ui.bar.modules.clock")
-local battery = require("ui.bar.modules.battery")
-local info = require("ui.bar.modules.info")
-local layouts = require("ui.bar.modules.layouts")
-local taglist = require("ui.bar.modules.taglist")
+local launcher = require("ui.bar.mods.launcher")
+local keyboard = require("ui.bar.mods.keyboard")
+local tray = require("ui.bar.mods.tray")
+local clock = require("ui.bar.mods.clock")
+local battery = require("ui.bar.mods.battery")
+local info = require("ui.bar.mods.info")
+local layouts = require("ui.bar.mods.layouts")
+local taglist = require("ui.bar.mods.taglist")
 
 local Bar = {}
 

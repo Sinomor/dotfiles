@@ -70,7 +70,7 @@ Powermenu.popup = awful.popup {
 function Powermenu:next()
 	if self.index_element == 2 then
 		self.index_element = self.index_element + 2
-	elseif index_element ~= #self.elements then
+	elseif self.index_element ~= #self.elements then
 		self.index_element = self.index_element + 1
 	end
 end
@@ -106,7 +106,7 @@ function Powermenu:add_elements()
 			forced_height = 140,
 			buttons = {
 				awful.button({}, 1, function()
-					if index_element == i then
+					if self.index_element == i then
 						element:command()
 					else
 						self.index_element = i

@@ -5,22 +5,22 @@ local beautiful = require("beautiful")
 local helpers = require("helpers")
 local user = require("user")
 
-local Bright = require("scripts.signals.bright")
+local Bright = require("daemons.bright")
 local Volume = require("daemons.pipewire")
-local Wall = require("scripts.awesome.wallpapers")
+local Wall = require("scripts.wallpapers")
 
 local Launcher = require("ui.launcher")
 local Powermenu = require("ui.powermenu")
 local Control = require("ui.control")
-local Info = require("ui.bar.modules.info")
+local Info = require("ui.bar.mods.info")
 local Bar = require("ui.bar")
-local tray = require("ui.bar.modules.tray")
+local tray = require("ui.bar.mods.tray")
 local Wifi_applet = require("ui.control.main.wifi_applet")
 
-mod = "Mod4"
-alt = "Mod1"
-ctrl = "Control"
-shift = "Shift"
+local mod = "Mod4"
+local alt = "Mod1"
+local ctrl = "Control"
+local shift = "Shift"
 
 awful.keyboard.append_global_keybindings({
 

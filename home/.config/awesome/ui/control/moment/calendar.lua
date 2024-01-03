@@ -50,7 +50,7 @@ Cal.m_layout = wibox.widget {
 	forced_num_rows = 7,
 	forced_num_cols = 7,
 	vertical_spacing = 12,
-	horizontal_spacing = 26,
+	horizontal_spacing = 24,
 	layout = wibox.layout.grid,
 }
 if not user.control_fullscreen then

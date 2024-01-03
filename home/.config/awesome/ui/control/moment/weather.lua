@@ -2,6 +2,7 @@ local wibox = require("wibox")
 local awful = require("awful")
 local helpers = require("helpers")
 local beautiful = require("beautiful")
+local user = require("user")
 
 local Weather = {}
 
@@ -40,7 +41,7 @@ function Weather:add_hours(out)
 		local hour_temp = self:create_textbox("center")
 
 		local hour_widget = wibox.widget {
-			spacing = 8,
+			spacing = 10,
 			layout = wibox.layout.fixed.vertical,
 			hour_time,
 			hour_temp,
@@ -59,6 +60,7 @@ Weather.days_count = 7
 Weather.days_layout = wibox.widget {
 	layout = wibox.layout.overflow.horizontal,
 	forced_width = 450,
+	spacing = 20,
 	step = 50,
 	scrollbar_enabled = false,
 }
@@ -77,6 +79,9 @@ function Weather:add_days(out)
 			forced_height = 56,
 			widget = wibox.widget.textbox,
 		}
+		if user.control_fullscreen then
+			day_desc.forced_height = 78
+		end
 
 		local day_temp_max = self:create_textbox("center")
 		local day_temp_min = self:create_textbox("center")
@@ -84,7 +89,7 @@ function Weather:add_days(out)
 		local day_widget = wibox.widget {
 			layout = wibox.layout.fixed.vertical,
 			spacing = 10,
-			forced_width = 150,
+			forced_width = 130,
 			day,
 			day_icon,
 			day_desc,

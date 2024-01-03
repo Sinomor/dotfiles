@@ -4,7 +4,8 @@ local beautiful = require("beautiful")
 local rubato = require("modules.rubato")
 local helpers = require("helpers")
 local user = require("user")
-local Top = require("scripts.signals.top")
+
+local Top = require("daemons.processes")
 
 local System = {}
 
@@ -276,7 +277,7 @@ function System:top_massange(name, pid)
 	massange:get_children_by_id("button_yes")[1]:buttons {
 		awful.button({}, 1, function()
 			awful.spawn.with_shell("kill " .. pid)
-			Top.gen_top_list()
+			Top:gen_top_list()
 			self.top_widget:get_children_by_id("top_comp")[1]:remove(3)
 			self.top_container.forced_height = 250
 		end)

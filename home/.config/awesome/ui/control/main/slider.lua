@@ -57,8 +57,8 @@ local function create_slider(args)
 	end)
 
 	slider:connect_signal("button::press", function()
-		slider:connect_signal("property::value", function(_, new_value)
-			awful.spawn.with_shell(string.format(args.command, new_value))
+		slider:connect_signal("property::value", function()
+			if args.func then args.func(slider.value) end
 		end)
 	end)
 

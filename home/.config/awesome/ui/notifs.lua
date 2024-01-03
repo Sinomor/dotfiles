@@ -8,6 +8,15 @@ local rubato = require("modules.rubato")
 local helpers = require("helpers")
 local user = require("user")
 
+local pos = {
+	["Top Left"] = "top_left",
+	["Top Right"] = "top_right",
+	["Top Center"] = "top_middle",
+	["Bottom Left"] = "bottom_left",
+	["Bottom Right"] = "bottom_right",
+	["Bottom Center"] = "bottom_middle"
+}
+
 naughty.connect_signal("request::display_error", function(message, startup)
 	naughty.notification {
 		urgency = "critical",
@@ -24,7 +33,7 @@ ruled.notification.connect_signal('request::rules', function()
 		properties = {
 			screen = awful.screen.preferred,
 			implicit_timeout = 4,
-			position = user.notifs_pos,
+			position = pos[user.notifs_pos],
 			spacing = beautiful.useless_gap * 2,
 			bg = beautiful.bg,
 			fg = beautiful.fg,
@@ -38,7 +47,7 @@ ruled.notification.connect_signal('request::rules', function()
 		properties = {
 			screen = awful.screen.preferred,
 			implicit_timeout = 4,
-			position = user.notifs_pos,
+			position = pos[user.notifs_pos],
 			spacing = beautiful.useless_gap * 2,
 			bg = beautiful.bg,
 			fg = beautiful.red,
@@ -84,6 +93,9 @@ naughty.connect_signal("request::display", function(n)
 		halign = "left",
 		markup = n.message or n.text,
 	}
+	if n.urgency == "critical" then
+		text.markup = helpers.ui.colorizeText(n.message or n.text, beautiful.red)
+	end
 
 	naughty.layout.box {
 		notification = n,

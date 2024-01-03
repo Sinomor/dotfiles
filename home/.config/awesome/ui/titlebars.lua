@@ -146,9 +146,7 @@ function Titlebar:create_titlebar(c, pos)
 		awful.mouse.client.move(c)
 	end),
 	awful.button({ }, 3, function()
-		client.focus = c
-		c:raise()
-		awful.mouse.client.resize(c)
+
 	end)
 	)
 
@@ -173,6 +171,13 @@ function Titlebar:create_titlebar(c, pos)
 			c:kill()
 		end
 		)
+
+		Titlebar.resize = Titlebar.create_button_v(c, beautiful.orange, "resize",
+		function ()
+			client.focus = c
+			c:raise()
+			awful.mouse.client.resize(c)
+		end)
 
 		Titlebar.bar = awful.titlebar(c, {
 			size = 36,
@@ -199,8 +204,9 @@ function Titlebar:create_titlebar(c, pos)
 				buttons = Titlebar.buttons,
 			},
 			{
-				widget = wibox.container.background,
-				buttons = Titlebar.buttons
+				widget = wibox.container.margin,
+				margins = { right = 12, left = 12, bottom = 12 },
+				Titlebar.resize
 			}
 		}
 
@@ -226,6 +232,13 @@ function Titlebar:create_titlebar(c, pos)
 		end
 		)
 
+		Titlebar.resize = Titlebar.create_button_h(c, beautiful.orange, "resize",
+		function ()
+			client.focus = c
+			c:raise()
+			awful.mouse.client.resize(c)
+		end)
+
 		Titlebar.bar = awful.titlebar(c, {
 			size = 36,
 			position = user.titlebar_pos:lower()
@@ -247,8 +260,9 @@ function Titlebar:create_titlebar(c, pos)
 				buttons = Titlebar.buttons,
 			},
 			{
-				widget = wibox.container.background,
-				buttons = Titlebar.buttons
+				widget = wibox.container.margin,
+				margins = { right = 12, bottom = 12, top = 12 },
+				Titlebar.resize
 			}
 		}
 

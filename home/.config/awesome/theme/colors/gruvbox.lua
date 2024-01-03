@@ -1,5 +1,6 @@
 local colorsheme = {}
 
+colorsheme.name = "Gruvbox"
 colorsheme.bg = "#282828"
 colorsheme.bg_alt = "#3c3836"
 colorsheme.bg_urgent = "#504945"

@@ -11,8 +11,8 @@ local Create_toggle = require("ui.control.main.toggle")
 local Create_slider = require("ui.control.main.slider")
 
 local Bluetooth = require("daemons.bluetooth")
-local Bright = require("scripts.signals.bright")
 local Volume = require("daemons.pipewire")
+local Bright = require("daemons.bright")
 local Wifi = require("daemons.wifi")
 local Wifi_applet = require("ui.control.main.wifi_applet")
 local Notifs_list = require("ui.control.main.notifs_list")
@@ -25,7 +25,9 @@ local Main = {}
 Main.volume = Create_slider({
 	color = beautiful.orange,
 	signal = "signal::volume",
-	command = "amixer -D pipewire sset Master %d%%"
+	func = function(value)
+		Volume:set_value(value)
+	end
 })
 Main.volume:buttons {
 	awful.button({}, 3, function()
@@ -34,9 +36,11 @@ Main.volume:buttons {
 }
 
 Main.bright = Create_slider({
-	signal = "signal::bright",
 	color = beautiful.violet,
-	command = "brightnessctl s %d%%"
+	signal = "signal::bright",
+	func = function(value)
+		Bright:set_value(value)
+	end
 })
 
 Main.info = wibox.widget {
@@ -112,7 +116,7 @@ Main.dnd_toggle = Create_toggle({
 	value = "On",
 	arroy_visible = false,
 	click_func = function()
-		local Info = require("ui.bar.modules.info")
+		local Info = require("ui.bar.mods.info")
 		Info:dnd_toggle()
 		if naughty.is_suspended() then
 			Main.dnd_toggle.change("on")

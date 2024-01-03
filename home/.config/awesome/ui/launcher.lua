@@ -1,24 +1,21 @@
 local awful = require("awful")
-local naughty = require("naughty")
 local wibox = require("wibox")
 local lgi = require("lgi")
 local Gio = lgi.Gio
-local Gtk = lgi.require("Gtk", "3.0")
 local beautiful = require("beautiful")
 local helpers = require("helpers")
 local user = require("user")
 local gears = require("gears")
 local dir = "~/.disk/Books/'10 класс'/"
-local Powermenu = require("ui.powermenu")
-local icon_theme = Gtk.IconTheme.get_default()
 
+local Powermenu = require("ui.powermenu")
 local Launcher = {}
 local Tabbar = {}
 
 -- bar module --
 
 local Bar = require("ui.bar")
-local launcher = require("ui.bar.modules.launcher")
+local launcher = require("ui.bar.mods.launcher")
 launcher.text:buttons {
 	awful.button({}, 1, function()
 		Launcher:toggle()
@@ -40,7 +37,7 @@ Tabbar.elems = {
 	{ name = "clients", icon = "", index = 4 }
 }
 
-if user.control_fullscreen then
+if user.launcher_fullscreen then
 	Tabbar.e_container = wibox.widget {
 		homogeneous = false,
 		expand = false,
@@ -166,7 +163,7 @@ Tabbar.main_widget = {
 		widget = wibox.container.margin,
 		margins = 10,
 		{
-			layout = wibox.layout.align.horizontal,
+			layout = user.launcher_fullscreen and wibox.layout.align.horizontal or wibox.layout.align.vertical,
 			Tabbar.e_container,
 			nil,
 			Tabbar.power_button
@@ -230,7 +227,6 @@ if user.launcher_fullscreen then
 	Launcher.popup = awful.popup {
 		ontop = true,
 		visible = false,
-		x = 56,
 		minimum_height = screen[1].geometry.height,
 		minimum_width = 510 + beautiful.border_width,
 		maximum_width = 510 + beautiful.border_width,
@@ -253,9 +249,8 @@ else
 	Launcher.popup = awful.popup {
 		ontop = true,
 		visible = false,
-		x = 56,
-		minimum_height = 60 * Launcher.entries_count + 10 * 12 + 20,
-		maximum_height = 60 * Launcher.entries_count + 10 * 12 + 20,
+		minimum_height = 60 * (Launcher.entries_count + 1) + 10 * Launcher.entries_count + 20,
+		maximum_height = 60 * (Launcher.entries_count + 1) + 10 * Launcher.entries_count + 20,
 		minimum_width = 510 + beautiful.border_width,
 		maximum_width = 510 + beautiful.border_width,
 		border_width = beautiful.border_width,
@@ -446,6 +441,7 @@ function Launcher:run_prompt()
 		prompt = "Search: ",
 		textbox = self.prompt,
 		bg_cursor = beautiful.bg_alt,
+		fg_cursor = beautiful.fg,
 		done_callback = function()
 			self:close()
 		end,
@@ -496,7 +492,6 @@ function Launcher:open(mode)
 	self.state = true
 	if self.state then
 		Bar:change_bg_container(launcher.widget, "on")
-		self.popup.visible = true
 		if user.bar_pos == "Left" and user.launcher_fullscreen then
 			self.popup.placement = function(d)
 				awful.placement.right(d)
@@ -518,6 +513,7 @@ function Launcher:open(mode)
 				awful.placement.left(d)
 			end
 		end
+		self.popup.visible = true
 	end
 
 	mode = mode or "launcher"

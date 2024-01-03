@@ -4,7 +4,8 @@ local beautiful = require("beautiful")
 local helpers = require("helpers")
 local user = require("user")
 local rubato = require("modules.rubato")
-local top = require("scripts.signals.top")
+
+local Top = require("daemons.processes")
 
 local System = require("ui.control.system")
 local Moment = require("ui.control.moment")
@@ -18,8 +19,8 @@ local Control = {}
 -- bar modules --
 
 local Bar = require("ui.bar")
-local Clock = require("ui.bar.modules.clock")
-local Info = require("ui.bar.modules.info")
+local Clock = require("ui.bar.mods.clock")
+local Info = require("ui.bar.mods.info")
 
 Clock.widget:buttons {
 	awful.button({}, 1, function()
@@ -99,10 +100,10 @@ end
 
 function Tabbar:toggle_timers(x)
 	if x then
-		top:gen_top_list()
-		top.timer:start()
+		Top:gen_top_list()
+		Top.timer:start()
 	else
-		top.timer:stop()
+		Top.timer:stop()
 	end
 end
 
@@ -201,15 +202,15 @@ function Control:open(mode)
 
 	if (user.bar_pos == "Right" or user.bar_pos == "Bottom") and not user.control_fullscreen then
 		self.popup.placement = function(d)
-			awful.placement.bottom_right(d, { honor_workarea = true, margins = beautiful.useless_gap*2 })
+			awful.placement.bottom_right(d, { honor_workarea = true, margins = beautiful.useless_gap * 2 })
 		end
 	elseif user.bar_pos == "Top" and not user.control_fullscreen then
 		self.popup.placement = function(d)
-			awful.placement.top_right(d, { honor_workarea = true, margins = beautiful.useless_gap*2 })
+			awful.placement.top_right(d, { honor_workarea = true, margins = beautiful.useless_gap * 2 })
 		end
 	elseif user.bar_pos == "Left" and not user.control_fullscreen then
 		self.popup.placement = function(d)
-			awful.placement.bottom_left(d, { honor_workarea = true, margins = beautiful.useless_gap*2 })
+			awful.placement.bottom_left(d, { honor_workarea = true, margins = beautiful.useless_gap * 2 })
 		end
 	elseif user.bar_pos == "Right" and user.control_fullscreen then
 		self.popup.placement = function(d)

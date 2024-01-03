@@ -27,7 +27,7 @@ local function create_inputbox(var, name)
 				end
 				prompt.markup = input
 				user[var] = input
-				awful.spawn.easy_async_with_shell([[ sed -i -e "s/user.]] ..var.. [[ =.*/user.]] ..var.. [[ = ']] ..input.. [['/g" ]] ..user_file)
+				awful.spawn.easy_async_with_shell([[sed -i -e "s/user.]] ..var.. [[ =.*/user.]] ..var.. [[ = ']] ..input.. [['/g" ]] ..user_file)
 			end
 		})
 	end

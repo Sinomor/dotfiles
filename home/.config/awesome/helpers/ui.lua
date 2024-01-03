@@ -14,13 +14,13 @@ function _ui.rrect(radius)
 end
 
 function _ui.recolor_image(image, color)
-	awful.spawn.easy_async_with_shell("convert " ..image.. " -alpha extract -background '" ..color.. "' -alpha shape -define png:color-type=6 " ..image)
+	if not image then return end
+	if not color then color = beautiful.foreground end
+	os.execute("convert " .. image .. " -alpha extract -background '" .. color .. "' -alpha shape -define png:color-type=6 " .. image)
 end
 
 function _ui.colorizeText(txt, fg)
-	if fg == nil then
-		fg = beautiful.fg
-	end
+	if not fg then fg = beautiful.fg end
 	return "<span foreground='" .. fg .. "'>" .. txt .. "</span>"
 end
 

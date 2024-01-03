@@ -4,12 +4,13 @@ local beautiful = require("beautiful")
 local user = require("user")
 local helpers = require("helpers")
 local user_file = "~/.config/awesome/user.lua"
+local naughty = require("naughty")
 
 local function create_pathbox(var, name)
 
 	local prompt = wibox.widget {
 		widget = wibox.widget.textbox,
-		markup = user[var]:gsub(user.home, "~/")
+		markup = user[var]
 	}
 
 	local text = wibox.widget {
@@ -33,11 +34,8 @@ local function create_pathbox(var, name)
 				if reason == "exit" then
 					if stdout ~= "" then
 						local write = stdout:gsub([[/]], [[\/]])
-						local save_command = [[ 
-							bash -c "sed -i -e "s/user.]] ..var.. [[ =.*/user.]] ..var.. [[ = ']] ..write.. [['/g"]] ..user_file.. [["
-						]]
-						awful.spawn.easy_async_with_shell(save_command)
-						prompt.markup = stdout:gsub(user.home, "~/")
+						prompt.markup = stdout
+						awful.spawn.easy_async_with_shell([[sed -i -e "s/user.]] ..var.. [[ =.*/user.]] ..var.. [[ = ']] ..write.. [['/g" ]] .. user_file)
 					end
 				end
 			end)

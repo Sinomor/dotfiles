@@ -1,5 +1,6 @@
 local colorsheme = {}
 
+colorsheme.name = "Catppuccin"
 colorsheme.bg = "#1e1e2e"
 colorsheme.bg_alt = "#28283e"
 colorsheme.bg_urgent = "#32324d"

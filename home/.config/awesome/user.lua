@@ -9,16 +9,25 @@ user.useless_gap = 5
 user.border_width = 2
 user.bar_size = 56
 
+-- system --
+
+user.battery = "BAT1"
+
 -- username --
 
 user.name = os.getenv("USER")
+
+-- widgets vars --
 
 user.titlebar_pos = 'Top'
 user.launcher_fullscreen = false
 user.control_fullscreen = false
 user.bar_pos = 'Bottom'
-user.notifs_pos = 'top_middle'
+user.notifs_pos = 'Top Center'
 user.bar_float = true
+
+-- compositor opacity --
+
 user.opacity_value = false
 
 -- actual colorsheme --
@@ -39,10 +48,11 @@ user.awm_config = user.home .. ".config/awesome/"
 
 user.wall_type = 'Random'
 user.wall_update = 1800
-user.wallpaper = '/home/sinomor/wall.jpg'
+user.wall_path = '/home/sinomor/frieren.jpg'
 user.wall_color = '#fbf1c7'
 user.wall_tile_size = 30
 user.wall_tile_type = 'Diagonal Line'
+user.wall_tile_icon = '󰘧'
 
 -- applications --
 

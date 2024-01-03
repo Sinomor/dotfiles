@@ -1,11 +1,8 @@
 local wibox = require("wibox")
 local awful = require("awful")
 local beautiful = require("beautiful")
-local rubato = require("modules.rubato")
 local user = require("user")
 local helpers = require("helpers")
-local user_file = "~/.config/awesome/user.lua"
-local naughty = require("naughty")
 
 local Pathbox = require("ui.control.config.create_pathbox")
 local Passbox = require("ui.control.config.create_passbox")
@@ -16,7 +13,7 @@ local Dropmenu = require("ui.control.config.create_dropmenu")
 local Themer_widget = require("ui.control.config.create_themer")
 
 local Themer = require("daemons.themer")
-local Wall = require("scripts.awesome.wallpapers")
+local Wall = require("scripts.wallpapers")
 
 local Config = {}
 
@@ -106,10 +103,18 @@ Config.ui_wall_update = Numberbox("wall_update", "Cycle Wall")
 Config.ui_wall_color = Inputbox("wall_color", "Wallpaper Color")
 Config.ui_wall_tile_type = Dropmenu("wall_tile_type", "Wallpaper Tile Type", { "Diagonal Line", "Dots" })
 Config.ui_wall_tile_size = Numberbox("wall_tile_size", "Wallpaper Tile Size")
+Config.ui_wall_path = Pathbox("wall_path", "Wallpaper Path")
 
 Config.ui_bar_pos = Dropmenu("bar_pos", "Bar Position", { "Right", "Left", "Top", "Bottom" })
 Config.ui_titlebar_pos = Dropmenu("titlebar_pos", "Titlebar Position", { "Right", "Left", "Top", "Bottom" })
-Config.ui_notifs_pos = Dropmenu("notifs_pos", "Notifs Position", { "top_right", "top_middle", "top_left", "bottom_right", "bottom_middle", "bottom_left" })
+Config.ui_notifs_pos = Dropmenu("notifs_pos", "Notifs Position", { 
+	"Top Right",
+	"Top Center",
+	"Top Left",
+	"Bottom Right",
+	"Bottom Center",
+	"Bottom Left"
+})
 Config.ui_opacity = Toggle("opacity_value", "Compositor Opacity")
 Config.ui_launcher = Toggle("launcher_fullscreen", "Fullscreen Launcher")
 Config.ui_control = Toggle("control_fullscreen", "Fullscreen Control")
@@ -124,6 +129,7 @@ Config.ui_layout = wibox.widget {
 	Config.ui_gaps,
 	Config.ui_border_width,
 	Config.ui_bar_size,
+	--Config.ui_wall_path,
 	Config.ui_bar_float,
 	Config.ui_wall_type,
 	Config.ui_titlebar_pos,
@@ -207,13 +213,13 @@ function Config:add_missing(var, value)
 		else
 			self.ui_layout:remove(self.ui_layout:index(self.ui_wall_update))
 		end
-		if value == "Colorized" then
-			if self.ui_layout:index(self.ui_wall_color) == nil then
-				self.ui_layout:insert(wall_index + 1, self.ui_wall_color)
-			end
-		else
-			self.ui_layout:remove(self.ui_layout:index(self.ui_wall_color))
-		end
+		--if value == "Colorized" then
+		--	if self.ui_layout:index(self.ui_wall_color) == nil then
+		--		self.ui_layout:insert(wall_index + 1, self.ui_wall_color)
+		--	end
+		--else
+		--	self.ui_layout:remove(self.ui_layout:index(self.ui_wall_color))
+		--end
 		if value == "Tile" then
 			if self.ui_layout:index(self.ui_wall_tile_type) == nil then
 				self.ui_layout:insert(wall_index + 1, self.ui_wall_tile_type)
@@ -238,6 +244,8 @@ awesome.connect_signal("droplist::change", function(var, value)
 			Wall:change_wall("Random")
 		elseif value == "Tile" then
 			Wall:change_wall("Tile")
+		elseif value == "Colorized" then
+			Wall:change_wall("Colorized", beautiful.bg)
 		end
 	end
 end)

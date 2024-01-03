@@ -7,7 +7,19 @@ local user_file = "~/.config/awesome/user.lua"
 
 local Themer = {}
 
-Themer.colorshemes = { "biscuit", "rosepine_light", "everforest", "mountain", "stardew", "catppuccin", "gruvbox", "gruvbox_light", "nymph" }
+Themer.colorshemes = {
+	"biscuit",
+	"catppuccin",
+	"catppuccin_latte",
+	"everforest",
+	"gruvbox",
+	"gruvbox_light",
+	"mountain",
+	"nymph",
+	"rosepine_dawn",
+	"satyr",
+	"stardew"
+}
 Themer.colors = { "bg", "bg_urgent", "fg", "fg_alt", "green", "yellow", "blue", "red", "orange", "violet", "cyan" }
 
 function Themer:create_theme_color(color, name)
@@ -50,7 +62,7 @@ function Themer:create_themes(colorsheme)
 	local text = wibox.widget {
 		widget = wibox.widget.textbox,
 		font = beautiful.font_name .. " " .. tostring(beautiful.font_size + 1),
-		markup = colorsheme:gsub("^%l", string.upper)
+		markup = clsh.name
 	}
 
 	local colors_layout = wibox.widget {

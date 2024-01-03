@@ -12,7 +12,7 @@
 	"workspace": {
 		"library": [
 			"/usr/share/awesome/lib/",
-			"/usr/share/lua/5.4/lgi"
+			"/usr/share/lua/5.1/lgi"
 		],
 		"maxPreload": 2000,
 		"preloadFileSize": 1000

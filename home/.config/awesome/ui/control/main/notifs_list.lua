@@ -55,6 +55,8 @@ Notifs_list.container = wibox.widget {
 }
 if not user.control_fullscreen then
 	Notifs_list.container.forced_height = 420
+else
+	Notifs_list.container.forced_height = 480
 end
 
 Notifs_list.remove_notifs_empty = true
@@ -104,6 +106,9 @@ function Notifs_list:create_notif(icon, n, width)
 		valign = "top",
 		widget = wibox.widget.textbox,
 	}
+	if n.urgency == "critical" then
+		n_text.markup = helpers.ui.colorizeText(n.message or n.text, beautiful.red)
+	end
 
 	local time_arroy = wibox.widget {
 		layout = wibox.layout.fixed.horizontal,

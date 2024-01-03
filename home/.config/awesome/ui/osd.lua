@@ -52,16 +52,25 @@ Osd.popup = awful.popup {
 	maximum_width = 290,
 	placement = function(d)
 		awful.placement.bottom(d, {
+			honor_workarea = true,
 			margins = beautiful.useless_gap * 4 + beautiful.border_width * 2
 		})
 	end,
 	widget = Osd.main_widget,
 }
 
+Osd.anim = rubato.timed {
+	duration = 0.3,
+	easing = rubato.easing.linear,
+	subscribed = function(value)
+		Osd.progressbar.value = value
+	end
+}
+
 -- volume --
 
 awesome.connect_signal("signal::volume", function(value, icon)
-	Osd.progressbar.value = value
+	Osd.anim.target = value
 	Osd.value_text.text = value
 	Osd.icon.text = icon
 end)
@@ -69,7 +78,7 @@ end)
 -- bright --
 
 awesome.connect_signal("signal::bright", function(value, icon)
-	Osd.progressbar.value = value
+	Osd.anim.target = value
 	Osd.value_text.text = value
 	Osd.icon.text = icon
 end)
