@@ -18,6 +18,7 @@ function Top:gen_top_list()
 		end
 		if reason == "exit" then
 			awesome.emit_signal("signal::top", list)
+			collectgarbage("collect")
 		end
 	end)
 end

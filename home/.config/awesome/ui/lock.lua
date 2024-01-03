@@ -79,6 +79,11 @@ Lock.button = wibox.widget {
 	font = beautiful.font_name .. " " .. tostring(beautiful.font_size + 1),
 }
 
+Lock.promptbox_layout = wibox.widget {
+	layout = wibox.layout.fixed.horizontal,
+	Lock.prompt,
+}
+
 Lock.promptbox = wibox.widget {
 	widget = wibox.container.background,
 	bg = beautiful.bg_alt,
@@ -89,11 +94,7 @@ Lock.promptbox = wibox.widget {
 		margins = { right = 10, left = 10 },
 		{
 			layout = wibox.layout.align.horizontal,
-			{
-				layout = wibox.layout.fixed.horizontal,
-				id = "main",
-				Lock.prompt,
-			},
+			Lock.promptbox_layout,
 			nil,
 			Lock.button
 		}
@@ -137,12 +138,12 @@ Lock.popup = awful.popup {
 Lock.pass_hide = true
 
 function Lock:toggle_password()
-	self.promptbox:get_children_by_id("main")[1]:remove(1)
+	self.promptbox_layout:reset()
 	if self.pass_hide then
-		self.promptbox:get_children_by_id("main")[1]:insert(1, self.prompt_pass)
+		self.promptbox_layout:add(self.prompt_pass)
 		self.button.text = ""
 	else
-		self.promptbox:get_children_by_id("main")[1]:insert(1, self.prompt)
+		self.promptbox_layout:add(self.prompt)
 		self.button.text = ""
 	end
 	self.pass_hide = not self.pass_hide

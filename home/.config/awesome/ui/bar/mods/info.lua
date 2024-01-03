@@ -37,6 +37,7 @@ I.bluetooth = wibox.widget {
 function I:create_v()
 	self.widget = wibox.widget {
 		widget = wibox.container.background,
+		state = false,
 		bg = beautiful.bg_alt,
 		buttons = self.button,
 		{
@@ -57,6 +58,7 @@ end
 function I:create_h()
 	self.widget = wibox.widget {
 		widget = wibox.container.background,
+		state = false,
 		bg = beautiful.bg_alt,
 		buttons = self.button,
 		{

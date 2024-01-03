@@ -13,6 +13,7 @@ L.text = wibox.widget {
 function L:create_v()
 	self.widget = wibox.widget {
 		widget = wibox.container.background,
+		state = false,
 		bg = beautiful.bg_alt,
 		{
 			widget = wibox.container.margin,
@@ -26,6 +27,7 @@ end
 function L:create_h()
 	self.widget =  wibox.widget {
 		widget = wibox.container.background,
+		state = false,
 		bg = beautiful.bg_alt,
 		{
 			widget = wibox.container.margin,

@@ -14,7 +14,9 @@ local Wifi = require("daemons.wifi")
 
 require("daemons.stats")
 require("daemons.weather")
+if user.battery then
 require("daemons.bat")
+end
 
 gears.timer {
 	autostart = true,

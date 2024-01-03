@@ -100,6 +100,11 @@ Wifi.hide_button = wibox.widget {
 	halign = "right"
 }
 
+Wifi.passbox_layout = wibox.widget {
+	layout = wibox.layout.fixed.horizontal,
+	Wifi.passbox_prompt_hide
+}
+
 Wifi.passbox = wibox.widget {
 	widget = wibox.container.background,
 	forced_width = 370,
@@ -141,11 +146,7 @@ Wifi.passbox = wibox.widget {
 						widget = wibox.widget.textbox,
 						text = "Password: "
 					},
-					{
-						layout = wibox.layout.fixed.horizontal,
-						id = "prompt",
-						Wifi.passbox_prompt_hide
-					},
+					Wifi.passbox_layout,
 					Wifi.hide_button,
 				}
 			}
@@ -156,12 +157,12 @@ Wifi.passbox = wibox.widget {
 Wifi.pass_hide = true
 
 function Wifi:toggle_password()
-	self.passbox:get_children_by_id("prompt")[1]:remove(1)
+	self.passbox_layout:reset()
 	if self.pass_hide then
-		self.passbox:get_children_by_id("prompt")[1]:insert(1, self.passbox_prompt)
+		self.passbox_layout:add(self.passbox_prompt)
 		self.hide_button.text = ""
 	else
-		self.passbox:get_children_by_id("prompt")[1]:insert(1, self.passbox_prompt_hide)
+		self.passbox_layout:add(self.passbox_prompt_hide)
 		self.hide_button.text = ""
 	end
 	self.pass_hide = not self.pass_hide

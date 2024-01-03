@@ -6,6 +6,7 @@ local C = {}
 function C:create_v()
 	self.widget = wibox.widget {
 		widget = wibox.container.background,
+		state = false,
 		bg = beautiful.bg_alt,
 		{
 			widget = wibox.container.margin,
@@ -24,6 +25,7 @@ end
 function C:create_h()
 	self.widget = wibox.widget {
 		widget = wibox.container.background,
+		state = false,
 		bg = beautiful.bg_alt,
 		{
 			widget = wibox.container.margin,

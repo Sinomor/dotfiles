@@ -24,12 +24,7 @@ Themer.colors = { "bg", "bg_urgent", "fg", "fg_alt", "green", "yellow", "blue", 
 
 function Themer:create_theme_color(color, name)
 
-	local widget = wibox.widget {
-		widget = wibox.container.background,
-		forced_width = 30,
-		forced_height = 30,
-		bg = color
-	}
+	local widget = helpers.ui.create_point(color, 30)
 
 	local popup = awful.tooltip {
 		objects = { widget },

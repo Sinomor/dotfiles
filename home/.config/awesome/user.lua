@@ -11,7 +11,8 @@ user.bar_size = 56
 
 -- system --
 
-user.battery = "BAT1"
+user.battery = false
+user.bat_device = "BAT1"
 
 -- username --
 
@@ -24,7 +25,7 @@ user.launcher_fullscreen = false
 user.control_fullscreen = false
 user.bar_pos = 'Bottom'
 user.notifs_pos = 'Top Center'
-user.bar_float = true
+user.bar_float = false
 
 -- compositor opacity --
 

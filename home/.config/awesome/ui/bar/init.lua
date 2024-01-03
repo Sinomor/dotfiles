@@ -61,7 +61,7 @@ function Bar:create_bar_v(s, pos, margins)
 				tray:create_v(),
 				info:create_v(),
 				keyboard:create_v(),
-				battery:create_v(),
+				user.battery and battery:create_v(),
 				layouts:create()
 			}
 		}
@@ -133,7 +133,7 @@ function Bar:create_bar_h(s, pos, margins)
 				tray:create_h(),
 				info:create_h(),
 				keyboard:create_h(),
-				battery:create_h(),
+				user.battery and battery:create_h(),
 				layouts:create()
 			}
 		}

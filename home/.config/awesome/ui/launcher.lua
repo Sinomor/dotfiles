@@ -5,8 +5,6 @@ local Gio = lgi.Gio
 local beautiful = require("beautiful")
 local helpers = require("helpers")
 local user = require("user")
-local gears = require("gears")
-local dir = "~/.disk/Books/'10 класс'/"
 
 local Powermenu = require("ui.powermenu")
 local Launcher = {}
@@ -31,29 +29,16 @@ else
 end
 
 Tabbar.elems = {
-	{ name = "launcher", icon = "", index = 1 },
-	{ name = "clipboard", icon = "", index = 2 },
-	{ name = "books", icon = "", index = 3 },
-	{ name = "clients", icon = "", index = 4 }
+	{ name = "launcher", icon = "" },
+	{ name = "clipboard", icon = "" },
+	{ name = "books", icon = "" },
+	{ name = "clients", icon = "" }
 }
 
-if user.launcher_fullscreen then
-	Tabbar.e_container = wibox.widget {
-		homogeneous = false,
-		expand = false,
-		forced_num_cols = 4,
-		spacing = 10,
-		layout = wibox.layout.grid
-	}
-else
-	Tabbar.e_container = wibox.widget {
-		homogeneous = false,
-		expand = false,
-		forced_num_rows = 4,
-		spacing = 10,
-		layout = wibox.layout.grid
-	}
-end
+Tabbar.main_layout = wibox.widget {
+	layout = user.launcher_fullscreen and wibox.layout.fixed.horizontal or wibox.layout.fixed.vertical,
+	spacing = 10,
+}
 
 function Tabbar:next_el()
 	if self.el_index > 1 then
@@ -70,7 +55,7 @@ function Tabbar:prev_el()
 end
 
 function Tabbar:add_modes()
-	Tabbar.e_container:reset()
+	Tabbar.main_layout:reset()
 
 	for i, el in ipairs(self.elems) do
 		local el_widget = wibox.widget {
@@ -100,7 +85,7 @@ function Tabbar:add_modes()
 			}
 		}
 
-		Tabbar.e_container:add(el_widget)
+		self.main_layout:add(el_widget)
 
 		if i == self.el_index then
 			helpers.ui.transitionColor {
@@ -164,7 +149,7 @@ Tabbar.main_widget = {
 		margins = 10,
 		{
 			layout = user.launcher_fullscreen and wibox.layout.align.horizontal or wibox.layout.align.vertical,
-			Tabbar.e_container,
+			Tabbar.main_layout,
 			nil,
 			Tabbar.power_button
 		}
@@ -212,6 +197,7 @@ if user.launcher_fullscreen then
 else
 	Launcher.entries_container.forced_width = 420
 end
+
 Launcher.main_widget = wibox.widget {
 	widget = wibox.container.margin,
 	margins = user.launcher_fullscreen and 20 or 10,
@@ -308,9 +294,9 @@ end
 
 function Launcher:get_books()
 	local entries = {}
-	awful.spawn.easy_async_with_shell("ls -1 " .. dir, function(stdout, stderr, reason, code)
+	awful.spawn.easy_async_with_shell("ls -1 " .. user.books_path, function(stdout, stderr, reason, code)
 		for line in stdout:gmatch("[^\n]+") do
-			local exe_command = "cd " .. dir .. " && zathura " .. line
+			local exe_command = "cd " .. user.books_path .. " && zathura " .. line
 			table.insert(entries, { name = line, appinfo = exe_command  })
 		end
 		if reason == "exit" then
@@ -432,10 +418,6 @@ function Launcher:add_entries(input)
 	collectgarbage("collect")
 end
 
-function Launcher:send_signal()
-	awesome.emit_signal("launcher:state", self.state)
-end
-
 function Launcher:run_prompt()
 	awful.prompt.run {
 		prompt = "Search: ",
@@ -480,18 +462,15 @@ function Launcher:run_prompt()
 end
 
 function Launcher:change_mode(mode)
-	if not self.state then return end
-	self.state = false
 	Launcher.entries_container:reset()
-	Tabbar.e_container:reset()
+	Tabbar.main_layout:reset()
 	Launcher:open(mode)
 end
 
 function Launcher:open(mode)
-	if self.state then return end
-	self.state = true
-	if self.state then
+	if not Launcher.popup.visible then
 		Bar:change_bg_container(launcher.widget, "on")
+		launcher.widget.state = true
 		if user.bar_pos == "Left" and user.launcher_fullscreen then
 			self.popup.placement = function(d)
 				awful.placement.right(d)
@@ -534,8 +513,6 @@ function Launcher:open(mode)
 	end
 	Tabbar:add_modes()
 
-	self:send_signal()
-
 	if self.mode ~= ("clipboard" or "books") then
 		self:filter("")
 		self:add_entries("")
@@ -546,13 +523,12 @@ function Launcher:open(mode)
 end
 
 function Launcher:close()
-	if not self.state then return end
-	self.state = false
-
-	Bar:change_bg_container(launcher.widget, "off")
-	awful.keygrabber.stop()
-	self.popup.visible = false
-	self:send_signal()
+	if self.popup.visible then
+		Bar:change_bg_container(launcher.widget, "off")
+		launcher.widget.state = false
+		self.popup.visible = false
+		awful.keygrabber.stop()
+	end
 end
 
 function Launcher:toggle(mode)

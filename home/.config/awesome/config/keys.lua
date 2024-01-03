@@ -218,14 +218,14 @@ end)
 client.connect_signal("button::press", function()
 	Launcher:close()
 	Powermenu:close()
-	Control:close(Control.mode)
+	Control:close()
 end)
 
 awful.mouse.append_global_mousebinding(
 	awful.button({}, 1, function()
 		Launcher:close()
 		Powermenu:close()
-		Control:close(Control.mode)
+		Control:close()
 	end)
 )
 

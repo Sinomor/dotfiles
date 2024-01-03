@@ -141,6 +141,21 @@ Config.ui_layout = wibox.widget {
 }
 Config.ui = Config:create_container(Config.ui_layout)
 
+Config.system_title = Config:create_titlebar("System", beautiful.bg_urgent)
+
+Config.battery_toggle = Toggle("battery", "Battery Signal")
+Config.battery_device = Numberbox("bat_device", "Battery Device")
+
+Config.system_layout = wibox.widget {
+	layout = wibox.layout.fixed.vertical,
+	spacing = 10,
+	Config.system_title,
+	Config.battery_toggle,
+	Config.battery_device
+}
+
+Config.system = Config:create_container(Config.system_layout)
+
 Config.colorsheme_layout = wibox.widget {
 	layout = wibox.layout.fixed.vertical,
 	spacing = 10,
@@ -158,6 +173,7 @@ if user.control_fullscreen then
 		step = 100,
 		Config.ui,
 		Config.colorsheme,
+		Config.system,
 		Config.apps,
 	}
 else
@@ -175,9 +191,13 @@ else
 				Config.ui,
 			},
 			{
-				layout = wibox.layout.fixed.vertical,
+				layout = wibox.layout.overflow.vertical,
+				scrollbar_enabled = false,
+				step = 100,
+				forced_height = 500,
 				spacing = 10,
 				Config.colorsheme,
+				Config.system,
 				Config.apps,
 			},
 		},

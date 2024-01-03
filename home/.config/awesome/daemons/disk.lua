@@ -22,6 +22,7 @@ function Disk.gen_disk_list()
 		end
 		if reason == "exit" then
 			awesome.emit_signal("signal::disk_list", list)
+			collectgarbage("collect")
 		end
 	end)
 end

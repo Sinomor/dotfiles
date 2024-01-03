@@ -3,7 +3,6 @@ local wibox = require("wibox")
 local beautiful = require("beautiful")
 local helpers = require("helpers")
 local user = require("user")
-local rubato = require("modules.rubato")
 
 local Top = require("daemons.processes")
 
@@ -35,67 +34,38 @@ Info.widget:buttons {
 
 -- main --
 
+
+Tabbar.main_layout = wibox.widget {
+	layout = user.control_fullscreen and wibox.layout.fixed.horizontal or wibox.layout.fixed.vertical,
+	spacing = 10,
+}
+
+Tabbar.main_widget = wibox.widget {
+	widget = wibox.container.background,
+	bg = beautiful.bg_alt,
+	{
+		widget = wibox.container.margin,
+		margins = 10,
+		Tabbar.main_layout
+	}
+}
 if user.control_fullscreen then
-	Tabbar.main_layour = wibox.widget {
-		homogeneous = false,
-		expand = false,
-		spacing = 10,
-		forced_num_cols = 4,
-		layout = wibox.layout.grid,
-	}
-	Tabbar.main_widget = wibox.widget {
-		widget = wibox.container.background,
-		forced_height = 60,
-		forced_width = 470,
-		bg = beautiful.bg_alt,
-		{
-			widget = wibox.container.margin,
-			margins = 10,
-			Tabbar.main_layour
-		}
-	}
+	Tabbar.main_widget.forced_width = 470
 else
-	Tabbar.main_layour = wibox.widget {
-		homogeneous = false,
-		expand = false,
-		spacing = 10,
-		forced_num_rows = 4,
-		layout = wibox.layout.grid,
-	}
-	Tabbar.main_widget = wibox.widget {
-		widget = wibox.container.background,
-		forced_width = 60,
-		bg = beautiful.bg_alt,
-		{
-			widget = wibox.container.margin,
-			margins = 10,
-			Tabbar.main_layour
-		}
-	}
+	Tabbar.main_widget.forced_height = 60
 end
 
 Tabbar.tabs = {
-	{ name = "main", icon = "", to = Main.main_widget, i = 1 },
-	{ name = "moment", icon = "", to = Moment.main_widget, i = 2 },
-	{ name = "system", icon = "", to = System.main_widget, i = 3 },
-	{ name = "config", icon = "", to = Config.main_widget, i = 4 }
+	{ name = "main", icon = "", to = Main.main_widget },
+	{ name = "moment", icon = "", to = Moment.main_widget },
+	{ name = "system", icon = "", to = System.main_widget },
+	{ name = "config", icon = "", to = Config.main_widget }
 }
 
-function Tabbar:tab_change(to, i)
-	if i == 2 then
-		Calendar:set(os.date("*t"))
-	elseif i == 3 then
-		self:toggle_timers(true)
-	else
-		self:toggle_timers(false)
-	end
-
-	self.index_tab = i
-	self.main_layour:reset()
-	self:add_tabs()
-
-	Control.main_layout:remove(2)
-	Control.main_layout:insert(2, to)
+function Tabbar:tab_change(mode)
+	self.main_layout:reset()
+	Control.main_layout:reset()
+	Control:open(mode)
 end
 
 function Tabbar:toggle_timers(x)
@@ -108,7 +78,7 @@ function Tabbar:toggle_timers(x)
 end
 
 function Tabbar:add_tabs()
-	self.main_layour:reset()
+	self.main_layout:reset()
 
 	for i, tab in ipairs(self.tabs) do
 		local tab_widget = wibox.widget {
@@ -119,7 +89,7 @@ function Tabbar:add_tabs()
 			buttons = {
 				awful.button({}, 1, function()
 					if self.index_tab ~= i then
-						self:tab_change(tab.to, tab.i)
+						self:tab_change(tab.name)
 					end
 				end),
 			},
@@ -132,7 +102,7 @@ function Tabbar:add_tabs()
 			}
 		}
 
-		self.main_layour:add(tab_widget)
+		self.main_layout:add(tab_widget)
 
 		if i == self.index_tab then
 			helpers.ui.transitionColor {
@@ -149,20 +119,15 @@ end
 
 Control.main_layout = wibox.widget {
 	layout = user.control_fullscreen and wibox.layout.fixed.vertical or wibox.layout.fixed.horizontal,
-	spacing = 10,
-	Tabbar.main_widget,
-	Control.main_layout
+	spacing = 10
 }
 
 Control.main_widget = wibox.widget {
-	widget = wibox.container.background,
-	bg = beautiful.bg,
-	{
-		widget = wibox.container.margin,
-		margins = user.control_fullscreen and 20 or 10,
-		Control.main_layout
-	}
+	widget = wibox.container.margin,
+	margins = user.control_fullscreen and 20 or 10,
+	Control.main_layout
 }
+
 if user.control_fullscreen then
 	Control.popup = awful.popup {
 		visible = false,
@@ -200,52 +165,76 @@ end
 
 function Control:open(mode)
 
-	if (user.bar_pos == "Right" or user.bar_pos == "Bottom") and not user.control_fullscreen then
-		self.popup.placement = function(d)
-			awful.placement.bottom_right(d, { honor_workarea = true, margins = beautiful.useless_gap * 2 })
+	if not self.popup.visible then
+		self.main_layout:reset()
+		Tabbar.main_layout:reset()
+		if (user.bar_pos == "Right" or user.bar_pos == "Bottom") and not user.control_fullscreen then
+			self.popup.placement = function(d)
+				awful.placement.bottom_right(d, { honor_workarea = true, margins = beautiful.useless_gap * 2 })
+			end
+		elseif user.bar_pos == "Top" and not user.control_fullscreen then
+			self.popup.placement = function(d)
+				awful.placement.top_right(d, { honor_workarea = true, margins = beautiful.useless_gap * 2 })
+			end
+		elseif user.bar_pos == "Left" and not user.control_fullscreen then
+			self.popup.placement = function(d)
+				awful.placement.bottom_left(d, { honor_workarea = true, margins = beautiful.useless_gap * 2 })
+			end
+		elseif user.bar_pos == "Right" and user.control_fullscreen then
+			self.popup.placement = function(d)
+				awful.placement.left(d)
+			end
+		else
+			self.popup.placement = function(d)
+				awful.placement.right(d)
+			end
 		end
-	elseif user.bar_pos == "Top" and not user.control_fullscreen then
-		self.popup.placement = function(d)
-			awful.placement.top_right(d, { honor_workarea = true, margins = beautiful.useless_gap * 2 })
-		end
-	elseif user.bar_pos == "Left" and not user.control_fullscreen then
-		self.popup.placement = function(d)
-			awful.placement.bottom_left(d, { honor_workarea = true, margins = beautiful.useless_gap * 2 })
-		end
-	elseif user.bar_pos == "Right" and user.control_fullscreen then
-		self.popup.placement = function(d)
-			awful.placement.left(d)
-		end
-	else
-		self.popup.placement = function(d)
-			awful.placement.right(d)
-		end
+		self.popup.visible = true
+
 	end
 
-	Tabbar:add_tabs()
-	self.mode = mode
 	if mode == "main" then
-		Tabbar:tab_change(Tabbar.tabs[1].to, Tabbar.tabs[1].i)
+		Tabbar.index_tab = 1
 		Bar:change_bg_container(Info.widget, "on")
+		Info.widget.state = true
 	elseif mode == "moment" then
-		Tabbar:tab_change(Tabbar.tabs[2].to, Tabbar.tabs[2].i)
+		Tabbar.index_tab = 2
+		Calendar:set(os.date("*t"))
 		Bar:change_bg_container(Clock.widget, "on")
+		Clock.widget.state = true
 	elseif mode == "system" then
-		Tabbar:tab_change(Tabbar.tabs[3].to, Tabbar.tabs[3].i)
+		Tabbar.index_tab = 3
+		Tabbar:toggle_timers(true)
 	elseif mode == "config" then
-		Tabbar:tab_change(Tabbar.tabs[4].to, Tabbar.tabs[4].i)
+		Tabbar.index_tab = 4
 	end
-	self.popup.visible = true
+	Tabbar:add_tabs()
+	self.main_layout:add(Tabbar.main_widget, Tabbar.tabs[Tabbar.index_tab].to)
+
+	if mode ~= "system" then
+		Tabbar:toggle_timers(false)
+	end
+	if mode ~= "main" and Info.widget.state then
+		Bar:change_bg_container(Info.widget, "off")
+		Info.widget.state = false
+	end
+	if mode ~= "moment" and Clock.widget.state then
+		Bar:change_bg_container(Clock.widget, "off")
+		Clock.widget.state = false
+	end
 
 end
 
 function Control:close()
 	if self.popup.visible then
 		self.popup.visible = false
-		if self.mode == "main" then
+		if Info.widget.state then
 			Bar:change_bg_container(Info.widget, "off")
-		elseif self.mode == "moment" then
+			Info.widget.state = false
+		end
+		if Clock.widget.state then
 			Bar:change_bg_container(Clock.widget, "off")
+			Clock.widget.state = false
 		end
 	end
 end

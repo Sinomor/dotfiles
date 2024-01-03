@@ -128,58 +128,59 @@ Music.main_widget = wibox.widget {
 					{ 0.3, beautiful.bg_alt .. "E6" },
 					{ 0.5, beautiful.bg_alt .. "CC" },
 					{ 0.7, beautiful.bg_alt .. "B3" },
-					{ 0.9, beautiful.bg_alt .. "99" } }
+					{ 0.9, beautiful.bg_alt .. "99" }
 				}
-			},
+			}
+		},
+		{
+			widget = wibox.container.margin,
+			margins = 10,
 			{
-				widget = wibox.container.margin,
-				margins = 10,
+				layout = wibox.layout.fixed.horizontal,
+				spacing = 20,
 				{
-					layout = wibox.layout.fixed.horizontal,
-					spacing = 20,
+					widget = wibox.container.rotate,
+					direction = "east",
+					forced_width = beautiful.border_width * 4,
+					Music.media_slider
+				},
+				{
+					layout = wibox.layout.flex.vertical,
 					{
-						widget = wibox.container.rotate,
-						direction = "east",
-						forced_width = beautiful.border_width * 4,
-						Music.media_slider
+						layout = wibox.layout.fixed.vertical,
+						spacing = 10,
+						{
+							widget = wibox.container.scroll.horizontal,
+							step_function = wibox.container.scroll.step_functions.waiting_nonlinear_back_and_forth,
+							speed = 50,
+							Music.title
+						},
+						Music.artist
 					},
 					{
-						layout = wibox.layout.flex.vertical,
+						widget = wibox.container.place,
+						valign = "bottom",
+						halign = "left",
 						{
-							layout = wibox.layout.fixed.vertical,
-							spacing = 10,
-							{
-								widget = wibox.container.scroll.horizontal,
-								step_function = wibox.container.scroll.step_functions.waiting_nonlinear_back_and_forth,
-								speed = 50,
-								Music.title
-							},
-							Music.artist
-						},
-						{
-							widget = wibox.container.place,
-							valign = "bottom",
-							halign = "left",
-							{
-								layout = wibox.layout.fixed.horizontal,
-								spacing = 15,
-								Music.prev,
-								Music.play,
-								Music.next
-							}
+							layout = wibox.layout.fixed.horizontal,
+							spacing = 15,
+							Music.prev,
+							Music.play,
+							Music.next
 						}
 					}
 				}
 			}
 		}
 	}
-	if not user.control_fullscreen then
-		Music.main_widget.forced_height = 180
-	end
+}
+if not user.control_fullscreen then
+	Music.main_widget.forced_height = 180
+end
 
-	playerctl:connect_signal("playback_status", function(_, playing, player_name)
-		Music.play:get_children_by_id("icon")[1].markup = playing and
-		helpers.ui.colorizeText("", "") or helpers.ui.colorizeText("", "")
-	end)
+playerctl:connect_signal("playback_status", function(_, playing, player_name)
+	Music.play:get_children_by_id("icon")[1].markup = playing and
+	helpers.ui.colorizeText("", "") or helpers.ui.colorizeText("", "")
+end)
 
-	return Music
+return Music

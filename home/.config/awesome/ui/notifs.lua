@@ -99,8 +99,8 @@ naughty.connect_signal("request::display", function(n)
 
 	naughty.layout.box {
 		notification = n,
-		minimum_width = 300,
-		maximum_width = 300,
+		minimum_width = 800,
+		maximum_width = 800,
 		maximum_height = 120,
 		minimum_height = 120,
 		widget_template = {
