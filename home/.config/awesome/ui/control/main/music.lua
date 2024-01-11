@@ -179,8 +179,7 @@ if not user.control_fullscreen then
 end
 
 playerctl:connect_signal("playback_status", function(_, playing, player_name)
-	Music.play:get_children_by_id("icon")[1].markup = playing and
-	helpers.ui.colorizeText("", "") or helpers.ui.colorizeText("", "")
+	Music.play:get_children_by_id("icon")[1].markup = playing and "" or ""
 end)
 
 return Music
