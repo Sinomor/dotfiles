@@ -1,0 +1,219 @@
+spawn-at-startup "swww-daemon"
+spawn-at-startup "bash" "-c" "ags run";
+spawn-at-startup "/usr/libexec/xfce-polkit"
+spawn-at-startup "blueman-applet"
+spawn-at-startup "nm-applet"
+spawn-at-startup "wl-paste" "--watch" "cliphist" "store"
+spawn-at-startup "xwayland-satellite"
+
+environment {
+   DISPLAY ":0"
+   GSK_RENDERER "ngl" // nvidia moment
+}
+
+overview {
+   zoom 0.75
+   backdrop-color "#28282c"
+   workspace-shadow {
+     off
+   }
+}
+
+workspace "1"
+workspace "2"
+workspace "3"
+workspace "4"
+
+hotkey-overlay {
+   skip-at-startup
+}
+
+input {
+   keyboard {
+      xkb {
+         layout "us,ru"
+         options "grp:caps_toggle"
+      }
+      repeat-delay 500
+      repeat-rate 30
+   }
+
+   touchpad {
+      tap
+      natural-scroll
+   }
+
+   mouse {
+     accel-profile "flat"
+     // accel-speed 0.1
+   }
+}
+
+output "eDP-1" {
+   mode "1920x1080@60"
+   scale 1.0
+   transform "normal"
+   position x=0 y=0
+}
+
+layout {
+   gaps 5
+   // center-focused-column "always"
+  
+   focus-ring {
+      // off
+      width 1
+      active-color "#36363A"
+      inactive-color "#28282C"
+   }
+
+   insert-hint {
+      // off
+      color "#ffc87f80"
+   }
+
+   preset-column-widths {
+      proportion 0.5
+      proportion 1.0
+   }
+
+   default-column-width { proportion 1.0; }
+}
+
+prefer-no-csd
+
+window-rule {
+   match app-id=r#"^org\.keepassxc\.KeePassXC$"#
+   match app-id=r#"^org\.gnome\.World\.Secrets$"#
+   block-out-from "screen-capture"
+}
+
+window-rule {
+   geometry-corner-radius 0
+   clip-to-geometry true
+}
+
+window-rule {
+   match app-id="windowkill"
+   draw-border-with-background false
+   default-window-height { fixed 900; }
+   focus-ring {
+      off
+   }
+}
+
+window-rule { 
+   match app-id="librewolf"
+   match app-id="org.mozilla.firefox"
+   match app-id="com.github.neithern.g4music"
+   match app-id="io.bassi.Amberol"
+   open-on-workspace "1"
+}
+
+window-rule {
+   match app-id="io.github.kukuruzka165.materialgram"
+   match app-id="discord"
+   open-on-workspace "2"
+}
+
+window-rule {
+   match app-id="steam"
+   match app-id="gamescope"
+   match app-id="net.lutris.Lutris"
+   open-on-workspace "4"
+}
+
+window-rule {
+   match app-id="io.github.kukuruzka165.materialgram" title="Media viewer"
+   match app-id="gamescope"
+   match app-id="flameshot"
+   open-fullscreen true
+}
+
+window-rule {
+   match app-id="xfce-polkit"
+   open-floating true
+}
+
+binds {
+   Mod+Return { spawn "alacritty"; }
+   Mod+E { spawn "nautilus" "-w"; }
+   
+   Mod+B { spawn "flatpak" "run" "org.mozilla.firefox"; }
+   Mod+A { spawn "flatpak" "run" "io.github.kukuruzka165.materialgram"; }
+   Ctrl+Escape { spawn "flatpak" "run" "net.nokyan.Resources"; }
+
+   Print { spawn "~/.config/niri/bin/screenshot.sh" "--area"; }
+   Shift+Print { spawn "~/.config/niri/bin/screenshot.sh" "--full"; }
+   Mod+Shift+C { spawn "~/.config/niri/bin/colorpicker.sh"; }
+
+   Mod+S { spawn "ags" "toggle" "control" "-i" "delta-shell"; }
+   Mod+N { spawn "ags" "toggle" "calendar" "-i" "delta-shell"; }
+   Mod+D { spawn "astal" "toggle" "applauncher" "-i" "delta-shell"; }
+   Mod+C { spawn "astal" "toggle" "clipboard" "-i" "delta-shell"; }
+   Mod+X { spawn "ags" "toggle" "powermenu" "-i" "delta-shell"; }
+   Mod+W { spawn "bash" "-c" "ags quit -i delta-shell; ags run"; }
+
+   XF86AudioRaiseVolume allow-when-locked=true { spawn "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "0.02+"; }
+   XF86AudioLowerVolume allow-when-locked=true { spawn "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "0.02-"; }
+   XF86AudioMute        allow-when-locked=true { spawn "wpctl" "set-mute" "@DEFAULT_AUDIO_SINK@" "toggle"; }
+   XF86AudioMicMute     allow-when-locked=true { spawn "wpctl" "set-mute" "@DEFAULT_AUDIO_SOURCE@" "toggle"; }
+
+   XF86MonBrightnessUp allow-when-locked=true { spawn "brightnessctl" "s" "5%+";}
+   XF86MonBrightnessDown allow-when-locked=true { spawn "brightnessctl" "s" "5%-";}
+
+   XF86AudioNext allow-when-locked=true { spawn "playerctl" "next"; }
+   XF86AudioPrev allow-when-locked=true { spawn "playerctl" "prev"; }
+   XF86AudioPause allow-when-locked=true { spawn "playerctl" "play-pause"; }
+   XF86AudioPlay allow-when-locked=true { spawn "playerctl" "play-pause"; }
+
+   Mod+Q { close-window; }
+
+   Mod+H { focus-column-left; }
+   Mod+J { focus-window-down; }
+   Mod+K { focus-window-up; }
+   Mod+L { focus-column-right; }
+   Mod+Tab { focus-column-right-or-first; }
+   Mod+Shift+Tab { focus-column-left-or-last; }
+   Mod+M { switch-preset-column-width; }
+   
+   Mod+Ctrl+H { move-column-left; }
+   Mod+Ctrl+J { move-window-down; }
+   Mod+Ctrl+K { move-window-up; }
+   Mod+Ctrl+L { move-column-right; }
+
+   Mod+1 { focus-workspace 1; }
+   Mod+2 { focus-workspace 2; }
+   Mod+3 { focus-workspace 3; }
+   Mod+4 { focus-workspace 4; }
+   Mod+5 { focus-workspace 5; }
+   Mod+6 { focus-workspace 6; }
+   Mod+7 { focus-workspace 7; }
+   Mod+8 { focus-workspace 8; }
+   Mod+9 { focus-workspace 9; }
+   Alt+1 { spawn "~/.config/niri/bin/focus-app.sh" "focus" "1"; }
+   Alt+2 { spawn "~/.config/niri/bin/focus-app.sh" "focus" "2"; }
+   Alt+3 { spawn "~/.config/niri/bin/focus-app.sh" "focus" "3"; }
+   Alt+4 { spawn "~/.config/niri/bin/focus-app.sh" "focus" "4"; }
+   Alt+5 { spawn "~/.config/niri/bin/focus-app.sh" "focus" "5"; }
+   Alt+6 { spawn "~/.config/niri/bin/focus-app.sh" "focus" "6"; }
+   Alt+7 { spawn "~/.config/niri/bin/focus-app.sh" "focus" "7"; }
+   Alt+8 { spawn "~/.config/niri/bin/focus-app.sh" "focus" "8"; }
+   Alt+9 { spawn "~/.config/niri/bin/focus-app.sh" "focus" "9"; }
+   Mod+Shift+1 { move-column-to-workspace 1; }
+   Mod+Shift+2 { move-column-to-workspace 2; }
+   Mod+Shift+3 { move-column-to-workspace 3; }
+   Mod+Shift+4 { move-column-to-workspace 4; }
+   Mod+Shift+5 { move-column-to-workspace 5; }
+   Mod+Shift+6 { move-column-to-workspace 6; }
+   Mod+Shift+7 { move-column-to-workspace 7; }
+   Mod+Shift+8 { move-column-to-workspace 8; }
+   Mod+Shift+9 { move-column-to-workspace 9; }
+
+   Mod+F { fullscreen-window; }
+
+   Mod+Minus { set-column-width "-5%"; }
+   Mod+Equal { set-column-width "+5%"; }
+
+   Mod+V       { toggle-window-floating; }
+}
