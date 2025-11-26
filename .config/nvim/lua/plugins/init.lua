@@ -8,16 +8,21 @@ return {
 	},
 
 	{
+		"MeanderingProgrammer/render-markdown.nvim",
+		ft = { "markdown", "markdown_inline", "codecompanion" },
+		dependencies = { "nvim-treesitter/nvim-treesitter", "nvim-tree/nvim-web-devicons" },
+		config = function()
+			require("render-markdown").setup({})
+		end,
+	},
+
+	{
 		"nvchad/ui",
 		lazy = false,
 		config = function()
 			require("nvchad")
 		end,
 	},
-
-	"nvzone/volt",
-	"nvzone/menu",
-	{ "nvzone/minty", cmd = { "Huefy", "Shades" } },
 
 	{
 		"lukas-reineke/indent-blankline.nvim",
@@ -36,6 +41,7 @@ return {
 			dofile(vim.g.base46_cache .. "blankline")
 		end,
 	},
+	-- { import = "nvchad.blink.lazyspec" },
 
 	{
 		"stevearc/conform.nvim",
@@ -73,7 +79,6 @@ return {
 					require("configs.luasnip")
 				end,
 			},
-
 			{
 				"windwp/nvim-autopairs",
 				opts = {

@@ -1,7 +1,11 @@
-local on_attach = require("configs.lspconfig").on_attach
-local on_init = require("configs.lspconfig").on_init
 local capabilities = require("configs.lspconfig").capabilities
-local lspconfig = require("lspconfig")
+local lsp = vim.lsp
+local handlers = vim.g.re_nvim_border_style == "rounded"
+		and {
+			["textDocument/hover"] = lsp.with(lsp.handlers.hover, { border = "rounded" }),
+			["textDocument/signatureHelp"] = lsp.with(lsp.handlers.signature_help, { border = "rounded" }),
+		}
+	or {}
 
 local servers = {
 	"lua_ls",
@@ -12,18 +16,19 @@ local servers = {
 	"ts_ls",
 	"vala_ls",
 	"biome",
+	"clangd",
 	"qmlls",
 }
 
-for _, lsp in ipairs(servers) do
-	lspconfig[lsp].setup({
-		on_attach = on_attach,
-		on_init = on_init,
+for _, name in ipairs(servers) do
+	lsp.config(name, {
+		handlers = handlers,
 		capabilities = capabilities,
 	})
+	lsp.enable(name)
 end
 
-lspconfig.pyright.setup({
+lsp.config("pyright", {
 	settings = {
 		pyright = {
 			disableOrganizeImports = true,
@@ -36,7 +41,7 @@ lspconfig.pyright.setup({
 	},
 })
 
-lspconfig.bashls.setup({
+lsp.config("bashls", {
 	filetypes = { "sh", "bash", "zsh" },
 })
 
@@ -48,7 +53,7 @@ local function organize_imports()
 	vim.buf.execute_command(params)
 end
 
-lspconfig.ts_ls.setup({
+lsp.config("ts_ls", {
 	init_options = {
 		preferences = {
 			disableSuggestions = true,
@@ -59,6 +64,29 @@ lspconfig.ts_ls.setup({
 			organize_imports,
 			description = "Organize Imports",
 		},
+	},
+})
+
+lsp.config("clangd", {
+	cmd = {
+		"clangd",
+		"--background-index",
+		"--header-insertion-decorators",
+		"--header-insertion=iwyu",
+		"--completion-style=detailed",
+		"--function-arg-placeholders",
+		"--fallback-style=llvm",
+		"--clang-tidy",
+		"--clang-tidy-checks=*",
+		"--compile-commands-dir=.",
+		"--all-scopes-completion",
+		"--cross-file-rename",
+		"--pch-storage=memory",
+	},
+	init_options = {
+		usePlaceholders = true,
+		completeUnimported = true,
+		clangdFileStatus = true,
 	},
 })
 

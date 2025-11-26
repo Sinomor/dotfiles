@@ -1,266 +1,323 @@
+// statup
 spawn-sh-at-startup "waypaper --restore"
-spawn-at-startup "~/.delta-shell/run-dev.sh";
+spawn-at-startup "~/.delta-shell/run-dev.sh"
 // spawn-at-startup "delta-shell";
 spawn-at-startup "/usr/libexec/xfce-polkit"
 spawn-at-startup "blueman-applet"
 spawn-at-startup "nm-applet"
 spawn-sh-at-startup "flatpak run org.mozilla.firefox"
 spawn-sh-at-startup "flatpak run io.github.kukuruzka165.materialgram"
-
-environment {
-   GSK_RENDERER "ngl" // nvidia moment
+spawn-sh-at-startup "swayidle -w timeout 300 'niri msg action power-off-monitors' before-sleep 'hyprlock'"
+// monitors
+output "eDP-1" {
+    mode "1920x1080@60"
+    scale 1.0
+    focus-at-startup
+    transform "normal"
+    position x=0 y=0
 }
-
-screenshot-path "~/Pictures/Screenshots/%Y-%m-%d_%H-%M-%S.png"
-
-clipboard {
-    disable-primary
+output "HDMI-A-1" {
+    mode "3840x2160@60.000"
+    scale 1.0
+    transform "normal"
+    position x=1920 y=0
 }
-
-layer-rule {
-    match namespace="^swww-daemon$"
-    place-within-backdrop true
+// input
+input {
+    keyboard {
+        xkb {
+            layout "us,ru"
+            options "grp:caps_toggle"
+        }
+        repeat-delay 500
+        repeat-rate 30
+    }
+    touchpad {
+        tap
+        natural-scroll
+    }
+    mouse {
+        accel-profile "flat"
+    }
 }
-
+// actual look
 overview {
-   zoom 0.75
-   backdrop-color "#28282c"
-   workspace-shadow {
-      off
-   }
+    zoom 0.75
+    backdrop-color "#28282c"
+    workspace-shadow {
+        off
+    }
 }
-
+layout {
+    gaps 5
+    background-color "transparent"
+    border {
+        // off
+        width 1
+        active-color "#36363A"
+        inactive-color "#28282C"
+    }
+    focus-ring {
+        off
+    }
+    insert-hint {
+        // off
+        color "#9141ac80"
+    }
+    shadow {
+        on
+        softness 10
+        spread 0
+        offset x=0 y=0
+        draw-behind-window true
+        color "#00000063"
+    }
+    preset-column-widths {
+        proportion 0.5
+        proportion 1.0
+    }
+    default-column-width {
+        proportion 1.0
+    }
+}
+// workspaces
 workspace "1"
 workspace "2"
 workspace "3"
 workspace "4"
-
-hotkey-overlay {
-   skip-at-startup
+// windows and layers rules
+layer-rule {
+    match namespace="^swww-daemon$"
+    place-within-backdrop true
 }
-
-input {
-   keyboard {
-      xkb {
-         layout "us,ru"
-         options "grp:caps_toggle"
-      }
-      repeat-delay 500
-      repeat-rate 30
-   }
-
-   touchpad {
-      tap
-      natural-scroll
-   }
-
-   mouse {
-     accel-profile "flat"
-     // accel-speed 0.1
-   }
+window-rule {
+    match app-id="^org\\.keepassxc\\.KeePassXC$"
+    match app-id="^org\\.gnome\\.World\\.Secrets$"
+    block-out-from "screen-capture"
 }
-
-output "eDP-1" {
-   mode "1920x1080@60"
-   scale 1.0
-   focus-at-startup
-   transform "normal"
-   position x=0 y=0
+window-rule {
+    geometry-corner-radius 8
+    clip-to-geometry true
+    open-maximized-to-edges false
 }
-
-output "HDMI-A-1" {
-   mode "3840x2160@60.000"
-   scale 1.0
-   transform "normal"
-   position x=1920 y=0
+window-rule {
+    match at-startup=true
+    open-focused false
 }
-
-layout {
-   gaps 5
-   // center-focused-column "always"
-   background-color "transparent"
-  
-   border {
-      // off
-      width 1
-      active-color "#36363A"
-      inactive-color "#28282C"
-   }
-
-   focus-ring {
-      off
-   }
-
-   insert-hint {
-      // off
-      color "#6f839680"
-   }
-
-   shadow {
-      on
-      softness 10
-      spread 0
-      offset x=0 y=0
-      draw-behind-window true
-      color "#00000063"
+window-rule {
+    match app-id="windowkill"
+    draw-border-with-background false
+    default-window-height {
+        fixed 900
     }
-
-   preset-column-widths {
-      proportion 0.5
-      proportion 1.0
-   }
-
-   default-column-width { proportion 1.0; }
+    focus-ring {
+        off
+    }
+    shadow {
+        off
+    }
+}
+window-rule {
+    match app-id="librewolf"
+    match app-id="org.mozilla.firefox"
+    match app-id="com.github.neithern.g4music"
+    match app-id="io.bassi.Amberol"
+    open-on-workspace "1"
+}
+window-rule {
+    match app-id="io.github.kukuruzka165.materialgram"
+    match app-id="discord"
+    open-on-workspace "2"
+}
+window-rule {
+    match app-id="org.gnome.World.Secrets"
+    match app-id="obsidian"
+    match app-id="ONLYOFFICE"
+    open-on-workspace "3"
+}
+window-rule {
+    match app-id="steam"
+    match app-id="gamescope"
+    match app-id="net.lutris.Lutris"
+    match app-id="osu!"
+    open-on-workspace "4"
+}
+window-rule {
+    match app-id="io.github.kukuruzka165.materialgram" title="Media viewer"
+    match app-id="gamescope"
+    match app-id="flameshot"
+    open-fullscreen true
+}
+window-rule {
+    match app-id="xfce-polkit"
+    open-floating true
+}
+// binds
+binds {
+    Mod+Return repeat=false {
+        spawn "alacritty"
+    }
+    Mod+E repeat=false {
+        spawn "nautilus" "-w"
+    }
+    Ctrl+Escape repeat=false {
+        spawn-sh "flatpak run net.nokyan.Resources"
+    }
+    Print repeat=false {
+        spawn-sh "~/.config/niri/bin/screenshot.sh --area"
+    }
+    Shift+Print repeat=false {
+        spawn-sh "~/.config/niri/bin/screenshot.sh --full"
+    }
+    Mod+Shift+C repeat=false {
+        spawn "~/.config/niri/bin/colorpicker.sh"
+    }
+    Mod+L repeat=false {
+        spawn "hyprlock"
+    }
+    Mod+S repeat=false {
+        spawn-sh "delta-shell toggle quicksettings"
+    }
+    Mod+C repeat=false {
+        spawn-sh "delta-shell toggle calendar"
+    }
+    Mod+N repeat=false {
+        spawn-sh "delta-shell toggle notificationslist"
+    }
+    Mod+A repeat=false {
+        spawn-sh "delta-shell toggle applauncher"
+    }
+    Mod+V repeat=false {
+        spawn-sh "delta-shell toggle clipboard"
+    }
+    Mod+X repeat=false {
+        spawn-sh "delta-shell toggle powermenu"
+    }
+    Mod+Shift+R repeat=false {
+        spawn-sh "delta-shell quit; ~/.delta-shell/run-dev.sh"
+    }
+    // Mod+Shift+R { spawn "delta-shell reload"; }
+    XF86AudioRaiseVolume allow-when-locked=true {
+        spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.02+ -l 1.0"
+    }
+    XF86AudioLowerVolume allow-when-locked=true {
+        spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.02-"
+    }
+    XF86AudioMute allow-when-locked=true {
+        spawn-sh "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
+    }
+    XF86AudioMicMute allow-when-locked=true {
+        spawn-sh "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"
+    }
+    XF86MonBrightnessUp allow-when-locked=true {
+        spawn-sh "brightnessctl s 5%+"
+    }
+    XF86MonBrightnessDown allow-when-locked=true {
+        spawn-sh "brightnessctl s 5%-"
+    }
+    XF86AudioNext allow-when-locked=true {
+        spawn-sh "playerctl next"
+    }
+    XF86AudioPrev allow-when-locked=true {
+        spawn-sh "playerctl prev"
+    }
+    XF86AudioPause allow-when-locked=true {
+        spawn-sh "playerctl play-pause"
+    }
+    XF86AudioPlay allow-when-locked=true {
+        spawn-sh "playerctl play-pause"
+    }
+    Mod+Q {
+        close-window
+    }
+    Mod+Tab {
+        focus-column-right-or-first
+    }
+    Mod+Shift+Tab {
+        focus-column-left-or-last
+    }
+    Mod+M {
+        switch-preset-column-width
+    }
+    Mod+1 {
+        focus-workspace 1
+    }
+    Mod+2 {
+        focus-workspace 2
+    }
+    Mod+3 {
+        focus-workspace 3
+    }
+    Mod+4 {
+        focus-workspace 4
+    }
+    Mod+5 {
+        focus-workspace 5
+    }
+    Mod+6 {
+        focus-workspace 6
+    }
+    Mod+7 {
+        focus-workspace 7
+    }
+    Mod+8 {
+        focus-workspace 8
+    }
+    Mod+9 {
+        focus-workspace 9
+    }
+    Mod+Shift+1 {
+        move-column-to-workspace 1
+    }
+    Mod+Shift+2 {
+        move-column-to-workspace 2
+    }
+    Mod+Shift+3 {
+        move-column-to-workspace 3
+    }
+    Mod+Shift+4 {
+        move-column-to-workspace 4
+    }
+    Mod+Shift+5 {
+        move-column-to-workspace 5
+    }
+    Mod+Shift+6 {
+        move-column-to-workspace 6
+    }
+    Mod+Shift+7 {
+        move-column-to-workspace 7
+    }
+    Mod+Shift+8 {
+        move-column-to-workspace 8
+    }
+    Mod+Shift+9 {
+        move-column-to-workspace 9
+    }
+    Mod+F {
+        fullscreen-window
+    }
+    Mod+Space {
+        toggle-window-floating
+    }
+}
+// etc
+environment {
+    // nvidia moment
+    GSK_RENDERER "gl"
+}
+clipboard {
+    disable-primary
+}
+hotkey-overlay {
+    skip-at-startup
+}
+gestures {
+    hot-corners {
+        off
+    }
 }
 prefer-no-csd
-
-
-window-rule {
-   match app-id=r#"^org\.keepassxc\.KeePassXC$"#
-   match app-id=r#"^org\.gnome\.World\.Secrets$"#
-   block-out-from "screen-capture"
+recent-windows {
+    off
 }
 
-window-rule {
-   geometry-corner-radius 0
-   clip-to-geometry true
-}
-
-window-rule {
-   match at-startup=true
-   open-focused false
-}
-
-window-rule {
-   match app-id="windowkill"
-   draw-border-with-background false
-   default-window-height { fixed 900; }
-   focus-ring {
-      off
-   }
-   shadow {
-      off
-   }
-}
-
-window-rule { 
-   match app-id="librewolf"
-   match app-id="org.mozilla.firefox"
-   match app-id="com.github.neithern.g4music"
-   match app-id="io.bassi.Amberol"
-   open-on-workspace "1"
-}
-
-window-rule {
-   match app-id="io.github.kukuruzka165.materialgram"
-   match app-id="discord"
-   open-on-workspace "2"
-}
-
-window-rule {
-   match app-id="org.gnome.World.Secrets"
-   match app-id="obsidian"
-   open-on-workspace "3"
-}
-
-window-rule {
-   match app-id="steam"
-   match app-id="gamescope"
-   match app-id="net.lutris.Lutris"
-   open-on-workspace "4"
-}
-
-window-rule {
-   match app-id="io.github.kukuruzka165.materialgram" title="Media viewer"
-   match app-id="gamescope"
-   match app-id="flameshot"
-   open-fullscreen true
-}
-
-window-rule {
-   match app-id="xfce-polkit"
-   open-floating true
-}
-
-binds {
-   Mod+Return repeat=false { spawn "alacritty"; }
-   Mod+E repeat=false { spawn "nautilus" "-w"; }
-   Ctrl+Escape { spawn-sh "flatpak run net.nokyan.Resources"; }
-
-   Print repeat=false { spawn-sh "~/.config/niri/bin/screenshot.sh --area"; }
-   Shift+Print repeat=false { spawn-sh "~/.config/niri/bin/screenshot.sh --full"; }
-   Mod+Shift+C repeat=false { spawn "~/.config/niri/bin/colorpicker.sh"; }
-
-   Mod+S repeat=false { spawn-sh "delta-shell toggle control"; }
-   Mod+C repeat=false { spawn-sh "delta-shell toggle calendar" ; }
-   Mod+N repeat=false { spawn-sh "delta-shell toggle notifications_list" ; }
-   Mod+A repeat=false { spawn-sh "delta-shell toggle applauncher"; }
-   Mod+V repeat=false { spawn-sh "delta-shell toggle clipboard"; }
-   Mod+X repeat=false { spawn-sh "delta-shell toggle powermenu"; }
-   Mod+W repeat=false { spawn-sh "delta-shell toggle weather"; }
-   Mod+Shift+R repeat=false { spawn-sh "delta-shell quit; ~/.delta-shell/run-dev.sh"; }
-   // Mod+Shift+R { spawn "delta-shell reload"; }
-
-   XF86AudioRaiseVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.02+"; }
-   XF86AudioLowerVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.02-"; }
-   XF86AudioMute        allow-when-locked=true { spawn-sh "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"; }
-   XF86AudioMicMute     allow-when-locked=true { spawn-sh "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"; }
-
-   XF86MonBrightnessUp allow-when-locked=true { spawn-sh "brightnessctl s 5%+";}
-   XF86MonBrightnessDown allow-when-locked=true { spawn-sh "brightnessctl s 5%-";}
-
-   XF86AudioNext allow-when-locked=true { spawn-sh "playerctl next"; }
-   XF86AudioPrev allow-when-locked=true { spawn-sh "playerctl prev"; }
-   XF86AudioPause allow-when-locked=true { spawn-sh "playerctl play-pause"; }
-   XF86AudioPlay allow-when-locked=true { spawn-sh "playerctl play-pause"; }
-
-   Mod+Q { close-window; }
-
-   Mod+H { focus-column-left; }
-   Mod+J { focus-window-down; }
-   Mod+K { focus-window-up; }
-   Mod+L { focus-column-right; }
-   Mod+Tab { focus-column-right-or-first; }
-   Mod+Shift+Tab { focus-column-left-or-last; }
-   Mod+M { switch-preset-column-width; }
-   
-   Mod+Ctrl+H { move-column-left; }
-   Mod+Ctrl+J { move-window-down; }
-   Mod+Ctrl+K { move-window-up; }
-   Mod+Ctrl+L { move-column-right; }
-
-   Mod+1 { focus-workspace 1; }
-   Mod+2 { focus-workspace 2; }
-   Mod+3 { focus-workspace 3; }
-   Mod+4 { focus-workspace 4; }
-   Mod+5 { focus-workspace 5; }
-   Mod+6 { focus-workspace 6; }
-   Mod+7 { focus-workspace 7; }
-   Mod+8 { focus-workspace 8; }
-   Mod+9 { focus-workspace 9; }
-   Alt+1 { spawn-sh "~/.config/niri/bin/focus-app.sh focus 1"; }
-   Alt+2 { spawn-sh "~/.config/niri/bin/focus-app.sh focus 2"; }
-   Alt+3 { spawn-sh "~/.config/niri/bin/focus-app.sh focus 3"; }
-   Alt+4 { spawn-sh "~/.config/niri/bin/focus-app.sh focus 4"; }
-   Alt+5 { spawn-sh "~/.config/niri/bin/focus-app.sh focus 5"; }
-   Alt+6 { spawn-sh "~/.config/niri/bin/focus-app.sh focus 6"; }
-   Alt+7 { spawn-sh "~/.config/niri/bin/focus-app.sh focus 7"; }
-   Alt+8 { spawn-sh "~/.config/niri/bin/focus-app.sh focus 8"; }
-   Alt+9 { spawn-sh "~/.config/niri/bin/focus-app.sh focus 9"; }
-   Mod+Shift+1 { move-column-to-workspace 1; }
-   Mod+Shift+2 { move-column-to-workspace 2; }
-   Mod+Shift+3 { move-column-to-workspace 3; }
-   Mod+Shift+4 { move-column-to-workspace 4; }
-   Mod+Shift+5 { move-column-to-workspace 5; }
-   Mod+Shift+6 { move-column-to-workspace 6; }
-   Mod+Shift+7 { move-column-to-workspace 7; }
-   Mod+Shift+8 { move-column-to-workspace 8; }
-   Mod+Shift+9 { move-column-to-workspace 9; }
-
-   Mod+F { fullscreen-window; }
-
-   Mod+Minus { set-column-width "-5%"; }
-   Mod+Equal { set-column-width "+5%"; }
-
-   Mod+Space { toggle-window-floating; }
-}

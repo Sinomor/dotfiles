@@ -2,7 +2,7 @@ local M = {}
 
 M.base_30 = {
 	white = "#ffffff",
-	darker_black = "#1D1D20",
+	darker_black = "#28282C",
 	black = "#28282C",
 	black2 = "#36363A",
 	one_bg = "#36363A",
@@ -27,8 +27,8 @@ M.base_30 = {
 	teal = "#99c1f1",
 	orange = "#ffa348",
 	cyan = "#4fd2fd",
-	statusline_bg = "#303030",
-	lightbg = "#303030",
+	statusline_bg = "#28282C",
+	lightbg = "#28282C",
 	pmenu_bg = "#51a1ff",
 	folder_bg = "#51a1ff",
 }

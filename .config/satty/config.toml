@@ -52,7 +52,7 @@ palette = [
     "#99c1f1",
     "#f66151",
     "#dc8add",
-    "#8ff0a4",
+    "#ffffff",
 ]
 
 # These will be available in the color picker as presets
@@ -62,5 +62,5 @@ custom = [
     "#99c1f1",
     "#f66151",
     "#dc8add",
-    "#8ff0a4",
+    "#ffffff",
 ]

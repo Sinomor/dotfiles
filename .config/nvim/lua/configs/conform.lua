@@ -11,6 +11,7 @@ local options = {
 		javascriptreact = { "prettierd" },
 		typescriptreact = { "prettierd" },
 		python = { "black" },
+		kdl = { "kdlfmt" },
 		c = { "clang_format" },
 		sh = { "beautysh" },
 		cpp = { "clang_format" },

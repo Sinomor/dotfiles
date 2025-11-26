@@ -44,30 +44,29 @@ M.defaults = function()
 	dofile(vim.g.base46_cache .. "lsp")
 	require("nvchad.lsp").diagnostic_config()
 
-	require("lspconfig").lua_ls.setup({
-		on_attach = M.on_attach,
-		capabilities = M.capabilities,
-		on_init = M.on_init,
+	vim.api.nvim_create_autocmd("LspAttach", {
+		callback = function(args)
+			M.on_attach(_, args.buf)
+		end,
+	})
 
-		settings = {
-			Lua = {
-				diagnostics = {
-					globals = { "vim" },
-				},
-				workspace = {
-					library = {
-						vim.fn.expand("$VIMRUNTIME/lua"),
-						vim.fn.expand("$VIMRUNTIME/lua/vim/lsp"),
-						vim.fn.stdpath("data") .. "/lazy/ui/nvchad_types",
-						vim.fn.stdpath("data") .. "/lazy/lazy.nvim/lua/lazy",
-						"${3rd}/luv/library",
-					},
-					maxPreload = 100000,
-					preloadFileSize = 10000,
+	local lua_lsp_settings = {
+		Lua = {
+			runtime = { version = "LuaJIT" },
+			workspace = {
+				library = {
+					vim.fn.expand("$VIMRUNTIME/lua"),
+					vim.fn.stdpath("data") .. "/lazy/ui/nvchad_types",
+					vim.fn.stdpath("data") .. "/lazy/lazy.nvim/lua/lazy",
+					"${3rd}/luv/library",
 				},
 			},
 		},
-	})
+	}
+
+	vim.lsp.config("*", { capabilities = M.capabilities, on_init = M.on_init })
+	vim.lsp.config("lua_ls", { settings = lua_lsp_settings })
+	vim.lsp.enable("lua_ls")
 end
 
 return M

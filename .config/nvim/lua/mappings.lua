@@ -19,24 +19,14 @@ map("n", "<leader>w", "<cmd>w<CR>")
 map("n", "<leader>e", "<cmd>NvimTreeToggle<CR>")
 map("n", "<S-e>", "<cmd>NvimTreeFocus<CR>")
 
-map("n", "<leader>m", function()
-	local options = vim.bo.ft == "NvimTree" and "nvimtree" or "default"
-	require("menu").open(options, { border = true })
-end, { desc = "context menu" })
-
-map("n", "<RightMouse>", function()
-	vim.cmd.exec('"normal! \\ <RightMouse>"')
-	local options = vim.bo.ft == "NvimTree" and "nvimtree" or "default"
-	require("menu").open(options, { mouse = true, border = true })
-end, { desc = "right click context menu" })
-
 map("n", "<leader>fm", function()
 	require("conform").format({ lsp_fallback = true })
 end, { desc = "general format file" })
 
 map({ "n", "t" }, "<leader>t", function()
-	require("nvchad.term").toggle({ pos = "sp", id = "htoggleTerm" })
+	require("nvchad.term").toggle({ pos = "float", id = "floatTerm" })
 end)
+
 map("t", "<C-x>", "<C-\\><C-N>", { desc = "terminal escape terminal mode" })
 
 map("n", "<leader>b", "<cmd>enew<CR>")
